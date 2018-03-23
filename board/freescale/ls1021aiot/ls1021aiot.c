@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2016 Freescale Semiconductor, Inc.
- * Copyright 2021 NXP
+ * Copyright 2021-2022 NXP
  */
 
 #include <common.h>
@@ -164,6 +164,10 @@ int board_early_init_f(void)
 	clrbits_be32(&scfg->etsecdmamcr, SCFG_ETSECDMAMCR_LE_BD_FR);
 	out_be32(&scfg->etsecmcr, SCFG_ETSECCMCR_GE2_CLK125);
 
+#endif
+
+#ifdef CONFIG_FSL_IFC
+	init_early_memctl_regs();
 #endif
 
 	arch_soc_init();
