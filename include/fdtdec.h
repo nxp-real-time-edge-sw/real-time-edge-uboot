@@ -1183,6 +1183,8 @@ int fdtdec_resetup(int *rescan);
  */
 void *board_fdt_blob_setup(void);
 
+int fdt_baremetal_setup(void);
+
 /*
  * Decode the size of memory
  *
