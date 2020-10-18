@@ -22,6 +22,10 @@
 		ethernet5 = &swp4;
 		ethernet6 = &swp5;
 	};
+
+	chosen {
+		stdout-path = &uart0;
+	};
 };
 
 &dspi0 {
@@ -118,6 +122,14 @@
 };
 
 &i2c0 {
+	status = "okay";
+};
+
+&lpuart0 {
+	status = "okay";
+};
+
+&lpuart3 {
 	status = "okay";
 };
 
