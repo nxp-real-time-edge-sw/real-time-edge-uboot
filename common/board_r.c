@@ -474,7 +474,7 @@ static int initr_malloc_bootparams(void)
 
 static int initr_gic_init(void)
 {
-	if (get_core_id() == 1)
+	if (get_core_id() == CONFIG_SLAVE_FIRST_CORE)
 		gic_set_pri_common();
 	gic_set_pri_per_cpu();
 	gic_enable_dist();
