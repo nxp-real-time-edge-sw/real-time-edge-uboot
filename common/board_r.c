@@ -61,6 +61,7 @@
 #include <wdt.h>
 #include <asm-generic/gpio.h>
 #include <efi_loader.h>
+#include <asm/interrupt-gic.h>
 #ifdef CONFIG_FSL_FASTBOOT
 #include <fb_fsl.h>
 #endif
@@ -470,6 +471,15 @@ static int initr_malloc_bootparams(void)
 	return 0;
 }
 #endif
+
+static int initr_gic_init(void)
+{
+	if (get_core_id() == 1)
+		gic_set_pri_common();
+	gic_set_pri_per_cpu();
+	gic_enable_dist();
+	return 0;
+}
 
 #ifdef CONFIG_CMD_NET
 static int initr_ethaddr(void)
@@ -970,6 +980,7 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
+	initr_gic_init,
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,
