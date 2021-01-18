@@ -164,5 +164,9 @@ config ENETC_CTL_NUM
 	default "1"
 endif
 
+config SAI_COREID_SET
+	bool "Enable SAI for baremetal"
+	depends on BAREMETAL
+	default n
 
 endmenu
