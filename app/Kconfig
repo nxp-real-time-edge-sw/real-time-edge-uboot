@@ -191,4 +191,9 @@ config FEC_NIC0_COREID
 	default "1"
 endif
 
+config GPIO_GPIO5_COREID
+	int "The core GPIO5 assigned"
+	depends on BAREMETAL
+	default 0
+
 endmenu
