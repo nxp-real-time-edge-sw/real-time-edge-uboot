@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2016 Freescale Semiconductor
- * Copyright 2019-2020 NXP
+ * Copyright 2019-2021 NXP
  */
 
 #ifndef __LS1046A_COMMON_H
@@ -54,9 +54,6 @@
 
 /* Generic Timer Definitions */
 #define COUNTER_FREQUENCY		25000000	/* 25MHz */
-
-/* Size of malloc() pool */
-#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 1024 * 1024)
 
 /* Serial Port */
 #define CONFIG_CONS_INDEX      2
