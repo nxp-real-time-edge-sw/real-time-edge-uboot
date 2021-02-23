@@ -798,6 +798,13 @@ static int fsl_qspi_probe(struct udevice *bus)
 	struct fdt_resource res;
 	int ret;
 
+#ifdef CONFIG_QSPI_COREID_SET
+	if (get_core_id() != CONFIG_QSPI_QSPI0_COREID) {
+		printf("QSPI is not assigned on this core\n");
+		return -1;
+	}
+#endif
+
 	q->dev = bus;
 	q->devtype_data = (struct fsl_qspi_devtype_data *)
 			   dev_get_driver_data(bus);
