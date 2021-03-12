@@ -6,6 +6,7 @@
 #include <env.h>
 #include <fsl_qe.h>	/* For struct qe_firmware */
 #include <u-boot/crc.h>
+#include <linux/libfdt.h>
 
 #ifdef CONFIG_SYS_DPAA_FMAN
 /**
