@@ -60,8 +60,10 @@ obj-$(CONFIG_SH_SPI) += sh_spi.o
 obj-$(CONFIG_SH_QSPI) += sh_qspi.o
 obj-$(CONFIG_STM32_QSPI) += stm32_qspi.o
 obj-$(CONFIG_STM32_SPI) += stm32_spi.o
+ifndef CONFIG_TARGET_LS1028ATSN
 obj-$(CONFIG_SJA1105) += sja1105.o
 obj-$(CONFIG_SJA1105) += sja1105_cfg.o
+endif
 obj-$(CONFIG_TEGRA114_SPI) += tegra114_spi.o
 obj-$(CONFIG_TEGRA20_SFLASH) += tegra20_sflash.o
 obj-$(CONFIG_TEGRA20_SLINK) += tegra20_slink.o
