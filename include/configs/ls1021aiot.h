@@ -136,10 +136,6 @@
 
 #define CONFIG_FSL_DEVICE_DISABLE
 
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"bootargs=root=/dev/ram0 rw console=ttyS0,115200\0" \
-"initrd_high=0xffffffff\0"
-
 /*
  * Miscellaneous configurable options
  */
@@ -160,5 +156,31 @@
 #endif
 
 #include <asm/fsl_secure_boot.h>
+
+#ifdef CONFIG_BAREMETAL
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#define CONFIG_EXTRA_ENV_SETTINGS		\
+	"board=ls1021aiot\0"			\
+	"baremetaladdr=0x84000000\0"                 \
+	"baremetalfile=bm-u-boot.bin\0"              \
+	"baudrate=115200\0"               \
+	"bootargs=root=/dev/mmcblk0p2 rootwait rw console=ttyS0,115200 cma=64M@0x0-0xb0000000\0"           \
+	"bootdelay=3\0"		\
+	"bootfile=uImage\0"		\
+	"eth1addr=00:1F:7B:63:35:E9\0"		\
+	"eth2addr=00:1F:7B:63:35:EA\0"		\
+	"ethact=eTSEC1\0"		\
+	"ethaddr=00:1F:7B:63:35:E8\0"		\
+	"ethprime=eTSEC1\0"		\
+	"fdtaddr=0x8f000000\0"		\
+	"fdtfile=ls1021a-iot-bm.dtb\0"		\
+	"loadaddr=0x80008000\0"	\
+	"bootcmd=mmcinfo;fatload mmc 0:1 ${loadaddr} ${bootfile};" \
+		"fatload mmc 0:1 ${fdtaddr} ${fdtfile};" \
+		"fatload mmc 0:1 ${baremetaladdr} ${baremetalfile};cpu start ${baremetaladdr};" \
+		"bootm ${loadaddr} - ${fdtaddr}\0"
+#endif
+
+#define CONFIG_SYS_BOOTM_LEN	(64 << 20) /* Increase max gunzip size */
 
 #endif
