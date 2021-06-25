@@ -231,7 +231,7 @@
 #endif
 
 #define JAILHOUSE_ENV \
-	"jh_mmcboot=setenv dtb fsl-ls1046a-rdb-jailhouse.dtb;" \
+	"jh_mmcboot=setenv dtb fsl-ls1046a-rdb-sdk-jailhouse.dtb;" \
 		"run bootcmd \0"
 
 #ifndef SPL_NO_MISC
