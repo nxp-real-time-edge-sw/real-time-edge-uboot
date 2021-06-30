@@ -250,8 +250,15 @@ static void dsa_port_set_hwaddr(struct udevice *pdev, struct udevice *master)
 	unsigned char env_enetaddr[ARP_HLEN];
 
 	eth_env_get_enetaddr_by_index("eth", dev_seq(pdev), env_enetaddr);
-	if (!is_zero_ethaddr(env_enetaddr))
+	if (!is_zero_ethaddr(env_enetaddr)) {
+		/* individual port mac addrs require master to be promisc */
+		struct eth_ops *eth_ops = eth_get_ops(master);
+
+		if (eth_ops->set_promisc)
+			eth_ops->set_promisc(master, 1);
+
 		return;
+	}
 
 	master_pdata = dev_get_plat(master);
 	eth_pdata = dev_get_plat(pdev);
