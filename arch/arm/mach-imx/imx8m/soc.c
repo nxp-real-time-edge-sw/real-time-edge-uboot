@@ -140,7 +140,8 @@ static struct mm_region imx8m_mem_map[] = {
 #ifdef CONFIG_IMX_TRUSTY_OS
 			 PTE_BLOCK_INNER_SHARE
 #else
-			 PTE_BLOCK_OUTER_SHARE
+			 PTE_BLOCK_OUTER_SHARE |
+			 PTE_BLOCK_NS
 #endif
 #ifdef PHYS_SDRAM_2_SIZE
 	}, {
@@ -152,7 +153,8 @@ static struct mm_region imx8m_mem_map[] = {
 #ifdef CONFIG_IMX_TRUSTY_OS
 			 PTE_BLOCK_INNER_SHARE
 #else
-			 PTE_BLOCK_OUTER_SHARE
+			 PTE_BLOCK_OUTER_SHARE |
+			 PTE_BLOCK_NS
 #endif
 #endif
 	}, {
