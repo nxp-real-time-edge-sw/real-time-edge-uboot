@@ -157,29 +157,74 @@
 
 #include <asm/fsl_secure_boot.h>
 
-#ifdef CONFIG_BAREMETAL
-#undef CONFIG_EXTRA_ENV_SETTINGS
-#define CONFIG_EXTRA_ENV_SETTINGS		\
-	"board=ls1021aiot\0"			\
-	"baremetaladdr=0x84000000\0"                 \
-	"baremetalfile=bm-u-boot.bin\0"              \
-	"baudrate=115200\0"               \
-	"bootargs=root=/dev/mmcblk0p2 rootwait rw console=ttyS0,115200 cma=64M@0x0-0xb0000000\0"           \
-	"bootdelay=3\0"		\
-	"bootfile=uImage\0"		\
-	"eth1addr=00:1F:7B:63:35:E9\0"		\
-	"eth2addr=00:1F:7B:63:35:EA\0"		\
-	"ethact=eTSEC1\0"		\
-	"ethaddr=00:1F:7B:63:35:E8\0"		\
-	"ethprime=eTSEC1\0"		\
-	"fdtaddr=0x8f000000\0"		\
-	"fdtfile=ls1021a-iot-bm.dtb\0"		\
-	"loadaddr=0x80008000\0"	\
-	"bootcmd=mmcinfo;fatload mmc 0:1 ${loadaddr} ${bootfile};" \
-		"fatload mmc 0:1 ${fdtaddr} ${fdtfile};" \
-		"fatload mmc 0:1 ${baremetaladdr} ${baremetalfile};cpu start ${baremetaladdr};" \
-		"bootm ${loadaddr} - ${fdtaddr}\0"
-#endif
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"bootargs=root=/dev/ram0 rw console=ttyS0,115200 "	\
+		"cma=64M@0x0-0xb0000000\0" \
+	"initrd_high=0xffffffff\0"      \
+	"fdt_addr=0x64f00000\0"		\
+	"kernel_addr=0x61000000\0"	\
+	"kernelheader_addr=0x60800000\0"	\
+	"scriptaddr=0x80000000\0"	\
+	"scripthdraddr=0x80080000\0"	\
+	"fdtheader_addr_r=0x80100000\0"	\
+	"kernelheader_addr_r=0x80200000\0"	\
+	"kernel_addr_r=0x81000000\0"	\
+	"kernelheader_size=0x40000\0"	\
+	"fdt_addr_r=0x90000000\0"	\
+	"ramdisk_addr_r=0xa0000000\0"	\
+	"load_addr=0x81000000\0"	\
+	"kernel_size=0x2800000\0"	\
+	"kernel_addr_sd=0x8000\0"	\
+	"kernel_size_sd=0x14000\0"	\
+	"kernelhdr_addr_sd=0x4000\0"		\
+	"kernelhdr_size_sd=0x10\0"		\
+	"othbootargs=cma=64M@0x0-0xb0000000\0"	\
+	"boot_scripts=ls1021aiot_boot.scr\0"	\
+	"boot_script_hdr=hdr_ls1021aiot_bs.out\0"	\
+		"scan_dev_for_boot_part="	\
+			"part list ${devtype} ${devnum} devplist; "	\
+			"env exists devplist || setenv devplist 1; "	\
+			"for distro_bootpart in ${devplist}; do "	\
+			"if fstype ${devtype} "				\
+				"${devnum}:${distro_bootpart} "		\
+				"bootfstype; then "			\
+				"run scan_dev_for_boot; "		\
+			"fi; "			\
+		"done\0"			\
+	"scan_dev_for_boot="				  \
+		"echo Scanning ${devtype} "		  \
+				"${devnum}:${distro_bootpart}...; "  \
+		"for prefix in ${boot_prefixes}; do "	  \
+			"run scan_dev_for_scripts; "	  \
+		"done;"					  \
+		"\0"					  \
+	"boot_a_script="				  \
+		"load ${devtype} ${devnum}:${distro_bootpart} "  \
+			"${scriptaddr} ${prefix}${script}; "    \
+		"env exists secureboot && load ${devtype} "     \
+			"${devnum}:${distro_bootpart} "		\
+			"${scripthdraddr} ${prefix}${boot_script_hdr} " \
+			"&& esbc_validate ${scripthdraddr};"    \
+		"source ${scriptaddr}\0"	  \
+	"qspi_bootcmd=echo Trying load from qspi..;"	\
+		"sf probe && sf read $load_addr "	\
+		"$kernel_addr $kernel_size; env exists secureboot "	\
+		"&& sf read $kernelheader_addr_r $kernelheader_addr "	\
+		"$kernelheader_size && esbc_validate ${kernelheader_addr_r}; " \
+		"bootm $load_addr#$board\0" \
+	"nor_bootcmd=echo Trying load from nor..;"	\
+		"cp.b $kernel_addr $load_addr "		\
+		"$kernel_size; env exists secureboot "	\
+		"&& cp.b $kernelheader_addr $kernelheader_addr_r "	\
+		"$kernelheader_size && esbc_validate ${kernelheader_addr_r}; " \
+		"bootm $load_addr#$board\0"	\
+	"sd_bootcmd=echo Trying load from SD ..;"       \
+		"mmcinfo && mmc read $load_addr "	\
+		"$kernel_addr_sd $kernel_size_sd && "	\
+		"env exists secureboot && mmc read $kernelheader_addr_r "		\
+		"$kernelhdr_addr_sd $kernelhdr_size_sd "		\
+		" && esbc_validate ${kernelheader_addr_r};"	\
+		"bootm $load_addr#$board\0"
 
 #define CONFIG_SYS_BOOTM_LEN	(64 << 20) /* Increase max gunzip size */
 
