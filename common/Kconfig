@@ -710,6 +710,11 @@ config BLOBLIST_SIZE_RELOC
 
 endmenu
 
+config BAREMETAL
+	bool "Support baremtal features"
+	help
+		This provides a command to start baremetal on slave cores, and add some features to support baremetal.
+
 source "common/spl/Kconfig"
 
 config IMAGE_SIGN_INFO
