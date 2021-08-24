@@ -517,6 +517,9 @@ static void fdt_fixup_pcie_ls(void *blob)
 		    !device_is_compatible(bus, CONFIG_FSL_PCIE_COMPAT))
 			continue;
 
+		/* check that this is the LS PCI controller */
+		if (strcmp(bus->driver->name, PCI_LS_DRV_NAME))
+			continue;
 		pcie_rc = dev_get_priv(bus);
 
 		/* the DT fixup must be relative to the hose first_busno */
