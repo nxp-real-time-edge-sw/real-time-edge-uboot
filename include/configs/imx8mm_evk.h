@@ -100,6 +100,25 @@
 	"emmc_dev=2\0"\
 	"sd_dev=1\0" \
 
+#ifdef CONFIG_BAREMETAL
+#define BOOT_BAREMTEL_ENV \
+	"boot_bm_enable=yes\0" \
+	"bmimage=bm-u-boot.bin\0" \
+	"bm_addr=50200000\0" \
+	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
+	"startbm=dcache flush;cpu 1 release 50200000;sleep 6; \
+		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 2\0" \
+	"boot_bm=" \
+		"if run loadbmimage; then " \
+			"run startbm"	\
+		"else " \
+			"echo WARN: Cannot load the Baremetal Image; " \
+		"fi;\0"
+#else
+#define BOOT_BAREMTEL_ENV \
+	"boot_bm_enable=no\0"
+#endif
+
 /* Initial environment variables */
 #if defined(CONFIG_NAND_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -117,12 +136,12 @@
 	"bootcmd=nand read ${loadaddr} 0x5000000 0x2000000;"\
 		"nand read ${fdt_addr_r} 0x7000000 0x100000;"\
 		"booti ${loadaddr} - ${fdt_addr_r}"
-
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS		\
 	CONFIG_MFG_ENV_SETTINGS \
 	BOOTENV \
 	JAILHOUSE_ENV \
+	BOOT_BAREMTEL_ENV \
 	"prepare_mcore=setenv mcore_clk clk-imx8mm.mcore_booted;\0" \
 	"scriptaddr=0x43500000\0" \
 	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
@@ -179,15 +198,18 @@
 		"fi;\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
-		   "if run loadbootscript; then " \
-			   "run bootscript; " \
-		   "else " \
-			   "if run loadimage; then " \
-				   "run mmcboot; " \
-			   "else run netboot; " \
-			   "fi; " \
-		   "fi; " \
-	   "fi;"
+			"if test ${boot_bm_enable} = yes; then " \
+				"run boot_bm" \
+			"fi;" \
+			"if run loadbootscript; then " \
+				"run bootscript; " \
+			"else " \
+				"if run loadimage; then " \
+					"run mmcboot; " \
+				"else run netboot; " \
+				"fi; " \
+			"fi; " \
+		"fi;\0"
 #endif
 
 /* Link Definitions */
@@ -206,6 +228,30 @@
 #define PHYS_SDRAM                      0x40000000
 #define PHYS_SDRAM_SIZE			0x80000000 /* 2GB DDR */
 
+#define CONFIG_MAX_CPUS 4
+
+#define IMX_SRC_BASE            0x30390000
+#define IMX_GPC_BASE            0x303a0000
+
+#define SRC_GPR_CX_START_ADDRL_MASK 0x3fffff
+#define SRC_GPR_CX_START_ADDRH_MASK 0xffff
+#define SRC_GPR_CX_START_ADDRH_SHIFT 22
+#define SRC_A53RCR1_ENABLE_CORES_MASK 0xf
+
+#define IMX8M_SRC_A53RCR0         0x4
+#define IMX8M_SRC_A53RCR1         0x8
+#define IMX8M_SRC_M4RCR           0xc
+#define IMX8M_SRC_OTG1PHY_SCR         0x20
+#define IMX8M_SRC_OTG2PHY_SCR         0x24
+#define IMX8M_SRC_GPR1_OFFSET         0x74
+
+#define IMX8M_LPCR_A53_AD         0x4
+
+#define IMX8M_SRC_SCR_M4_ENABLE_MASK      BIT(3)
+#define IMX8M_SRC_SCR_M4C_NON_SCLR_RST_MASK   BIT(0)
+#define COREx_WFI_PDN(core_id)      (1 << ((core_id) < 2 ? (core_id) * 2 : ((core_id) - 2) * 2 + 16))
+#define COREx_PGC_PCR(core_id)      (0x800 + (core_id) * 0x40)
+#define CPU_PGC_UP_TRG          0xF0
 #define CONFIG_MXC_UART_BASE		UART2_BASE_ADDR
 
 /* Monitor Command Prompt */
