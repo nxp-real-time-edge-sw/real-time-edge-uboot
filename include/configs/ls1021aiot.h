@@ -157,6 +157,11 @@
 
 #include <asm/fsl_secure_boot.h>
 
+#define BOOT_TARGET_DEVICES(func) \
+	func(MMC, mmc, 0) \
+	func(DHCP, dhcp, na)
+#include <config_distro_bootcmd.h>
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"bootargs=root=/dev/ram0 rw console=ttyS0,115200 "	\
 		"cma=64M@0x0-0xb0000000\0" \
@@ -179,6 +184,7 @@
 	"kernelhdr_addr_sd=0x4000\0"		\
 	"kernelhdr_size_sd=0x10\0"		\
 	"othbootargs=cma=64M@0x0-0xb0000000\0"	\
+	BOOTENV				\
 	"boot_scripts=ls1021aiot_boot.scr\0"	\
 	"boot_script_hdr=hdr_ls1021aiot_bs.out\0"	\
 		"scan_dev_for_boot_part="	\
@@ -225,6 +231,10 @@
 		"$kernelhdr_addr_sd $kernelhdr_size_sd "		\
 		" && esbc_validate ${kernelheader_addr_r};"	\
 		"bootm $load_addr#$board\0"
+
+#undef CONFIG_BOOTCOMMAND
+#define CONFIG_BOOTCOMMAND "run distro_bootcmd; run sd_bootcmd; "	\
+			   "env exists secureboot && esbc_halt;"
 
 #define CONFIG_SYS_BOOTM_LEN	(64 << 20) /* Increase max gunzip size */
 
