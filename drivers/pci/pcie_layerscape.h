@@ -137,6 +137,8 @@
 /* layerscape PF1 offset */
 #define LS_PCIE_PF1_OFFSET	0x20000
 
+#define PCI_LS_DRV_NAME			"pci_layerscape"
+
 struct ls_pcie {
 	void __iomem *dbi;
 	void __iomem *lut;
