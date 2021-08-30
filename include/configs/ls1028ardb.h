@@ -7,6 +7,7 @@
 #define __LS1028A_RDB_H
 
 #include "ls1028a_common.h"
+#include "ls1028ardb_config.h"
 
 #define COUNTER_FREQUENCY_REAL		(get_board_sys_clk() / 4)
 
