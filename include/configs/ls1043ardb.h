@@ -276,6 +276,12 @@
 #endif
 #endif
 
+/*
+ * GPIO
+ */
+#define CONFIG_MPC8XXX_GPIO
+#define CONFIG_DM_GPIO
+
 /* SATA */
 #ifndef SPL_NO_SATA
 #define CONFIG_SYS_SCSI_MAX_SCSI_ID		2
