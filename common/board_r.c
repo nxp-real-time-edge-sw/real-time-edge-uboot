@@ -896,6 +896,8 @@ static init_fnc_t init_sequence_r[] = {
 	run_main_loop,
 };
 
+int icc_init(void);
+
 void board_init_r(gd_t *new_gd, ulong dest_addr)
 {
 	/*
@@ -990,6 +992,7 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_enable_interrupts,
 #endif
 	initr_gic_init,
+	icc_init,
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,
 #endif
