@@ -9,6 +9,23 @@
 
 #include "ls1046a_common.h"
 
+#define CONFIG_ICC
+
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE        (256 * 1024 * 1024)
+#define CONFIG_SYS_DDR_SDRAM_MASTER_SIZE       (512 * 1024 * 1024)
+#define ICC_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE (16 * 1024 * 1024)
+#define ICC_SYS_DDR_SDRAM_SHARE_SIZE \
+	((256 * 1024 * 1024) - ICC_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE)
+#define CONFIG_MASTER_CORE                     0
+#define CONFIG_SLAVE_FIRST_CORE			1
+
+#define ICC_SYS_DDR_SDRAM_SHARE_BASE \
+	(CONFIG_SYS_DDR_SDRAM_BASE + CONFIG_SYS_DDR_SDRAM_MASTER_SIZE \
+	+ CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE * (CONFIG_MAX_CPUS - 1))
+
+#define ICC_SYS_DDR_SDRAM_SHARE_RESERVE_BASE \
+	(ICC_SYS_DDR_SDRAM_SHARE_BASE + ICC_SYS_DDR_SDRAM_SHARE_SIZE)
+
 #define CONFIG_LAYERSCAPE_NS_ACCESS
 
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
@@ -134,6 +151,21 @@
 
 #endif
 
+/* GPIO */
+#define CONFIG_MPC8XXX_GPIO
+#define CONFIG_DM_GPIO
+#define SHARED_GPIO_REQUEST_INFO
+
+/* USB */
+#ifndef SPL_NO_USB
+#ifdef CONFIG_HAS_FSL_XHCI_USB
+#define CONFIG_USB_XHCI_HCD
+#define CONFIG_USB_XHCI_FSL
+#define CONFIG_USB_XHCI_DWC3
+#define CONFIG_USB_MAX_CONTROLLER_COUNT        1
+#endif
+#endif
+
 #ifndef SPL_NO_MISC
 #ifdef CONFIG_TFABOOT
 #define QSPI_NOR_BOOTCOMMAND "run distro_bootcmd; run qspi_bootcmd; "	\
@@ -142,6 +174,9 @@
 			   "env exists secureboot && esbc_halt;"
 #endif
 #endif
+
+#define CONFIG_ENABLE_COREID_DEBUG
+#define CONFIG_ENABLE_WRITE_LOCK
 
 #include <asm/fsl_secure_boot.h>
 

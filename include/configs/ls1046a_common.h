@@ -48,6 +48,7 @@
 #define COUNTER_FREQUENCY		25000000	/* 25MHz */
 
 /* Serial Port */
+#define CONFIG_CONS_INDEX      2
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK          (get_serial_clock())
@@ -110,6 +111,7 @@
 /* GPIO */
 
 /* I2C */
+#define CONFIG_SYS_I2C_MXC
 
 /* PCIe */
 #define CONFIG_PCIE1		/* PCIE controller 1 */
@@ -118,6 +120,7 @@
 
 #ifdef CONFIG_PCI
 #define CONFIG_PCI_SCAN_SHOW
+#define CONFIG_CMD_PCI
 #endif
 
 /* SATA */
