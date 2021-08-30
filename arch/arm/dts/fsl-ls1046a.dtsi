@@ -86,6 +86,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio1: gpio@2310000 {
@@ -96,6 +97,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio2: gpio@2320000 {
@@ -106,6 +108,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio3: gpio@2330000 {
@@ -116,6 +119,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		ifc: ifc@1530000 {
