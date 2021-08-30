@@ -71,6 +71,7 @@ __secondary_boot_func:
 	mov	x4, #1
 	str	x4, [x11, #8]	/* STATUS */
 	dsb	sy
+	bl	_main_slave
 
 1:
 	wfe
