@@ -45,7 +45,6 @@ struct imx_sec_config_fuse_t const imx_sec_config_fuse = {
 
 int timer_init(void)
 {
-#ifdef CONFIG_SPL_BUILD
 	struct sctr_regs *sctr = (struct sctr_regs *)SYSCNT_CTRL_BASE_ADDR;
 	unsigned long freq = readl(&sctr->cntfid0);
 
@@ -54,7 +53,6 @@ int timer_init(void)
 
 	clrsetbits_le32(&sctr->cntcr, SC_CNTCR_FREQ0 | SC_CNTCR_FREQ1,
 			SC_CNTCR_FREQ0 | SC_CNTCR_ENABLE | SC_CNTCR_HDBG);
-#endif
 
 	gd->arch.tbl = 0;
 	gd->arch.tbu = 0;
@@ -195,6 +193,19 @@ static unsigned int imx8m_find_dram_entry_in_mem_map(void)
 	hang();	/* Entry not found, this must never happen. */
 }
 
+u32 get_core_id(void)
+{
+    u32 aff;
+
+    asm volatile("mrs %0, mpidr_el1\n"
+                    :"=r" (aff)
+                    :
+                    :"memory");
+
+    aff = aff & 0xFFFF;
+    return aff;
+}
+
 void enable_caches(void)
 {
 	/* If OPTEE runs, remove OPTEE memory from MMU table to avoid speculative prefetch
@@ -226,6 +237,11 @@ void enable_caches(void)
 	dcache_enable();
 }
 
+void enable_caches_slave(void)
+{
+	icache_enable();
+	dcache_enable();
+}
 __weak int board_phys_sdram_size(phys_size_t *size)
 {
 	if (!size)
@@ -260,6 +276,13 @@ int dram_init(void)
 int dram_init_banksize(void)
 {
 	int bank = 0;
+    u32 coreid = get_core_id();
+
+	gd->bd->bi_dram[bank].start = CONFIG_SYS_DDR_SDRAM_SLAVE_COREX_ADDR(coreid);
+	gd->bd->bi_dram[bank].size = CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE;
+
+    return 0;
+
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size, sdram_b2_size;

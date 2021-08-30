@@ -123,6 +123,16 @@ static int initr_caches(void)
 }
 #endif
 
+
+#ifdef CONFIG_ARCH_IMX8M
+static int initr_caches_slave(void)
+{
+	/* Enable caches */
+	enable_caches_slave();
+	return 0;
+}
+#endif
+
 __weak int fixup_cpu(void)
 {
 	return 0;
@@ -1012,7 +1022,11 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_reloc,
 	/* TODO: could x86/PPC have this also perhaps? */
 #ifdef CONFIG_ARM
+#ifdef CONFIG_ARCH_IMX8M
+	initr_caches_slave,
+#else
 	initr_caches,
+#endif
 	/* Note: For Freescale LS2 SoCs, new MMU table is created in DDR.
 	 *	 A temporary mapping of IFC high region is since removed,
 	 *	 so environmental variables in NOR flash is not availble
@@ -1022,17 +1036,15 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 	initr_reloc_global_data,
 
+#ifndef CONFIG_ARCH_IMX8M
 	fdt_baremetal_setup,
+#endif
 
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 	initr_unlock_ram_in_cache,
 #endif
 	initr_barrier,
 	initr_malloc,
-	initr_env,
-#if defined(CONFIG_CONSOLE_RECORD)
-	console_record_init,
-#endif
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
@@ -1041,6 +1053,9 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_dm,
 #endif
 	initr_bootstage,
+#if defined(CONFIG_CONSOLE_RECORD)
+	console_record_init,
+#endif
 	stdio_init_tables,
 	serial_initialize,
 	initr_announce,
@@ -1066,15 +1081,11 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 
 	INIT_FUNC_WATCHDOG_RESET
-#if defined(CONFIG_PCI) && !defined(CONFIG_SYS_EARLY_PCI_INIT)
-	/*
-	 * Do pci configuration
-	 */
-	pci_init,
-#endif
+
 	stdio_add_devices,
 	jumptable_init,
 	console_init_r,		/* fully init console as a device */
+	initr_env,
 	INIT_FUNC_WATCHDOG_RESET
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
