@@ -52,9 +52,6 @@
 /* Generic Timer Definitions */
 #define COUNTER_FREQUENCY		25000000	/* 25MHz */
 
-/* Size of malloc() pool */
-#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 1024 * 1024)
-
 /* Serial Port */
 #define CONFIG_CONS_INDEX      2
 #define CONFIG_SYS_NS16550_SERIAL
