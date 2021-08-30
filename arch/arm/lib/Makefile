@@ -65,6 +65,7 @@ obj-y	+= interrupts_64.o
 else
 obj-y	+= interrupts.o
 endif
+obj-y	+= inter-core-comm.o
 ifndef CONFIG_$(SPL_TPL_)SYSRESET
 obj-y	+= reset.o
 endif

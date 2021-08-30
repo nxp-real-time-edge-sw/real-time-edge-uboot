@@ -921,6 +921,8 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 	hang();
 }
 
+int icc_init(void);
+
 init_fnc_t init_sequence_r_slave[] = {
 	initr_trace,
 	initr_reloc,
@@ -981,6 +983,7 @@ init_fnc_t init_sequence_r_slave[] = {
 
 	interrupt_init,
 	initr_gic_init,
+	icc_init,
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,
