@@ -999,10 +999,12 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
+#ifndef CONFIG_ARCH_LX2160A
 #ifndef CONFIG_ARCH_LS1028A
 	initr_gic_init,
 #endif
 	icc_init,
+#endif
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,

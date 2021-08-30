@@ -7,6 +7,7 @@
 #define __LX2_RDB_H
 
 #include "lx2160a_common.h"
+#include "lx2160ardb_config.h"
 
 /* RTC */
 #define CONFIG_SYS_RTC_BUS_NUM		4
@@ -67,5 +68,9 @@
 		"bootm $load_addr#$BOARD\0"
 
 #include <asm/fsl_secure_boot.h>
+
+#ifdef CONFIG_EXTRA_ENV_SETTINGS
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#endif
 
 #endif /* __LX2_RDB_H */
