@@ -138,6 +138,16 @@ static int initr_caches(void)
 }
 #endif
 
+
+#ifdef CONFIG_ARCH_IMX8M
+static int initr_caches_slave(void)
+{
+	/* Enable caches */
+	enable_caches_slave();
+	return 0;
+}
+#endif
+
 __weak int fixup_cpu(void)
 {
 	return 0;
@@ -1020,7 +1030,11 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_reloc,
 	/* TODO: could x86/PPC have this also perhaps? */
 #ifdef CONFIG_ARM
+#ifdef CONFIG_ARCH_IMX8M
+	initr_caches_slave,
+#else
 	initr_caches,
+#endif
 	/* Note: For Freescale LS2 SoCs, new MMU table is created in DDR.
 	 *	 A temporary mapping of IFC high region is since removed,
 	 *	 so environmental variables in NOR flash is not availble
@@ -1030,15 +1044,15 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 	initr_reloc_global_data,
 
+#ifndef CONFIG_ARCH_IMX8M
 	fdt_baremetal_setup,
+#endif
 
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 	initr_unlock_ram_in_cache,
 #endif
 	initr_barrier,
 	initr_malloc,
-	initr_env,
-	initr_console_record,
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
@@ -1047,8 +1061,11 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_dm,
 #endif
 	initr_bootstage,
+#if defined(CONFIG_CONSOLE_RECORD)
+	console_record_init,
+#endif
 	stdio_init_tables,
-	initr_serial,
+	serial_initialize,
 	initr_announce,
 	INIT_FUNC_WATCHDOG_RESET
 #ifdef CONFIG_CMD_NAND
@@ -1062,7 +1079,7 @@ init_fnc_t init_sequence_r_slave[] = {
 	 * Do early PCI configuration _before_ the flash gets initialised,
 	 * because PCU ressources are crucial for flash access on some boards.
 	 */
-	initr_pci,
+	pci_init,
 #endif
 #ifdef CONFIG_FMAN_COREID_SET
 	eth_early_init_r,
@@ -1076,18 +1093,16 @@ init_fnc_t init_sequence_r_slave[] = {
 	/*
 	 * Do pci configuration
 	 */
-	initr_pci,
+	pci_init,
 #endif
 	stdio_add_devices,
-	initr_jumptable,
+	jumptable_init,
 	console_init_r,		/* fully init console as a device */
+	initr_env,
 	INIT_FUNC_WATCHDOG_RESET
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
-#if defined(CONFIG_ARM) || defined(CONFIG_AVR32)
-	initr_enable_interrupts,
-#endif
 #ifndef CONFIG_ARCH_LX2160A
 #ifndef CONFIG_ARCH_LS1028A
 	initr_gic_init,

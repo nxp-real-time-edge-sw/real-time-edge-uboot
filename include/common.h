@@ -22,6 +22,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <linux/kernel.h>
+#if defined(CONFIG_MP)
+#include <asm/arch/mp.h>
+#endif
 #include <asm/u-boot.h> /* boot information for Linux kernel */
 #include <display_options.h>
 #include <vsprintf.h>
