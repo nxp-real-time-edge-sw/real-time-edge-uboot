@@ -10,6 +10,7 @@
 #include <linux/stringify.h>
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
+#include "imx8mm_evk_config.h"
 
 #define CONFIG_SYS_BOOTM_LEN		(64 * SZ_1M)
 #define CONFIG_SPL_MAX_SIZE		(148 * 1024)
@@ -192,8 +193,8 @@
 
 /* Link Definitions */
 
-#define CONFIG_SYS_INIT_RAM_ADDR        0x40000000
-#define CONFIG_SYS_INIT_RAM_SIZE        0x200000
+#define CONFIG_SYS_INIT_RAM_ADDR        0x40080000
+#define CONFIG_SYS_INIT_RAM_SIZE        0x80000
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 #define CONFIG_SYS_INIT_SP_ADDR \
@@ -206,7 +207,7 @@
 #define PHYS_SDRAM                      0x40000000
 #define PHYS_SDRAM_SIZE			0x80000000 /* 2GB DDR */
 
-#define CONFIG_MXC_UART_BASE		UART2_BASE_ADDR
+#define CONFIG_MXC_UART_BASE		UART4_BASE_ADDR
 
 /* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		2048
@@ -246,10 +247,6 @@
 #endif /* CONFIG_NAND_MXS */
 
 /* USB configs */
-#ifndef CONFIG_SPL_BUILD
-#define CONFIG_USBD_HS
-
-#endif
 
 #define CONFIG_USB_GADGET_VBUS_DRAW 2
 
