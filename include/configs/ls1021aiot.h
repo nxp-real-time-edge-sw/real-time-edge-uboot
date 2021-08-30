@@ -7,6 +7,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include "ls1021aiot_config.h"
+
 #define CONFIG_ARMV7_SECURE_BASE OCRAM_BASE_S_ADDR
 
 #define CONFIG_SYS_INIT_RAM_ADDR	OCRAM_BASE_ADDR
@@ -61,6 +63,12 @@
 
 #define CONFIG_CHIP_SELECTS_PER_CTRL	4
 
+#define CONFIG_MASTER_CORE          0
+
+#define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
+	(CONFIG_SYS_DDR_SDRAM_BASE + CONFIG_SYS_DDR_SDRAM_MASTER_SIZE \
+	+ CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE * (CONFIG_MAX_CPUS - 1))
+
 /*
  * Serial Port
  */
@@ -76,55 +84,8 @@
 #define CONFIG_SYS_I2C_EEPROM_NXID
 #define CONFIG_SYS_EEPROM_BUS_NUM		0
 
-/*
- * MMC
- */
-
-/* SATA */
-#ifndef PCI_DEVICE_ID_FREESCALE_AHCI
-#define PCI_DEVICE_ID_FREESCALE_AHCI	0x0440
-#endif
-#define CONFIG_SCSI_DEV_LIST		{PCI_VENDOR_ID_FREESCALE, \
-	PCI_DEVICE_ID_FREESCALE_AHCI}
-
 /* SPI */
 
-/*
- * eTSEC
- */
-
-#ifdef CONFIG_TSEC_ENET
-#define CONFIG_MII_DEFAULT_TSEC		1
-#define CONFIG_TSEC1			1
-#define CONFIG_TSEC1_NAME		"eTSEC1"
-#define CONFIG_TSEC2			1
-#define CONFIG_TSEC2_NAME		"eTSEC2"
-
-#define TSEC1_PHY_ADDR			1
-#define TSEC2_PHY_ADDR			3
-
-#define TSEC1_FLAGS			(TSEC_GIGABIT | TSEC_REDUCED)
-#define TSEC2_FLAGS			(TSEC_GIGABIT | TSEC_REDUCED)
-
-#define TSEC1_PHYIDX			0
-#define TSEC2_PHYIDX			0
-
-#define CONFIG_ETHPRIME			"eTSEC2"
-
-#define CONFIG_HAS_ETH0
-#define CONFIG_HAS_ETH1
-#define CONFIG_HAS_ETH2
-#endif
-
-/* PCIe */
-#define CONFIG_PCIE1		/* PCIE controler 1 */
-#define CONFIG_PCIE2		/* PCIE controler 2 */
-
-#define FSL_PCIE_COMPAT		"fsl,ls1021a-pcie"
-
-#ifdef CONFIG_PCI
-#define CONFIG_PCI_SCAN_SHOW
-#endif
 
 #define CONFIG_PEN_ADDR_BIG_ENDIAN
 #define CONFIG_LAYERSCAPE_NS_ACCESS
