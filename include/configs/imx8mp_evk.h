@@ -10,6 +10,7 @@
 #include <linux/stringify.h>
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
+#include "imx8mp_evk_config.h"
 
 #define CONFIG_SYS_BOOTM_LEN		(32 * SZ_1M)
 
@@ -48,7 +49,7 @@
 /* ENET1 */
 
 #if defined(CONFIG_CMD_NET)
-#define CONFIG_ETHPRIME                 "eth1" /* Set eqos to primary since we use its MDIO */
+#define CONFIG_ETHPRIME                 "eth0" /* Set eqos to primary since we use its MDIO */
 
 #define CONFIG_FEC_XCV_TYPE             RGMII
 #define CONFIG_FEC_MXC_PHYADDR          1
@@ -185,9 +186,13 @@
 	   "fi;"
 #endif
 
+#ifdef CONFIG_EXTRA_ENV_SETTINGS
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#endif
+
 /* Link Definitions */
 
-#define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
+#define CONFIG_SYS_INIT_RAM_ADDR	0x40080000
 #define CONFIG_SYS_INIT_RAM_SIZE	0x80000
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
@@ -207,7 +212,43 @@
 #define PHYS_SDRAM_2_SIZE		0xC0000000	/* 3 GB */
 #endif
 
-#define CONFIG_MXC_UART_BASE		UART2_BASE_ADDR
+#define CONFIG_MXC_UART_BASE		UART4_BASE_ADDR
+
+/* Size of malloc() pool */
+#define CONFIG_SYS_STACK_RESERVE_LEN  (CONFIG_SYS_MALLOC_LEN + 5 * SZ_1M) /*reserve 5MB memory for sp i.e. */
+
+#define CONFIG_ARP_TIMEOUT     200UL
+
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_RESERVE_SIZE (SZ_32M)
+#define CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE (SZ_4M)
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE	(SZ_32M)
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_ADDR (0x60000000)
+
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_COREX_ADDR(coreid) \
+	(CONFIG_SYS_DDR_SDRAM_SLAVE_ADDR + \
+        (coreid - 1) * CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE)
+#define CONFIG_SYS_DDR_SDRAM_SLAVE_COREX_RAMTOP_ADDR(coreid) \
+	(CONFIG_SYS_DDR_SDRAM_SLAVE_ADDR + \
+        (coreid - 1) * CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE + \
+	CONFIG_SYS_MALLOC_LEN + CONFIG_SYS_STACK_RESERVE_LEN )
+
+#define CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_BASE \
+	(CONFIG_SYS_DDR_SDRAM_SHARE_BASE + CONFIG_SYS_DDR_SDRAM_SHARE_SIZE)
+
+#define CONFIG_SYS_DDR_SDRAM_SHARE_SIZE \
+	(CONFIG_SYS_DDR_SDRAM_SLAVE_RESERVE_SIZE - \
+	 CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE)
+#define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
+	(CONFIG_SYS_DDR_SDRAM_SLAVE_ADDR + \
+	 CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE*(CONFIG_MAX_CPUS-1))
+#define CONFIG_MASTER_CORE                     0
+
+#define CONFIG_GICV3
+
+/* GICv3 base address */
+#define GICD_BASE          0x38800000
+#define GICR_BASE          0x38880000
+
 
 /* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		2048
