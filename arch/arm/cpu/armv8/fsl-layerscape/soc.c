@@ -48,7 +48,8 @@ int ls_gic_rd_tables_init(void *blob)
 	fdt_size_t size;
 	int offset, ret;
 
-	offset = fdt_path_offset(gd->fdt_blob, "/syscon@0x80000000");
+	offset = fdt_node_offset_by_compatible(gd->fdt_blob, -1, "gic-lpi-base");
+
 	addr = fdtdec_get_addr_size_auto_noparent(gd->fdt_blob, offset, "reg",
 						  0, &size, false);
 
