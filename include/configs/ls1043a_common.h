@@ -171,6 +171,11 @@
 #include <config_distro_bootcmd.h>
 #endif
 
+#define JAILHOUSE_ENV \
+	"jh_mmcboot=setenv dtb fsl-ls1043a-rdb-sdk-jailhouse.dtb;" \
+		"setenv othbootargs mem=1024MB;" \
+		"run bootcmd \0"
+
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS		\
 	"hwconfig=fsl_ddr:bank_intlv=auto\0"	\
@@ -198,6 +203,7 @@
 	"boot_os=y\0"				\
 	"mtdparts=" CONFIG_MTDPARTS_DEFAULT "\0"	\
 	BOOTENV					\
+	JAILHOUSE_ENV \
 	"boot_scripts=ls1043ardb_boot.scr\0"	\
 	"boot_script_hdr=hdr_ls1043ardb_bs.out\0"	\
 	"scan_dev_for_boot_part="		\
