@@ -250,6 +250,11 @@ int intpll_configure(enum pll_clocks pll, ulong freq)
 		pll_div_ctl_val = INTPLL_MAIN_DIV_VAL(0xc8) |
 			INTPLL_PRE_DIV_VAL(2) | INTPLL_POST_DIV_VAL(1);
 		break;
+	case MHZ(1800):
+		/* 24 * 0xe1 / 3 / 2 ^ 0 */
+		pll_div_ctl_val = INTPLL_MAIN_DIV_VAL(0xe1) |
+			INTPLL_PRE_DIV_VAL(3) | INTPLL_POST_DIV_VAL(0);
+		break;
 	case MHZ(2000):
 		/* 24 * 0xfa / 3 / 2 ^ 0 */
 		pll_div_ctl_val = INTPLL_MAIN_DIV_VAL(0xfa) |
@@ -515,7 +520,7 @@ int clock_init(void)
 	clock_set_target_val(ARM_A53_CLK_ROOT, CLK_ROOT_ON |
 			     CLK_ROOT_SOURCE_SEL(2));
 
-	intpll_configure(ANATOP_ARM_PLL, MHZ(1200));
+	intpll_configure(ANATOP_ARM_PLL, MHZ(1800));
 
 	/* Bypass CCM A53 ROOT, Switch to ARM PLL -> MUX-> CPU */
 	clock_set_target_val(CORE_SEL_CFG, CLK_ROOT_SOURCE_SEL(1));
