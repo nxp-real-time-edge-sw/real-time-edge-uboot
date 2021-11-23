@@ -147,6 +147,7 @@
 
 &mscc_felix_port0 {
 	label = "swp0";
+	managed = "in-band-status";
 	phy-handle = <&sw_phy0>;
 	phy-mode = "qsgmii";
 	status = "okay";
@@ -154,6 +155,7 @@
 
 &mscc_felix_port1 {
 	label = "swp1";
+	managed = "in-band-status";
 	phy-handle = <&sw_phy1>;
 	phy-mode = "qsgmii";
 	status = "okay";
@@ -161,6 +163,7 @@
 
 &mscc_felix_port2 {
 	label = "swp2";
+	managed = "in-band-status";
 	phy-handle = <&sw_phy2>;
 	phy-mode = "qsgmii";
 	status = "okay";
@@ -168,6 +171,7 @@
 
 &mscc_felix_port3 {
 	label = "swp3";
+	managed = "in-band-status";
 	phy-handle = <&sw_phy3>;
 	phy-mode = "qsgmii";
 	status = "okay";
