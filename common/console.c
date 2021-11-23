@@ -724,11 +724,11 @@ void puts(const char *s)
 		outbool = 1;
 	if (!outbool && printbuffer[0] == 0)
 		sprintf(printbuffer, "%c:", channel);
-	sprintf(printbuffer, "%s%s", printbuffer, s);
+	snprintf(printbuffer, 2048, "%s%s\0", printbuffer, s);
 	if (!outbool && s[strlen(s) - 1] != '\n')
 		return;
 #else
-	sprintf(printbuffer, "%s", s);
+	snprintf(printbuffer, 2048, "%s\0", s);
 #endif
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
