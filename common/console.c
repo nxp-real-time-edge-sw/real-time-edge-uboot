@@ -638,7 +638,9 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-char printbuffer[2048];
+#define PRINTBUFFER_LEN	2048
+
+char printbuffer[PRINTBUFFER_LEN];
 void putc(const char c)
 {
 	if (!gd)
@@ -718,17 +720,19 @@ void puts(const char *s)
 	char channel = '0';
 	int outbool = 0;
 	int coreid = get_core_id();
+	int chars_left;
 
 	channel += coreid;
 	if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
 		outbool = 1;
 	if (!outbool && printbuffer[0] == 0)
 		sprintf(printbuffer, "%c:", channel);
-	snprintf(printbuffer, 2048, "%s%s\0", printbuffer, s);
+	chars_left = PRINTBUFFER_LEN - strlen(printbuffer);
+	strncat(printbuffer, s, chars_left);
 	if (!outbool && s[strlen(s) - 1] != '\n')
 		return;
 #else
-	snprintf(printbuffer, 2048, "%s\0", s);
+	snprintf(printbuffer, PRINTBUFFER_LEN, "%s", s);
 #endif
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
