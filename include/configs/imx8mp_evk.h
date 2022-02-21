@@ -61,7 +61,7 @@
 
 #define DWC_NET_PHYADDR			1
 
-#define PHY_ANEG_TIMEOUT 20000
+#define PHY_ANEG_TIMEOUT 5000
 
 #endif
 
