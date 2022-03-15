@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2014-2015, Freescale Semiconductor
+ * Copyright 2018-2022 NXP
  */
 
 #ifndef _FSL_LAYERSCAPE_MP_H
@@ -44,6 +45,8 @@ static inline int fsl_layerscape_wake_seconday_cores(void) { return 0; }
 void *get_spin_tbl_addr(void);
 int is_core_online(u64 cpu_id);
 u32 cpu_pos_mask(void);
+int get_core_id(void);
+int is_core_valid(unsigned int core);
 #endif
 
 #endif /* _FSL_LAYERSCAPE_MP_H */
