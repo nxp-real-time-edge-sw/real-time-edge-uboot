@@ -49,6 +49,11 @@
 #if defined(CONFIG_MP) && defined(CONFIG_PPC)
 #include <asm/mp.h>
 #endif
+#if defined(CONFIG_MP) && \
+	(defined(CONFIG_ARCH_LS1021A) || \
+	 defined(CONFIG_FSL_LAYERSCAPE))
+#include <asm/arch/mp.h>
+#endif
 #include <asm/global_data.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -326,6 +331,10 @@ static int setup_dest_addr(void)
 	 * Ram is setup, size stored in gd !!
 	 */
 	debug("Ram size: %08lX\n", (ulong)gd->ram_size);
+#if defined(CONFIG_BAREMETAL)
+	if (get_core_id() == CONFIG_MASTER_CORE)
+		gd->ram_size = CONFIG_SYS_DDR_SDRAM_MASTER_SIZE;
+#endif
 #if defined(CONFIG_SYS_MEM_TOP_HIDE)
 	/*
 	 * Subtract specified amount of memory to hide so that it won't
