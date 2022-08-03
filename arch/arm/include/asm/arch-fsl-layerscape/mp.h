@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2014-2015, Freescale Semiconductor
+ * Copyright 2019-2022 NXP
  */
 
 #ifndef _FSL_LAYERSCAPE_MP_H
@@ -31,6 +32,7 @@
 #define OS_ARCH_DIFF			1
 
 #define id_to_core(x)	((x & 3) | (x >> 6))
+
 #ifndef __ASSEMBLY__
 extern u64 __real_cntfrq;
 extern void *secondary_boot_addr;
@@ -38,12 +40,15 @@ extern void *secondary_boot_code_start;
 extern size_t secondary_boot_code_size;
 #ifdef CONFIG_MP
 int fsl_layerscape_wake_seconday_cores(void);
+int fsl_layerscape_wakeup_fixed_core(u32 coreid, u64 addr);
 #else
 static inline int fsl_layerscape_wake_seconday_cores(void) { return 0; }
 #endif
 void *get_spin_tbl_addr(void);
 int is_core_online(u64 cpu_id);
 u32 cpu_pos_mask(void);
+int get_core_id(void);
+int is_core_valid(unsigned int core);
 #endif
 
 #endif /* _FSL_LAYERSCAPE_MP_H */
