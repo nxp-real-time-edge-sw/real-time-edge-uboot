@@ -8,6 +8,7 @@
 #define __LS1043ARDB_H__
 
 #include "ls1043a_common.h"
+#include "ls1043a_baremetal.h"
 
 #define CONFIG_LAYERSCAPE_NS_ACCESS
 
