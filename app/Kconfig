@@ -1,0 +1,31 @@
+menu "baremetal"
+
+config BAREMETAL
+	bool "Support baremtal features"
+	select MP
+	help
+	  This provides a command to start baremetal on slave cores, and add some features to support baremetal.
+
+if BAREMETAL
+
+config MASTER_CORE
+	int "master core"
+	default 0
+	help
+	  the master core number
+
+config SYS_DDR_SDRAM_MASTER_SIZE
+	hex "the memory size of master core"
+	default 0x20000000
+	help
+	  the memory size of master core
+
+config SYS_DDR_SDRAM_SLAVE_SIZE
+	hex "the memory size of slave core"
+	default 0x10000000
+	help
+	  the memory size of slave core
+
+endif
+
+endmenu
