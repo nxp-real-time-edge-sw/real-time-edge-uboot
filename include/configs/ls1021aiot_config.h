@@ -4,6 +4,10 @@
  *
  */
 
+#define CONFIG_USE_IRQ
+#define CONFIG_STACKSIZE_IRQ  (4*1024)
+#define CONFIG_STACKSIZE_FIQ  (4*1024)
+
 /* PCIe */
 #define CONFIG_PCIE1			/* PCIE controller 1 */
 #define CONFIG_PCIE2			/* PCIE controller 2 */
