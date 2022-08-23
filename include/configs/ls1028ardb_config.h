@@ -4,7 +4,6 @@
  *
  */
 
-#define CONFIG_ICC
 #define CONFIG_USE_IRQ
 #define CONFIG_STACKSIZE_IRQ  (4*1024)
 #define CONFIG_STACKSIZE_FIQ  (4*1024)
@@ -26,11 +25,6 @@
 
 #define CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_BASE \
 	(CONFIG_SYS_DDR_SDRAM_SHARE_BASE + CONFIG_SYS_DDR_SDRAM_SHARE_SIZE)
-
-/*
- * Size of malloc() pool
- */
-#define CONFIG_SYS_MALLOC_LEN	(CONFIG_ENV_SIZE + 128 * 1024 * 1024)
 
 /* Number of cores in each cluster */
 #define CORE_NUM_PER_CLUSTER	2
