@@ -8,13 +8,8 @@
 #define CONFIG_STACKSIZE_IRQ  (4*1024)
 #define CONFIG_STACKSIZE_FIQ  (4*1024)
 
-#define CONFIG_MASTER_CORE                     0
-
 #define CONFIG_SLAVE_FIRST_CORE                 1
 
-/* set Master core size to 512M, slave core size to 256M, share mem to 256M */
-#define CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE	(256 * 1024 * 1024)
-#define CONFIG_SYS_DDR_SDRAM_MASTER_SIZE	(512 * 1024 * 1024)
 #define CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE (16 * 1024 * 1024)
 #define CONFIG_SYS_DDR_SDRAM_SHARE_SIZE \
 	((256 * 1024 * 1024) - CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_SIZE)
