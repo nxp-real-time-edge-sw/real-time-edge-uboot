@@ -26,6 +26,11 @@ config SYS_DDR_SDRAM_SLAVE_SIZE
 	help
 	  the memory size of slave core
 
+config ICC
+	bool "inter-core communication"
+	default y
+	help
+	  inter-core communication
 endif
 
 config GPIO_COREID_SET
