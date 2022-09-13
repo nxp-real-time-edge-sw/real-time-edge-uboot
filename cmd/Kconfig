@@ -1837,7 +1837,7 @@ config CMD_MP
 
 config CMD_ICC
 	bool "support for multiprocessor communication commands"
-	depends on baremetal
+	depends on BAREMETAL
 	default y
 	help
 	  This enables commands to send the message to other cores.
