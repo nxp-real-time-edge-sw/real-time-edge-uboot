@@ -110,7 +110,7 @@
 		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 2\0" \
 	"boot_bm=" \
 		"if run loadbmimage; then " \
-			"run startbm"	\
+			"run startbm; "	\
 		"else " \
 			"echo WARN: Cannot load the Baremetal Image; " \
 		"fi;\0"
@@ -199,7 +199,7 @@
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
 			"if test ${boot_bm_enable} = yes; then " \
-				"run boot_bm" \
+				"run boot_bm; " \
 			"fi;" \
 			"if run loadbootscript; then " \
 				"run bootscript; " \
