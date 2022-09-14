@@ -2,7 +2,6 @@ menu "baremetal"
 
 config BAREMETAL
 	bool "Support baremtal features"
-	select MP
 	help
 	  This provides a command to start baremetal on slave cores, and add some features to support baremetal.
 
