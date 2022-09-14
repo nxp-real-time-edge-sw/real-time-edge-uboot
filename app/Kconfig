@@ -79,6 +79,7 @@ config IRQ_COREID_SET
 
 config ICC_COREID_SET
 	bool "Enable ICC for baremetal"
+	depends on ICC
 	default y
 
 config QSPI_COREID_SET
