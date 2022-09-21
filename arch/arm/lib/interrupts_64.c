@@ -205,11 +205,31 @@ void gic_set_pri_per_cpu(void)
 
 void gic_set_pri_common(void)
 {
+	unsigned long value;
 	int i;
+
+	/* set the SGI interrupts for this core to group 1 */
+	*((volatile unsigned int *)((void __iomem *)GICD_BASE +
+			GIC_DIST_IGROUP)) = 0xffffffff;
+	*((volatile unsigned int *)((void __iomem *)GICD_BASE +
+			GIC_DIST_CTRL)) = GICD_ENABLE;
+	u32 bypass = *((volatile unsigned int *)
+			((void __iomem *)GICC_BASE + GIC_CPU_CTRL));
+	bypass &= GICC_DIS_BYPASS_MASK;
+	bypass |= GICC_ENABLE;
+	*((volatile unsigned int *)((void __iomem *)GICC_BASE +
+		GIC_CPU_CTRL)) = bypass;
 
 	for (i = 32; i < 256; i += 4) {
 		*((volatile unsigned int *)((u32)gic_d.gicd_base +
 			    GIC_DIST_PRI + (i / 4) * 4)) = 0x70707070;
+	}
+
+	/* route interrupt to EL2 */
+	if (current_el() == 2) {
+		asm volatile("mrs %0, HCR_EL2" : "=r" (value));
+		value |= (1 << 4);
+		asm volatile("msr HCR_EL2, %0" : : "r" (value));
 	}
 }
 
