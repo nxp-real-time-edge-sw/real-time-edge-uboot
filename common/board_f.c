@@ -141,7 +141,7 @@ static int core_share_global_data_init(void)
 {
 	int coreid = get_core_id();
 
-	if (coreid != CONFIG_SLAVE_FIRST_CORE)
+	if (coreid != CONFIG_BAREMETAL_FIRST_CORE)
 		return 0;
 
 	memset(sgd, 0, sizeof(sgd_t));

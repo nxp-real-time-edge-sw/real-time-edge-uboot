@@ -519,7 +519,7 @@ static int initr_gic_init(void)
 #ifdef CONFIG_ARM64
 	gic_set_offset();
 #endif
-	if (get_core_id() == CONFIG_SLAVE_FIRST_CORE)
+	if (get_core_id() == CONFIG_BAREMETAL_FIRST_CORE)
 		gic_set_pri_common();
 	gic_set_pri_per_cpu();
 	gic_enable_dist();
@@ -674,7 +674,7 @@ static int run_main_loop(void)
 #endif
 	u32 coreid = get_core_id();
 
-	if (coreid == CONFIG_MASTER_CORE) {
+	if (coreid == 0) {
 		puts("Core[0] in the loop...\n");
 	/* main_loop() can return to retry autoboot, if so just run it again */
 		for (;;)
@@ -1025,6 +1025,8 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 		init_sequence_r[i] += gd->reloc_off;
 #endif
 
+	printf("board_init_r\n");
+
 	if (initcall_run_list(init_sequence_r))
 		hang();
 
@@ -1154,6 +1156,7 @@ void board_init_r_slave(gd_t *new_gd, ulong dest_addr)
 		init_sequence_r_slave[i] += gd->reloc_off;
 #endif
 
+	printf("board_init_r_slave\n");
 	if (initcall_run_list(init_sequence_r_slave))
 		hang();
 

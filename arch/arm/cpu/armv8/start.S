@@ -173,7 +173,7 @@ pie_fixup_done:
 #if defined(CONFIG_GICV2) || defined(CONFIG_GICV3)
 	mrs x0, mpidr_el1
 	and x0, x0, #0xffff
-	cmp x0, #CONFIG_SLAVE_FIRST_CORE
+	cmp x0, #CONFIG_BAREMETAL_FIRST_CORE
 	b.ne 1f
 
 	ldr	x0, =GICD_BASE

@@ -14,6 +14,11 @@ config BAREMETAL
 	default y
 
 if BAREMETAL
+
+config BAREMETAL_FIRST_CORE
+	int "The first Core ID running baremetal binary"
+	default 0
+
 config GPIO_COREID_SET
 	bool "Enable GPIO for baremetal"
 
