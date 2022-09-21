@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2019 NXP
+ * Copyright 2019-2022 NXP
  */
 
 #ifndef __IMX8MM_EVK_H
@@ -261,7 +261,6 @@
 #define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
 	(CONFIG_SYS_DDR_SDRAM_SLAVE_ADDR + \
 	CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE*(CONFIG_MAX_CPUS-1))
-#define CONFIG_MASTER_CORE                     0
 
 #define CONFIG_GICV3
 #define CONFIG_ICC

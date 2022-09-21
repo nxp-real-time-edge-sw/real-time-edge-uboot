@@ -5,7 +5,6 @@
  */
 
 #define CONFIG_ICC
-#define CONFIG_MASTER_CORE	0
 #define CONFIG_SLAVE_FIRST_CORE                 1
 #define CONFIG_USE_IRQ
 #define CONFIG_STACKSIZE_IRQ  (4*1024)

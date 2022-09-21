@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2015 Freescale Semiconductor
+ * Copyright 2022 NXP
  */
 
 #ifndef __LS1043ARDB_H__
@@ -10,8 +11,6 @@
 #include "ls1043ardb_config.h"
 
 #define CONFIG_ICC
-
-#define CONFIG_MASTER_CORE                     0
 
 #define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
 	(CONFIG_SYS_DDR_SDRAM_BASE + CONFIG_SYS_DDR_SDRAM_MASTER_SIZE \

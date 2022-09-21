@@ -1461,7 +1461,7 @@ int dram_init_banksize(void)
 	}
 #endif
 
-	if (get_core_id() == CONFIG_MASTER_CORE)
+	if (get_core_id() == 0)
 		gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	else
 		gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE +
@@ -1551,6 +1551,13 @@ int dram_init_banksize(void)
 	debug("%s is called. gd->ram_size is reduced to %lu\n",
 	      __func__, (ulong)gd->ram_size);
 #endif
+
+	printf("bank[%d]: start %lx, size %lx\n",
+		0, gd->bd->bi_dram[0].start,
+		      gd->bd->bi_dram[0].size);
+	printf("bank[%d]: start %lx, size %lx\n",
+		1, gd->bd->bi_dram[1].start,
+		      gd->bd->bi_dram[1].size);
 
 	return 0;
 }

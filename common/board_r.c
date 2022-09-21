@@ -512,6 +512,8 @@ static int initr_malloc_bootparams(void)
 }
 #endif
 
+int icc_init(void);
+
 static int initr_gic_init(void)
 {
 #ifdef CONFIG_ARM64
@@ -796,6 +798,9 @@ static init_fnc_t init_sequence_r[] = {
 	noncached_init,
 #endif
 	initr_of_live,
+#ifndef CONFIG_ARCH_IMX8M
+	fdt_baremetal_setup,
+#endif
 #ifdef CONFIG_DM
 	initr_dm,
 #endif
@@ -916,6 +921,8 @@ static init_fnc_t init_sequence_r[] = {
 	initr_kgdb,
 #endif
 	interrupt_init,
+	initr_gic_init,
+	icc_init,
 #if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
 	timer_init,		/* initialize timer */
 #endif

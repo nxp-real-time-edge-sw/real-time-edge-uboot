@@ -360,7 +360,7 @@ static int setup_dest_addr(void)
 	debug("Ram size: %08lX\n", (ulong)gd->ram_size);
 #if !defined(CONFIG_ARCH_LX2160A) && !defined(CONFIG_ARCH_IMX8M)
 #if defined(CONFIG_BAREMETAL)
-	if (get_core_id() == CONFIG_MASTER_CORE)
+	if (get_core_id() == 0)
 		gd->ram_size = CONFIG_SYS_DDR_SDRAM_MASTER_SIZE;
 #endif
 #endif
@@ -378,7 +378,7 @@ static int setup_dest_addr(void)
 	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
 #endif
 #ifdef CONFIG_SYS_SDRAM_BASE
-	if (get_core_id() == CONFIG_MASTER_CORE) {
+	if (get_core_id() == 0) {
 		gd->ram_base = CONFIG_SYS_SDRAM_BASE;
 	} else{
 #ifdef CONFIG_ARCH_IMX8M

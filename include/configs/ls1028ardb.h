@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2019, 2021 NXP
+ * Copyright 2019, 2021-2022 NXP
  */
 
 #ifndef __LS1028A_RDB_H
@@ -14,8 +14,6 @@
 #define CONFIG_STACKSIZE_IRQ  (4*1024)
 #define CONFIG_STACKSIZE_FIQ  (4*1024)
 
-
-#define CONFIG_MASTER_CORE                     0
 
 #define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
 	(CONFIG_SYS_DDR_SDRAM_BASE + CONFIG_SYS_DDR_SDRAM_MASTER_SIZE \
