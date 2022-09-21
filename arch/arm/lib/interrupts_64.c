@@ -2,6 +2,9 @@
 /*
  * (C) Copyright 2013
  * David Feng <fenghua@phytium.com.cn>
+ *
+ * Copyright 2022 NXP
+ *
  */
 
 #include <common.h>
@@ -18,8 +21,8 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 struct giccd_base {
-	u32 *gicd_base;
-	u32 *gicc_base;
+	void __iomem *gicd_base;
+	void __iomem *gicc_base;
 };
 
 #define GIC_CPU_CTRL			0x00
@@ -113,7 +116,7 @@ void gic_set_offset(void)
 
 u32 gic_ack_int(void)
 {
-	u32 ack = *((volatile unsigned int *)((u32)gic_d.gicc_base +
+	u32 ack = *((volatile unsigned int *)(gic_d.gicc_base +
 		    GIC_CPU_INTACK));
 	ack &= GICC_IAR_MASK;
 
@@ -122,7 +125,7 @@ u32 gic_ack_int(void)
 
 static inline void gic_end_int(u32 ack)
 {
-	*((volatile unsigned int *)((u32)gic_d.gicc_base +
+	*((volatile unsigned int *)(gic_d.gicc_base +
 		    GIC_CPU_EOI)) = (ack & GICC_IAR_MASK);
 }
 
@@ -136,20 +139,20 @@ void gic_irq_register(int irq_num, void (*irq_handle)(int, int))
 void gic_mask_irq(unsigned long hw_irq)
 {
 	u32 mask = 1 << (hw_irq % 32);
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_ENABLE_CLEAR + (hw_irq / 32) * 4)) = mask;
 }
 
 void gic_unmask_irq(unsigned long hw_irq)
 {
 	u32 mask = 1 << (hw_irq % 32);
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_ENABLE_SET + (hw_irq / 32) * 4)) = mask;
 }
 
 u32 gic_get_pending(unsigned long hw_irq)
 {
-	u32 pending = *((volatile unsigned int *)((u32)gic_d.gicd_base +
+	u32 pending = *((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_PENDING_SET + (hw_irq / 32) * 4));
 	return pending;
 }
@@ -158,9 +161,9 @@ void gic_set_target(u32 core_mask, unsigned long hw_irq)
 {
 	u32 val = core_mask << ((hw_irq % 4) * 8);
 	u32 mask = 0xff << ((hw_irq % 4) * 8);
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_TARGET + (hw_irq / 4) * 4)) &= ~mask;
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_TARGET + (hw_irq / 4) * 4)) |= val;
 }
 
@@ -169,7 +172,7 @@ void gic_set_type(unsigned long hw_irq)
 	u32 confmask = 0x2 << ((hw_irq % 16) * 2);
 
 	gic_mask_irq(hw_irq);
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_CONFIG + (hw_irq / 16) * 4)) |= confmask;
 	gic_unmask_irq(hw_irq);
 }
@@ -184,7 +187,7 @@ void gic_set_sgi(int core_mask, u32 hw_irq)
 	}
 
 	val = (core_mask << 16) | 0x8000 | hw_irq;
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_SOFTINT)) |= val;
 
 	return;
@@ -195,21 +198,41 @@ void gic_set_pri_per_cpu(void)
 	int i;
 
 	for (i = 0; i < 32; i += 4) {
-		*((volatile unsigned int *)((u32)gic_d.gicd_base +
+		*((volatile unsigned int *)(gic_d.gicd_base +
 			    GIC_DIST_PRI + (i / 4) * 4)) = 0x80808080;
 	}
 
-	*((volatile unsigned int *)((u32)gic_d.gicc_base +
+	*((volatile unsigned int *)(gic_d.gicc_base +
 		    GIC_CPU_PRIMASK)) = 0xf0;
 }
 
 void gic_set_pri_common(void)
 {
+	unsigned long value;
 	int i;
 
+	/* set the SGI interrupts for this core to group 1 */
+    *((volatile unsigned int *)(gic_d.gicd_base +
+                        GIC_DIST_IGROUP)) = 0xffffffff;
+    *((volatile unsigned int *)(gic_d.gicd_base +
+                        GIC_DIST_CTRL)) = GICD_ENABLE;
+    u32 bypass = *((volatile unsigned int *)
+                    (gic_d.gicc_base + GIC_CPU_CTRL));
+    bypass &= GICC_DIS_BYPASS_MASK;
+    bypass |= GICC_ENABLE;
+    *((volatile unsigned int *)(gic_d.gicc_base +
+                    GIC_CPU_CTRL)) = bypass;
+
 	for (i = 32; i < 256; i += 4) {
-		*((volatile unsigned int *)((u32)gic_d.gicd_base +
+		*((volatile unsigned int *)(gic_d.gicd_base +
 			    GIC_DIST_PRI + (i / 4) * 4)) = 0x70707070;
+	}
+
+	/* route interrupt to EL2 */
+	if (current_el() == 2) {
+		asm volatile("mrs %0, HCR_EL2" : "=r" (value));
+		value |= (1 << 4);
+		asm volatile("msr HCR_EL2, %0" : : "r" (value));
 	}
 }
 
@@ -217,9 +240,9 @@ void gic_set_pri_irq(u32 hw_irq, u8 pri)
 {
 	u32 val = pri << ((hw_irq % 4) * 8);
 	u32 mask = 0xff << ((hw_irq % 4) * 8);
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_PRI + (hw_irq / 4) * 4)) &= ~mask;
-	*((volatile unsigned int *)((u32)gic_d.gicd_base +
+	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_PRI + (hw_irq / 4) * 4)) |= val;
 }
 
