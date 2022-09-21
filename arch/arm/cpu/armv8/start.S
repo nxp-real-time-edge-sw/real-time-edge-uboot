@@ -196,6 +196,7 @@ pie_fixup_done:
 	/* never return */
 #elif defined(CONFIG_ARMV8_MULTIENTRY)
 	branch_if_master x0, x1, master_cpu
+
 	/*
 	 * Slave CPUs
 	 */

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2017-2020 NXP
+ * Copyright 2017-2022 NXP
  * Copyright 2014-2015 Freescale Semiconductor, Inc.
  */
 
@@ -1437,6 +1437,12 @@ int dram_init_banksize(void)
 	phys_size_t dp_ddr_size;
 #endif
 
+#ifndef CONFIG_BAREMETAL
+#ifdef CONFIG_TFABOOT
+	if (!tfa_dram_init_banksize())
+		return 0;
+#endif
+#endif
 	/*
 	 * gd->ram_size has the total size of DDR memory, less reserved secure
 	 * memory. The DDR extends from low region to high region(s) presuming

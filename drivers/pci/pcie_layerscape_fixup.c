@@ -517,6 +517,9 @@ static void fdt_fixup_pcie_ls(void *blob)
 		    !device_is_compatible(bus, CONFIG_FSL_PCIE_COMPAT))
 			continue;
 
+		/* check that this is the LS PCI controller */
+		if (strcmp(bus->driver->name, PCI_LS_DRV_NAME))
+			continue;
 		pcie_rc = dev_get_priv(bus);
 
 		/* the DT fixup must be relative to the hose first_busno */
@@ -580,10 +583,15 @@ static void ft_pcie_rc_fix(void *blob, struct ls_pcie_rc *pcie_rc)
 	if (off < 0)
 		return;
 
+#ifndef CONFIG_BAREMETAL
 	if (pcie_rc->enabled && pcie->mode == PCI_HEADER_TYPE_BRIDGE)
 		fdt_set_node_status(blob, off, FDT_STATUS_OKAY, 0);
 	else
 		fdt_set_node_status(blob, off, FDT_STATUS_DISABLED, 0);
+#else
+	if (!pcie_rc->enabled || pcie->mode != PCI_HEADER_TYPE_BRIDGE)
+		fdt_set_node_status(blob, off, FDT_STATUS_DISABLED, 0);
+#endif
 }
 
 static void ft_pcie_ep_fix(void *blob, struct ls_pcie_rc *pcie_rc)

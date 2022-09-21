@@ -63,7 +63,10 @@ int board_early_init_f(void)
 
 	set_wdog_reset(wdog);
 
-	imx_iomux_v3_setup_multiple_pads(uart4_pads, ARRAY_SIZE(uart_pads));
+	//imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
+	//init_uart_clk(1);
+
+	imx_iomux_v3_setup_multiple_pads(uart4_pads, ARRAY_SIZE(uart4_pads));
 	init_uart_clk(3);
 
 	return 0;

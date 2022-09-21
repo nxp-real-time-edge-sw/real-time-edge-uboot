@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2016 Freescale Semiconductor
- * Copyright 2019-2021 NXP
+ * Copyright 2019-2022 NXP
  */
 
 #ifndef __LS1046A_COMMON_H
@@ -52,8 +52,10 @@
 /* Generic Timer Definitions */
 #define COUNTER_FREQUENCY		25000000	/* 25MHz */
 
+/* Size of malloc() pool */
+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 1024 * 1024)
+
 /* Serial Port */
-#define CONFIG_CONS_INDEX      2
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK          (get_serial_clock())
@@ -133,7 +135,6 @@
 /* I2C */
 #if !CONFIG_IS_ENABLED(DM_I2C)
 #define CONFIG_SYS_I2C
-#define CONFIG_SYS_I2C_MXC
 #define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
 #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
@@ -147,12 +148,9 @@
 #define CONFIG_PCIE1		/* PCIE controller 1 */
 #define CONFIG_PCIE2		/* PCIE controller 2 */
 #define CONFIG_PCIE3		/* PCIE controller 3 */
-#ifndef CONFIG_PCI
-#define CONFIG_PCI
-#endif
+
 #ifdef CONFIG_PCI
 #define CONFIG_PCI_SCAN_SHOW
-#define CONFIG_CMD_PCI
 #endif
 
 /* SATA */
@@ -231,6 +229,12 @@
 	"boot_scripts=ls1046ardb_boot.scr\0"	\
 	"boot_script_hdr=hdr_ls1046ardb_bs.out\0"
 #endif
+
+#define JAILHOUSE_ENV \
+	"jh_mmcboot=setenv dtb fsl-ls1046a-rdb-sdk-jailhouse.dtb;" \
+		"setenv othbootargs mem=1024MB;" \
+		"run bootcmd \0"
+
 #ifndef SPL_NO_MISC
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS		\
@@ -243,7 +247,7 @@
 	"scripthdraddr=0x80080000\0"		\
 	"fdtheader_addr_r=0x80100000\0"         \
 	"kernelheader_addr_r=0x80200000\0"      \
-	"load_addr=0xa0000000\0"            \
+	"load_addr=0x81000000\0"            \
 	"kernel_addr_r=0x81000000\0"            \
 	"fdt_addr_r=0x90000000\0"               \
 	"fdt_addr=0x90000000\0"                 \
@@ -258,9 +262,10 @@
 	"kernelhdr_addr_sd=0x3000\0"		\
 	"kernelhdr_size_sd=0x10\0"		\
 	"console=ttyS0,115200\0"                \
-	 CONFIG_MTDPARTS_DEFAULT "\0"		\
+	"mtdparts=" CONFIG_MTDPARTS_DEFAULT "\0"	\
 	BOOTENV					\
 	LS1046A_BOOT_SRC_AND_HDR		\
+	JAILHOUSE_ENV \
 	"scan_dev_for_boot_part="               \
 		"part list ${devtype} ${devnum} devplist; "   \
 		"env exists devplist || setenv devplist 1; "  \

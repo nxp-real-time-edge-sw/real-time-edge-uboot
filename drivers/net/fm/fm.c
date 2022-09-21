@@ -2,6 +2,8 @@
 /*
  * Copyright 2009-2011 Freescale Semiconductor, Inc.
  *	Dave Liu <daveliu@freescale.com>
+ *
+ * Copyright 2022 NXP
  */
 #include <common.h>
 #include <env.h>
@@ -513,13 +515,13 @@ int fm_init_common(int index, struct ccsr_fman *reg)
 	void *addr = NULL;
 #endif
 
-#ifndef CONFIG_BAREMETAL
+//#ifndef CONFIG_MASTER
 	/* Upload the Fman microcode if it's present */
 	rc = fman_upload_firmware(index, &reg->fm_imem, addr);
 	if (rc)
 		return rc;
 	env_set_addr("fman_ucode", addr);
-#endif
+//#endif
 
 	fm_init_muram(index, &reg->muram);
 	fm_init_qmi(&reg->fm_qmi_common);

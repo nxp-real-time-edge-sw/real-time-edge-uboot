@@ -10,17 +10,6 @@
 #include "ls1046a_common.h"
 #include "ls1046ardb_config.h"
 
-#define CONFIG_ICC
-
-#define CONFIG_MASTER_CORE                     0
-
-#define CONFIG_SYS_DDR_SDRAM_SHARE_BASE \
-	(CONFIG_SYS_DDR_SDRAM_BASE + CONFIG_SYS_DDR_SDRAM_MASTER_SIZE \
-	+ CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE * (CONFIG_MAX_CPUS - 1))
-
-#define CONFIG_SYS_DDR_SDRAM_SHARE_RESERVE_BASE \
-	(CONFIG_SYS_DDR_SDRAM_SHARE_BASE + CONFIG_SYS_DDR_SDRAM_SHARE_SIZE)
-
 #define CONFIG_SYS_CLK_FREQ		100000000
 #define CONFIG_DDR_CLK_FREQ		100000000
 
@@ -181,24 +170,9 @@
 
 #define FDT_SEQ_MACADDR_FROM_ENV
 
-#define CONFIG_ETHPRIME			"FM1@DTSEC5"
+#define CONFIG_ETHPRIME			"FM1@DTSEC3"
 #endif
 
-#endif
-
-/* GPIO */
-#define CONFIG_MPC8XXX_GPIO
-#define CONFIG_DM_GPIO
-#define SHARED_GPIO_REQUEST_INFO
-
-/* USB */
-#ifndef SPL_NO_USB
-#ifdef CONFIG_HAS_FSL_XHCI_USB
-#define CONFIG_USB_XHCI_HCD
-#define CONFIG_USB_XHCI_FSL
-#define CONFIG_USB_XHCI_DWC3
-#define CONFIG_USB_MAX_CONTROLLER_COUNT        1
-#endif
 #endif
 
 #ifndef SPL_NO_MISC
@@ -218,21 +192,6 @@
 #endif
 #endif
 #endif
-
-#define CONFIG_ENABLE_COREID_DEBUG
-#define CONFIG_ENABLE_WRITE_LOCK
-
-#undef CONFIG_EXTRA_ENV_SETTINGS
-#define CONFIG_EXTRA_ENV_SETTINGS		\
-			"ipaddr=192.168.1.1\0" \
-			"eth1addr=00:04:9F:04:F0:F1\0" \
-			"eth2addr=00:1F:7B:63:35:E9\0" \
-			"eth3addr=00:04:9F:04:F0:F3\0" \
-			"eth4addr=00:04:9F:04:F0:F4\0" \
-			"eth5addr=00:04:9F:04:F0:F5\0" \
-			"eth6addr=00:04:9F:04:F0:F6\0" \
-			"eth7addr=68:05:ca:35:cc:61\0" \
-			"ethact=FM1@DTSEC5\0"			\
 
 #include <asm/fsl_secure_boot.h>
 
