@@ -638,7 +638,7 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-#define PRINTBUFFER_LEN	2048
+#define PRINTBUFFER_LEN	8196
 
 char printbuffer[PRINTBUFFER_LEN];
 void putc(const char c)
