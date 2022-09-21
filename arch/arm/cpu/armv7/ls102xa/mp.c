@@ -13,11 +13,13 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-int fsl_layerscape_wakeup_fixed_core(u32 coreid)
+int fsl_layerscape_wakeup_fixed_core(u32 coreid, u32 addr)
 {
 	struct ccsr_gur __iomem *gur = (void *)(CONFIG_SYS_FSL_GUTS_ADDR);
 
-	out_be32(&gur->scratchrw[0], CONFIG_SYS_TEXT_BASE);
+	 printf("%s cores %d, addr=0x%x, gd->reloc_addr 0x%x\n",
+		__func__, coreid, addr, gd->relocaddr);
+	out_be32(&gur->scratchrw[0], addr);
 	out_be32(&gur->brrl, 0x2);
 
 	/*
@@ -41,12 +43,12 @@ int is_core_online(u64 cpu_id)
 	return 0;
 }
 
-int cpu_reset(int nr)
+int cpu_reset(u32 nr)
 {
 	return 0;
 }
 
-int cpu_disable(int nr)
+int cpu_disable(u32 nr)
 {
 	puts("Feature is not implemented.\n");
 
@@ -58,12 +60,12 @@ int core_to_pos(int nr)
 	return 0;
 }
 
-int cpu_status(int nr)
+int cpu_status(u32 nr)
 {
 	return 0;
 }
 
-int cpu_release(int nr, int argc, char * const argv[])
+int cpu_release(u32 nr, int argc, char * const argv[])
 {
 	return 0;
 }

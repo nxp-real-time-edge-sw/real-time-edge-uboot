@@ -215,7 +215,7 @@ int fsl_layerscape_wake_seconday_cores(void)
 }
 
 
-int fsl_layerscape_wakeup_fixed_core(u32 coreid)
+int fsl_layerscape_wakeup_fixed_core(u32 coreid, u64 addr)
 {
 	struct ccsr_gur __iomem *gur = (void *)(CONFIG_SYS_FSL_GUTS_ADDR);
 #ifdef CONFIG_FSL_LSCH3
@@ -225,7 +225,11 @@ int fsl_layerscape_wakeup_fixed_core(u32 coreid)
 #endif
 	u32 core_mask;
 	u64 *table = get_spin_tbl_addr();
-	unsigned long relocaddr = CONFIG_SYS_TEXT_BASE;
+	unsigned long relocaddr = addr;
+#ifdef CONFIG_ARCH_LX2160A
+	u32 cluster;
+	u32 mpidr;
+#endif
 
 #ifdef COUNTER_FREQUENCY_REAL
 	/* update for secondary cores */
@@ -237,7 +241,8 @@ int fsl_layerscape_wakeup_fixed_core(u32 coreid)
 	/* CR3 CR2 CR1 CR0 */
 	core_mask = 1 << coreid;
 
-	/* Clear spin table so that secondary processors
+	/*
+	 * Clear spin table so that secondary processors
 	 * observe the correct value after waking up from wfe.
 	 */
 	memset(table, 0, CONFIG_MAX_CPUS*SPIN_TABLE_ELEM_SIZE);
@@ -248,7 +253,13 @@ int fsl_layerscape_wakeup_fixed_core(u32 coreid)
 #ifdef CONFIG_FSL_LSCH3
 	gur_out32(&gur->bootlocptrh, (u32)(relocaddr >> 32));
 	gur_out32(&gur->bootlocptrl, (u32)relocaddr);
+#ifdef CONFIG_ARCH_LX2160A
+	cluster = coreid / 2;
+	mpidr = cluster << 8 | coreid % 2;
+	gur_out32(&gur->scratchrw[6], mpidr);
+#else
 	gur_out32(&gur->scratchrw[6], 1);
+#endif
 	asm volatile("dsb st" : : : "memory");
 	rst->brrl = core_mask;
 	asm volatile("dsb st" : : : "memory");
@@ -262,7 +273,8 @@ int fsl_layerscape_wakeup_fixed_core(u32 coreid)
 	/* Bootup online cores */
 	scfg_out32(&scfg->corebcr, core_mask);
 #endif
-	/* This is needed as a precautionary measure.
+	/*
+	 * This is needed as a precautionary measure.
 	 * If some code before this has accidentally  released the secondary
 	 * cores then the pre-bootloader code will trap them in a "wfe" unless
 	 * the scratchrw[6] is set. In this case we need a sev here to get these

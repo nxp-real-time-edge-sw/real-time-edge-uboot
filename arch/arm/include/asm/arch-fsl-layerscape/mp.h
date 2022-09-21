@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2014-2015, Freescale Semiconductor
- * Copyright 2018-2022 NXP
+ * Copyright 2019-2022 NXP
  */
 
 #ifndef _FSL_LAYERSCAPE_MP_H
@@ -23,8 +23,13 @@
 #define SPIN_TABLE_ELEM_LPID_IDX	2
 /* compare os arch and cpu arch */
 #define SPIN_TABLE_ELEM_ARCH_COMP_IDX	3
+#ifdef CONFIG_ARCH_LX2160A
 #define WORDS_PER_SPIN_TABLE_ENTRY	16	/* pad to 128 bytes */
 #define SPIN_TABLE_ELEM_SIZE		128
+#else
+#define WORDS_PER_SPIN_TABLE_ENTRY	8	/* pad to 64 bytes */
+#define SPIN_TABLE_ELEM_SIZE		64
+#endif
 
 /* os arch is same as cpu arch */
 #define OS_ARCH_SAME			0
@@ -39,6 +44,7 @@ extern void *secondary_boot_code_start;
 extern size_t secondary_boot_code_size;
 #ifdef CONFIG_MP
 int fsl_layerscape_wake_seconday_cores(void);
+int fsl_layerscape_wakeup_fixed_core(u32 coreid, u64 addr);
 #else
 static inline int fsl_layerscape_wake_seconday_cores(void) { return 0; }
 #endif
