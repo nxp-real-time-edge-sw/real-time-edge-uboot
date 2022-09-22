@@ -19,6 +19,10 @@ config BAREMETAL_FIRST_CORE
 	int "The first Core ID running baremetal binary"
 	default 0
 
+config BAREMETAL_SLAVE_MODE
+	bool "The slave core running baremetal binary"
+	default n
+
 config ENABLE_COREID_DEBUG
 	bool "Add coreid to the log"
 	default n

@@ -355,7 +355,24 @@ static void fm_init_qmi(struct fm_qmi_common *qmi)
 }
 
 /* Init common part of FM, index is fm num# like fm as above */
-#ifdef CONFIG_TFABOOT
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+int fm_init_common(int index, struct ccsr_fman *reg)
+{
+	/* Not need to load ucode */
+
+	fm_init_muram(index, &reg->muram);
+	fm_init_qmi(&reg->fm_qmi_common);
+	fm_init_fpm(&reg->fm_fpm);
+
+	/* clear DMA status */
+	setbits_be32(&reg->fm_dma.fmdmsr, FMDMSR_CLEAR_ALL);
+
+	/* set DMA mode */
+	setbits_be32(&reg->fm_dma.fmdmmr, FMDMMR_SBER);
+
+	return fm_init_bmi(index, &reg->fm_bmi_common);
+}
+#elif defined(CONFIG_TFABOOT)
 int fm_init_common(int index, struct ccsr_fman *reg)
 {
 	int rc;
@@ -515,13 +532,11 @@ int fm_init_common(int index, struct ccsr_fman *reg)
 	void *addr = NULL;
 #endif
 
-//#ifndef CONFIG_MASTER
 	/* Upload the Fman microcode if it's present */
 	rc = fman_upload_firmware(index, &reg->fm_imem, addr);
 	if (rc)
 		return rc;
 	env_set_addr("fman_ucode", addr);
-//#endif
 
 	fm_init_muram(index, &reg->muram);
 	fm_init_qmi(&reg->fm_qmi_common);

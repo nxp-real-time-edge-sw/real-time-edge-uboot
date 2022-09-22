@@ -1180,7 +1180,8 @@ int eth_early_init_r(void)
 #ifdef CONFIG_SYS_FSL_HAS_RGMII
 	fsl_rgmii_init();
 #endif
-#ifdef CONFIG_FMAN_ENET
+
+#if defined(CONFIG_FMAN_ENET) && defined(CONFIG_BAREMETAL_SLAVE_MODE)
 	fman_enet_init();
 #endif
 	return 0;
