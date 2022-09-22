@@ -625,6 +625,7 @@ void fdt_fixup_pfe_firmware(void *blob)
 #endif
 
 #if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
+#ifdef CONFIG_DM_ETH
 #include <net.h>
 
 struct ec_port_t {
@@ -754,12 +755,9 @@ static void fdt_fixup_ethercat_prop(void *blob)
 	/* loop to check all ethernet devices */
 	uclass_first_device_check(UCLASS_ETH, &dev);
 	while (dev) {
-#ifdef CONFIG_DM_ETH
+
 		pdata = dev_get_plat(dev);
 		enetaddr = pdata->enetaddr;
-#else
-		enetaddr = &dev->enetaddr[0];
-#endif
 
 		for (idx = 0; idx < ec_port_num; idx++) {
 			if (!strcmp(ec_ports[idx].name, dev->name)) {
@@ -821,6 +819,7 @@ loop_tag:
 		node = fdt_node_offset_by_compatible(blob, node, compat);
 	}
 }
+#endif
 #endif
 
 void ft_cpu_setup(void *blob, struct bd_info *bd)
@@ -899,7 +898,9 @@ void ft_cpu_setup(void *blob, struct bd_info *bd)
 #endif
 
 #if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
+#ifdef CONFIG_DM_ETH
 	fdt_fixup_ethercat_prop(blob);
+#endif
 #endif
 }
 
