@@ -1,0 +1,10 @@
+		   README for MATH
+
+This directory contains header files and libm.a.
+
+The license is GPL-2.0, refer to COPYING.
+
+Those files are from gcc-arm-11.2-2022.02-x86_64-aarch64-none-elf.
+
+Download url:
+https://developer.arm.com/-/media/Files/downloads/gnu/11.2-2022.02/binrel/gcc-arm-11.2-2022.02-darwin-x86_64-aarch64-none-elf.tar.xz
