@@ -24,6 +24,7 @@
 /* Number of cores in each cluster */
 #define CORE_NUM_PER_CLUSTER    4
 
+#ifdef CONFIG_BAREMETAL_SLAVE_MODE
 #undef CONFIG_EXTRA_ENV_SETTINGS
 #define CONFIG_EXTRA_ENV_SETTINGS		\
 			"ipaddr=192.168.1.1\0" \
@@ -36,3 +37,4 @@
 			"eth7addr=68:05:ca:35:cc:61\0" \
 			"ethact=FM1@DTSEC5\0"			\
 
+#endif
