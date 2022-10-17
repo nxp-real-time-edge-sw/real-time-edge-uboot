@@ -90,7 +90,7 @@
 	"sd_dev=1\0"
 
 #ifdef CONFIG_BAREMETAL
-#define BOOT_BAREMTEL_ENV \
+#define BOOT_BAREMETAL_ENV \
 	"boot_bm_enable=yes\0" \
 	"bmimage=bm-u-boot.bin\0" \
 	"bm_addr=50200000\0" \
@@ -104,7 +104,7 @@
 			"echo WARN: Cannot load the Baremetal Image; " \
 		"fi;\0"
 #else
-#define BOOT_BAREMTEL_ENV \
+#define BOOT_BAREMETAL_ENV \
 	"boot_bm_enable=no\0"
 #endif
 
