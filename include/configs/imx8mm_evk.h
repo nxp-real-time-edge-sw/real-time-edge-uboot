@@ -101,7 +101,7 @@
 	"sd_dev=1\0" \
 
 #ifdef CONFIG_BAREMETAL
-#define BOOT_BAREMTEL_ENV \
+#define BOOT_BAREMETAL_ENV \
 	"boot_bm_enable=yes\0" \
 	"bmimage=bm-u-boot.bin\0" \
 	"bm_addr=50200000\0" \
@@ -115,7 +115,7 @@
 			"echo WARN: Cannot load the Baremetal Image; " \
 		"fi;\0"
 #else
-#define BOOT_BAREMTEL_ENV \
+#define BOOT_BAREMETAL_ENV \
 	"boot_bm_enable=no\0"
 #endif
 
@@ -141,7 +141,7 @@
 	CONFIG_MFG_ENV_SETTINGS \
 	BOOTENV \
 	JAILHOUSE_ENV \
-	BOOT_BAREMTEL_ENV \
+	BOOT_BAREMETAL_ENV \
 	"prepare_mcore=setenv mcore_clk clk-imx8mm.mcore_booted;\0" \
 	"scriptaddr=0x43500000\0" \
 	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
