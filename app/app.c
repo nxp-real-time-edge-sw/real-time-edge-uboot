@@ -10,6 +10,7 @@
 #include <malloc.h>
 #include <env.h>
 #include <linux/types.h>
+#include <linux/delay.h>
 #include "test.h"
 #include "../cmd/wavplayer.h"
 
@@ -49,6 +50,7 @@ void core1_main(void)
 #endif
 
 #ifdef CONFIG_SAI_COREID_SET
+	mdelay(2*1000);
 	test_wavplay();
 #endif
 
