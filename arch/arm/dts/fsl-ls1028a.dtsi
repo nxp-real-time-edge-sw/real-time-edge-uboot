@@ -188,6 +188,17 @@
 		};
 	};
 
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gic_lpi_table: gic-lpi-table@0x90000000 {
+			compatible = "fsl,gic-lpi-table";
+			reg = <0 0x90000000 0 0x100000>;
+		};
+	};
+
 	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
