@@ -10,6 +10,7 @@ obj-$(CONFIG_CMD_BOOTM) += bootm.o
 obj-y += help.o
 obj-y += panic.o
 obj-y += version.o
+obj-y += gpio_int.o
 
 # command
 obj-$(CONFIG_CMD_ACPI) += acpi.o
@@ -91,6 +92,7 @@ obj-y += load.o
 obj-$(CONFIG_CMD_LOG) += log.o
 obj-$(CONFIG_CMD_LSBLK) += lsblk.o
 obj-$(CONFIG_ID_EEPROM) += mac.o
+obj-$(CONFIG_CMD_MATH) += math.o
 obj-$(CONFIG_CMD_MD5SUM) += md5sum.o
 obj-$(CONFIG_CMD_MEMORY) += mem.o
 obj-$(CONFIG_CMD_IO) += io.o

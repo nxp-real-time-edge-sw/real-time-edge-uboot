@@ -1968,6 +1968,11 @@ config CMD_UUID
 	  The two commands are very similar except for the endianness of the
 	  output.
 
+config CMD_MATH
+	bool "math - test math functions"
+	help
+	  Test math functions based on toolchain's math library
+
 endmenu
 
 source "cmd/ti/Kconfig"
