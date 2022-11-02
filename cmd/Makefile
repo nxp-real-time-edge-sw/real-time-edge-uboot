@@ -10,6 +10,7 @@ obj-$(CONFIG_CMD_BOOTM) += bootm.o
 obj-y += help.o
 obj-y += panic.o
 obj-y += version.o
+obj-y += gpio_int.o
 
 # command
 obj-$(CONFIG_CMD_ACPI) += acpi.o
