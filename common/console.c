@@ -646,7 +646,7 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-char printbuffer[2048];
+char printbuffer[8];
 void putc(const char c)
 {
 	if (!gd)
@@ -723,30 +723,44 @@ void puts(const char *s)
 		return pre_console_puts(s);
 
 #ifdef CONFIG_ENABLE_COREID_DEBUG
-	char channel = '0';
-	int outbool = 0;
-	int coreid = get_core_id();
+	static bool is_new_line = true;
 
-	channel += coreid;
-	if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
-		outbool = 1;
-	if (!outbool && printbuffer[0] == 0)
-		sprintf(printbuffer, "%c:", channel);
-	sprintf(printbuffer, "%s%s", printbuffer, s);
-	if (!outbool && s[strlen(s) - 1] != '\n')
-		return;
-#else
-	sprintf(printbuffer, "%s", s);
+	if (is_new_line) {
+		int outbool = 0;
+		int coreid = get_core_id();
+
+		if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
+			outbool = 1;
+
+		if (!outbool)
+			sprintf(printbuffer, "%d:", coreid);
+
+		if (gd->flags & GD_FLG_DEVINIT) {
+			/* Send to the standard output */
+			fputs(stdout, printbuffer);
+		} else {
+			/* Send directly to the handler */
+			pre_console_puts(printbuffer);
+			serial_puts(printbuffer);
+		}
+
+	}
+
+	if (s[strlen(s) - 1] != '\n') {
+		is_new_line = false;
+	} else {
+		is_new_line = true;
+	}
 #endif
+
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
-		fputs(stdout, printbuffer);
+		fputs(stdout, s);
 	} else {
 		/* Send directly to the handler */
-		pre_console_puts(printbuffer);
-		serial_puts(printbuffer);
+		pre_console_puts(s);
+		serial_puts(s);
 	}
-	memset(printbuffer, 0, sizeof(printbuffer));
 }
 
 #ifdef CONFIG_CONSOLE_RECORD
