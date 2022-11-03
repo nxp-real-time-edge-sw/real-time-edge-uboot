@@ -107,7 +107,7 @@
 	"bm_addr=50200000\0" \
 	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
 	"startbm=dcache flush;cpu 1 release 50200000;sleep 6; \
-		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 2\0" \
+		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 17\0" \
 	"boot_bm=" \
 		"if run loadbmimage; then " \
 			"run startbm; "	\
@@ -160,12 +160,16 @@
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 	"mmcautodetect=yes\0" \
 	"mmcargs=setenv bootargs ${jh_clk} ${mcore_clk} console=${console} root=${mmcroot}\0 " \
+	"baremetal_args=setenv bootargs ${jh_clk} console=${console} root=${mmcroot} maxcpus=1 clk_ignore_unused\0 " \
 	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bsp_script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_r} ${fdtfile}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
+		"if test ${boot_bm_enable} = yes; then " \
+			"setenv mmcargs ${baremetal_args}; " \
+		"fi;" \
 		"run mmcargs; " \
 		"if test ${boot_fit} = yes || test ${boot_fit} = try; then " \
 			"bootm ${loadaddr}; " \
