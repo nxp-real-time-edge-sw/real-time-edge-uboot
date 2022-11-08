@@ -23,9 +23,11 @@ void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
 
 static int icc_ring_empty(struct icc_ring *ring)
 {
+#ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CONFIG_SYS_DDR_SDRAM_SHARE_BASE,
 		CONFIG_SYS_DDR_SDRAM_SHARE_BASE +
 		CONFIG_SYS_DDR_SDRAM_SHARE_SIZE);
+#endif
 	if (ring->desc_tail == ring->desc_head)
 		return 1;
 	return 0;
@@ -203,9 +205,11 @@ int icc_set_block(int core_mask, unsigned int byte_count, unsigned long block)
 	}
 
 	dsb();
+#ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CONFIG_SYS_DDR_SDRAM_SHARE_BASE,
 		CONFIG_SYS_DDR_SDRAM_SHARE_BASE +
 		CONFIG_SYS_DDR_SDRAM_SHARE_SIZE);
+#endif
 	/* trigger the inter-core interrupt */
 	icc_set_sgi(dest_core, ICC_SGI);
 
@@ -321,9 +325,11 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 		/* add desc_tail */
 		ring->desc_tail = (ring->desc_tail + 1) % ring->desc_num;
 	}
+#ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CONFIG_SYS_DDR_SDRAM_SHARE_BASE,
 		CONFIG_SYS_DDR_SDRAM_SHARE_BASE +
 		CONFIG_SYS_DDR_SDRAM_SHARE_SIZE);
+#endif
 }
 
 static int icc_irq_init(int hw_irq)
