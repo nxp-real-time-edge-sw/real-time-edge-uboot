@@ -15,6 +15,7 @@ int mycoreid;
 int blocks[ICC_CORE_BLOCK_COUNT];
 unsigned int block_idx;
 void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
+bool icc_debug_switch = false;
 
 #define block2index(x) ((x - ICC_CORE_BLOCK_BASE(mycoreid)) / \
 		ICC_BLOCK_UNIT_SIZE)
@@ -292,7 +293,9 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 				"Get the wrong SGI number: %d, expect: %d\n",
 				hw_irq, ICC_SGI);
 		return;
-	} else
+	}
+
+	if (icc_debug_switch)
 		printf("Time(us): 0x%llx, Get the SGI from CoreID: %d\n",
 				time_us, src_coreid);
 
@@ -391,4 +394,24 @@ void icc_show(void)
 		printf("busy_counts: %ld; interrupt_counts: %ld\n",
 			ring[i]->busy_counts, ring[i]->interrupt_counts);
 	}
+	printf("\n");
+	icc_debug_switch_show();
+}
+
+void icc_debug_switch_on(void)
+{
+	icc_debug_switch = true;
+	return;
+}
+
+void icc_debug_switch_off(void)
+{
+	icc_debug_switch = false;
+	return;
+}
+
+void icc_debug_switch_show(void)
+{
+	printf("icc debug switch: %s\n", icc_debug_switch ? "on" : "off");
+	return;
 }

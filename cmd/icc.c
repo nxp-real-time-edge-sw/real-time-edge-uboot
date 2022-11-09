@@ -150,6 +150,19 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 	icc_show();
 }
 
+static void do_icc_debug_switch(const char *opt)
+{
+	if (strncmp(opt, "on", strlen(opt)) == 0) {
+		icc_debug_switch_on();
+	} else if (strncmp(opt, "off", strlen(opt)) == 0) {
+		icc_debug_switch_off();
+	} else {
+		printf("switch dest status error\n");
+	}
+
+	return;
+}
+
 static void do_icc_send(unsigned long core_mask,
 	unsigned long data, unsigned long counts)
 {
@@ -256,6 +269,12 @@ icc_cmd(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 		return 0;
 	}
 
+	if (argc == 3) {
+		if (strncmp(argv[1], "debug", 5) == 0)
+			do_icc_debug_switch(argv[2]);
+		return 0;
+	}
+
 	if (argc == 4) {
 		if (strncmp(argv[1], "irq", 3) == 0)
 			do_icc_irq_set(simple_strtoul(argv[2], NULL, 16),
@@ -288,6 +307,7 @@ static char icc_help_text[] =
 	"icc perf <core_mask> <counts>		- ICC performance to cores <core_mask> with <counts> bytes\n"
 	"icc send <core_mask> <data> <counts>	- Send <counts> <data> to cores <core_mask>\n"
 	"icc irq <core_mask> <irq>		- Send SGI <irq> ID[0 - 15] to <core_mask>\n"
+	"icc debug <on/off>			- Enable/Disable icc debug switch\n"
 	"";
 #endif
 
