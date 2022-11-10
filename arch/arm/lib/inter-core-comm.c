@@ -15,7 +15,7 @@ int mycoreid;
 int blocks[ICC_CORE_BLOCK_COUNT];
 unsigned int block_idx;
 void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
-bool icc_debug_switch = false;
+bool icc_debug_switch = true;
 
 #define block2index(x) ((x - ICC_CORE_BLOCK_BASE(mycoreid)) / \
 		ICC_BLOCK_UNIT_SIZE)
@@ -295,10 +295,6 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 		return;
 	}
 
-	if (icc_debug_switch)
-		printf("Time(us): 0x%llx, Get the SGI from CoreID: %d\n",
-				time_us, src_coreid);
-
 #ifdef	CONFIG_ARCH_LX2160A
 	src_coreid = ICC_TRG_CORE;
 	ICC_TRG_CORE = 0;
@@ -328,6 +324,11 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 		/* add desc_tail */
 		ring->desc_tail = (ring->desc_tail + 1) % ring->desc_num;
 	}
+
+	if (!valid && icc_debug_switch)
+		printf("Time(us): 0x%lx, Get the SGI from CoreID: %d\n",
+			time_us, src_coreid);
+
 #ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CONFIG_SYS_DDR_SDRAM_SHARE_BASE,
 		CONFIG_SYS_DDR_SDRAM_SHARE_BASE +
