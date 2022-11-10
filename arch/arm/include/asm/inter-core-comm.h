@@ -151,4 +151,10 @@ int icc_set_block(int core_mask, unsigned int byte_count, unsigned long block);
 /* Show the icc ring state */
 void icc_show(void);
 
+void icc_debug_switch_on(void);
+
+void icc_debug_switch_off(void);
+
+void icc_debug_switch_show(void);
+
 #endif /* _ARM_INTER_CORE_COMM_H */
