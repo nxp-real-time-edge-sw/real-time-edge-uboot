@@ -20,7 +20,175 @@
 #define ipaddr		"192.168.1.1"
 #define server_ip	"192.168.1.2"
 
-#ifdef CONFIG_DM_PCI
+struct pci_reg_info {
+	const char *name;
+	enum pci_size_t size;
+	u8 offset;
+};
+
+static struct pci_reg_info regs_start[] = {
+	{ "vendor ID", PCI_SIZE_16, PCI_VENDOR_ID },
+	{ "device ID", PCI_SIZE_16, PCI_DEVICE_ID },
+	{ "command register ID", PCI_SIZE_16, PCI_COMMAND },
+	{ "status register", PCI_SIZE_16, PCI_STATUS },
+	{ "revision ID", PCI_SIZE_8, PCI_REVISION_ID },
+	{},
+};
+
+static struct pci_reg_info regs_rest[] = {
+	{ "sub class code", PCI_SIZE_8, PCI_CLASS_SUB_CODE },
+	{ "programming interface", PCI_SIZE_8, PCI_CLASS_PROG },
+	{ "cache line", PCI_SIZE_8, PCI_CACHE_LINE_SIZE },
+	{ "latency time", PCI_SIZE_8, PCI_LATENCY_TIMER },
+	{ "header type", PCI_SIZE_8, PCI_HEADER_TYPE },
+	{ "BIST", PCI_SIZE_8, PCI_BIST },
+	{ "base address 0", PCI_SIZE_32, PCI_BASE_ADDRESS_0 },
+	{},
+};
+
+static struct pci_reg_info regs_normal[] = {
+	{ "base address 1", PCI_SIZE_32, PCI_BASE_ADDRESS_1 },
+	{ "base address 2", PCI_SIZE_32, PCI_BASE_ADDRESS_2 },
+	{ "base address 3", PCI_SIZE_32, PCI_BASE_ADDRESS_3 },
+	{ "base address 4", PCI_SIZE_32, PCI_BASE_ADDRESS_4 },
+	{ "base address 5", PCI_SIZE_32, PCI_BASE_ADDRESS_5 },
+	{ "cardBus CIS pointer", PCI_SIZE_32, PCI_CARDBUS_CIS },
+	{ "sub system vendor ID", PCI_SIZE_16, PCI_SUBSYSTEM_VENDOR_ID },
+	{ "sub system ID", PCI_SIZE_16, PCI_SUBSYSTEM_ID },
+	{ "expansion ROM base address", PCI_SIZE_32, PCI_ROM_ADDRESS },
+	{ "interrupt line", PCI_SIZE_8, PCI_INTERRUPT_LINE },
+	{ "interrupt pin", PCI_SIZE_8, PCI_INTERRUPT_PIN },
+	{ "min Grant", PCI_SIZE_8, PCI_MIN_GNT },
+	{ "max Latency", PCI_SIZE_8, PCI_MAX_LAT },
+	{},
+};
+
+static struct pci_reg_info regs_bridge[] = {
+	{ "base address 1", PCI_SIZE_32, PCI_BASE_ADDRESS_1 },
+	{ "primary bus number", PCI_SIZE_8, PCI_PRIMARY_BUS },
+	{ "secondary bus number", PCI_SIZE_8, PCI_SECONDARY_BUS },
+	{ "subordinate bus number", PCI_SIZE_8, PCI_SUBORDINATE_BUS },
+	{ "secondary latency timer", PCI_SIZE_8, PCI_SEC_LATENCY_TIMER },
+	{ "IO base", PCI_SIZE_8, PCI_IO_BASE },
+	{ "IO limit", PCI_SIZE_8, PCI_IO_LIMIT },
+	{ "secondary status", PCI_SIZE_16, PCI_SEC_STATUS },
+	{ "memory base", PCI_SIZE_16, PCI_MEMORY_BASE },
+	{ "memory limit", PCI_SIZE_16, PCI_MEMORY_LIMIT },
+	{ "prefetch memory base", PCI_SIZE_16, PCI_PREF_MEMORY_BASE },
+	{ "prefetch memory limit", PCI_SIZE_16, PCI_PREF_MEMORY_LIMIT },
+	{ "prefetch memory base upper", PCI_SIZE_32, PCI_PREF_BASE_UPPER32 },
+	{ "prefetch memory limit upper", PCI_SIZE_32, PCI_PREF_LIMIT_UPPER32 },
+	{ "IO base upper 16 bits", PCI_SIZE_16, PCI_IO_BASE_UPPER16 },
+	{ "IO limit upper 16 bits", PCI_SIZE_16, PCI_IO_LIMIT_UPPER16 },
+	{ "expansion ROM base address", PCI_SIZE_32, PCI_ROM_ADDRESS1 },
+	{ "interrupt line", PCI_SIZE_8, PCI_INTERRUPT_LINE },
+	{ "interrupt pin", PCI_SIZE_8, PCI_INTERRUPT_PIN },
+	{ "bridge control", PCI_SIZE_16, PCI_BRIDGE_CONTROL },
+	{},
+};
+
+static struct pci_reg_info regs_cardbus[] = {
+	{ "capabilities", PCI_SIZE_8, PCI_CB_CAPABILITY_LIST },
+	{ "secondary status", PCI_SIZE_16, PCI_CB_SEC_STATUS },
+	{ "primary bus number", PCI_SIZE_8, PCI_CB_PRIMARY_BUS },
+	{ "CardBus number", PCI_SIZE_8, PCI_CB_CARD_BUS },
+	{ "subordinate bus number", PCI_SIZE_8, PCI_CB_SUBORDINATE_BUS },
+	{ "CardBus latency timer", PCI_SIZE_8, PCI_CB_LATENCY_TIMER },
+	{ "CardBus memory base 0", PCI_SIZE_32, PCI_CB_MEMORY_BASE_0 },
+	{ "CardBus memory limit 0", PCI_SIZE_32, PCI_CB_MEMORY_LIMIT_0 },
+	{ "CardBus memory base 1", PCI_SIZE_32, PCI_CB_MEMORY_BASE_1 },
+	{ "CardBus memory limit 1", PCI_SIZE_32, PCI_CB_MEMORY_LIMIT_1 },
+	{ "CardBus IO base 0", PCI_SIZE_16, PCI_CB_IO_BASE_0 },
+	{ "CardBus IO base high 0", PCI_SIZE_16, PCI_CB_IO_BASE_0_HI },
+	{ "CardBus IO limit 0", PCI_SIZE_16, PCI_CB_IO_LIMIT_0 },
+	{ "CardBus IO limit high 0", PCI_SIZE_16, PCI_CB_IO_LIMIT_0_HI },
+	{ "CardBus IO base 1", PCI_SIZE_16, PCI_CB_IO_BASE_1 },
+	{ "CardBus IO base high 1", PCI_SIZE_16, PCI_CB_IO_BASE_1_HI },
+	{ "CardBus IO limit 1", PCI_SIZE_16, PCI_CB_IO_LIMIT_1 },
+	{ "CardBus IO limit high 1", PCI_SIZE_16, PCI_CB_IO_LIMIT_1_HI },
+	{ "interrupt line", PCI_SIZE_8, PCI_INTERRUPT_LINE },
+	{ "interrupt pin", PCI_SIZE_8, PCI_INTERRUPT_PIN },
+	{ "bridge control", PCI_SIZE_16, PCI_CB_BRIDGE_CONTROL },
+	{ "subvendor ID", PCI_SIZE_16, PCI_CB_SUBSYSTEM_VENDOR_ID },
+	{ "subdevice ID", PCI_SIZE_16, PCI_CB_SUBSYSTEM_ID },
+	{ "PC Card 16bit base address", PCI_SIZE_32, PCI_CB_LEGACY_MODE_BASE },
+	{},
+};
+
+void pciinfo_header(int busnum, bool short_listing)
+{
+    printf("Scanning PCI devices on bus %d\n", busnum);
+
+    if (short_listing) {
+        printf("BusDevFun  VendorId   DeviceId   Device Class       Sub-Class\n");
+        printf("_____________________________________________________________\n");
+    }
+}
+
+static int pci_byte_size(enum pci_size_t size)
+{
+	switch (size) {
+	case PCI_SIZE_8:
+		return 1;
+	case PCI_SIZE_16:
+		return 2;
+	case PCI_SIZE_32:
+	default:
+		return 4;
+	}
+}
+
+static int pci_field_width(enum pci_size_t size)
+{
+	return pci_byte_size(size) * 2;
+}
+
+static void pci_show_regs(struct udevice *dev, struct pci_reg_info *regs)
+{
+	for (; regs->name; regs++) {
+		unsigned long val;
+
+		dm_pci_read_config(dev, regs->offset, &val, regs->size);
+		printf("  %s =%*s%#.*lx\n", regs->name,
+		       (int)(28 - strlen(regs->name)), "",
+		       pci_field_width(regs->size), val);
+	}
+}
+
+/**
+ * pci_header_show() - Show the header of the specified PCI device.
+ *
+ * @dev: Bus+Device+Function number
+ */
+static void pci_header_show(struct udevice *dev)
+{
+	unsigned long class, header_type;
+
+	dm_pci_read_config(dev, PCI_CLASS_CODE, &class, PCI_SIZE_8);
+	dm_pci_read_config(dev, PCI_HEADER_TYPE, &header_type, PCI_SIZE_8);
+	pci_show_regs(dev, regs_start);
+	printf("  class code =                  0x%.2x (%s)\n", (int)class,
+	       pci_class_str(class));
+	pci_show_regs(dev, regs_rest);
+
+	switch (header_type & 0x7f) {
+	case PCI_HEADER_TYPE_NORMAL:	/* "normal" PCI device */
+		pci_show_regs(dev, regs_normal);
+		break;
+	case PCI_HEADER_TYPE_BRIDGE:	/* PCI-to-PCI bridge */
+		pci_show_regs(dev, regs_bridge);
+		break;
+	case PCI_HEADER_TYPE_CARDBUS:	/* PCI-to-CardBus bridge */
+		pci_show_regs(dev, regs_cardbus);
+		break;
+
+	default:
+		printf("unknown header\n");
+		break;
+    }
+}
+
+#ifdef CONFIG_DM_ETH
 static const struct pci_flag_info {
 	uint flag;
 	const char *name;
@@ -218,10 +386,10 @@ void test_pcie(void)
 		return;
 	}
 
+#ifdef CONFIG_DM_ETH
 	printf("\nPCIe controller regions:\n");
 	pci_show_regions(bus);
 
-#ifdef CONFIG_DM_PCI
 	printf("\nPCIe bus information:\n");
 	pciinfo(bus, 1);
 
