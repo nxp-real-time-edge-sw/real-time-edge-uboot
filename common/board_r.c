@@ -1016,6 +1016,7 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 }
 
 int icc_init(void);
+int eth_early_init_r(void);
 
 init_fnc_t init_sequence_r_slave[] = {
 	initr_trace,
