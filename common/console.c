@@ -646,7 +646,7 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-char printbuffer[8];
+char printbuffer[2048];
 void putc(const char c)
 {
 	if (!gd)
@@ -688,6 +688,18 @@ void putc(const char c)
 	}
 }
 
+void puts_to_console(const char *s)
+{
+	if (gd->flags & GD_FLG_DEVINIT) {
+		/* Send to the standard output */
+		fputs(stdout, s);
+	} else {
+		/* Send directly to the handler */
+		pre_console_puts(s);
+		serial_puts(s);
+	}
+}
+
 void puts(const char *s)
 {
 	if (!gd)
@@ -723,36 +735,33 @@ void puts(const char *s)
 		return pre_console_puts(s);
 
 #ifdef CONFIG_ENABLE_COREID_DEBUG
-	static bool is_new_line = true;
+	static unsigned int offset = 0;
+	int outbool = 0;
+	int coreid = get_core_id();
 
-	if (is_new_line) {
-		int outbool = 0;
-		int coreid = get_core_id();
+	if (strlen(s) == 1 || !strncmp(s, "=>", strlen("=>")) ||
+			!strncmp(s, "u-boot=>", strlen("u-boot=>")))
+		outbool = 1;
 
-		if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
-			outbool = 1;
-
-		if (!outbool)
-			sprintf(printbuffer, "%d:", coreid);
-
-		if (gd->flags & GD_FLG_DEVINIT) {
-			/* Send to the standard output */
-			fputs(stdout, printbuffer);
-		} else {
-			/* Send directly to the handler */
-			pre_console_puts(printbuffer);
-			serial_puts(printbuffer);
-		}
-
+	if (!outbool && offset == 0) {
+		sprintf(printbuffer, "%d:", coreid);
+		offset = strlen(printbuffer);
 	}
 
-	if (s[strlen(s) - 1] != '\n') {
-		is_new_line = false;
+	if (offset + strlen(s) + 1 > sizeof(printbuffer) ) {
+		if (offset > 0)
+			puts_to_console(printbuffer);
+		puts_to_console(s);
+		offset = 0;
 	} else {
-		is_new_line = true;
+		sprintf(printbuffer + offset, "%s", s);
+		offset += strlen(s);
+		if (!outbool && printbuffer[offset - 1] != '\n')
+			return;
+		puts_to_console(printbuffer);
+		offset = 0;
 	}
-#endif
-
+#else
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
 		fputs(stdout, s);
@@ -761,6 +770,7 @@ void puts(const char *s)
 		pre_console_puts(s);
 		serial_puts(s);
 	}
+#endif
 }
 
 #ifdef CONFIG_CONSOLE_RECORD
