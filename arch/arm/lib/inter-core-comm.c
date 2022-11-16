@@ -15,7 +15,7 @@ int mycoreid;
 int blocks[ICC_CORE_BLOCK_COUNT];
 unsigned int block_idx;
 void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
-bool icc_debug_switch = true;
+bool icc_debug_switch = false;
 
 #define block2index(x) ((x - ICC_CORE_BLOCK_BASE(mycoreid)) / \
 		ICC_BLOCK_UNIT_SIZE)
