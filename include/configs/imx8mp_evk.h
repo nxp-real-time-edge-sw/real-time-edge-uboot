@@ -243,6 +243,8 @@
 	 CONFIG_SYS_DDR_SDRAM_SLAVE_SIZE*(CONFIG_MAX_CPUS-1))
 #define CONFIG_MASTER_CORE                     0
 
+#define CONFIG_ENABLE_WRITE_LOCK
+
 #define CONFIG_GICV3
 
 /* GICv3 base address */
