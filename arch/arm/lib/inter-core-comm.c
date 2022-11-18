@@ -90,6 +90,18 @@ unsigned long icc_ring_state(int coreid)
 	return desc[tail].block_addr;
 }
 
+/*
+ * get ring's irq status of the target core.
+ * return:
+ * 			ICC_IRQ_IDLE
+ * 			ICC_IRQ_BUSY
+ *
+ */
+unsigned int icc_ring_irq_status(int coreid)
+{
+	return ring[coreid]->irq_status;
+}
+
 unsigned long icc_block_request(void)
 {
 	unsigned int idx = block_idx;
@@ -250,6 +262,7 @@ static void icc_ring_init(int coreid)
 		ring[i]->interrupt_counts = 0;
 		ring[i]->desc = (struct icc_desc *)(ICC_CORE_DESC_BASE(coreid)
 				+ i * ICC_RING_ENTRY * sizeof(struct icc_desc));
+		ring[i]->irq_status = ICC_IRQ_IDLE;
 
 		/* init desc */
 		desc = ring[i]->desc;
@@ -306,6 +319,7 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 
 	/* get the ring for this core from source core */
 	ring = (struct icc_ring *)ICC_CORE_RING_BASE(src_coreid, mycoreid);
+	ring->irq_status = ICC_IRQ_BUSY;
 	valid = icc_ring_valid(ring);
 	for (i = 0; i < valid; i++) {
 		desc = ring->desc + ring->desc_tail;
@@ -329,6 +343,7 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 		printf("Time(us): 0x%lx, Get the SGI from CoreID: %d\n",
 			time_us, src_coreid);
 
+	ring->irq_status = ICC_IRQ_IDLE;
 #ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CONFIG_SYS_DDR_SDRAM_SHARE_BASE,
 		CONFIG_SYS_DDR_SDRAM_SHARE_BASE +

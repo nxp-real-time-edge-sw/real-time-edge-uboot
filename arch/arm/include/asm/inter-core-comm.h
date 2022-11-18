@@ -50,6 +50,9 @@
 #define IRQ_SGI_TEST 9
 #endif
 
+#define ICC_IRQ_IDLE		0x00
+#define ICC_IRQ_BUSY		0x01
+
 struct icc_desc {
 	unsigned long block_addr;	/* block address */
 	unsigned int byte_count;	/* available bytes in the block */
@@ -74,6 +77,8 @@ struct icc_ring {
 	unsigned long busy_counts;
 	/* statistic: total interrupt number triggered */
 	unsigned long interrupt_counts;
+	/* status of the ring, set by producer, reset by consumer */
+	bool irq_status;
 };
 
 /*
@@ -82,6 +87,14 @@ struct icc_ring {
  *         !0 - the working block address currently
  */
 unsigned long icc_ring_state(int coreid);
+
+/*
+ * get ring's irq status of the target core.
+ * return:
+ * 			ICC_IRQ_IDLE - idle
+ *			ICC_IRQ_BUSY - busy
+ */
+unsigned int icc_ring_irq_status(int coreid);
 
 /*
  * Request a block which is ICC_BLOCK_UNIT_SIZE size.
