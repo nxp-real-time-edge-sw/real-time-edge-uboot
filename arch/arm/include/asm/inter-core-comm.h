@@ -53,9 +53,13 @@
 #define ICC_IRQ_IDLE		0x00
 #define ICC_IRQ_BUSY		0x01
 
+#define ICC_CMD_TX_DATA		0x00
+#define ICC_CMD_DUMP_TIME	0x01
+
 struct icc_desc {
 	unsigned long block_addr;	/* block address */
 	unsigned int byte_count;	/* available bytes in the block */
+	unsigned int option_mode;	/* option mode for this icc irq */
 };
 
 struct icc_ring {
@@ -170,4 +174,6 @@ void icc_debug_switch_off(void);
 
 void icc_debug_switch_show(void);
 
+/* Set dump time request at send side */
+int icc_dump_time(int dest_core);
 #endif /* _ARM_INTER_CORE_COMM_H */
