@@ -34,6 +34,7 @@
 #include <asm/gpio.h>
 #include <linux/err.h>
 #include <asm/io.h>
+#include <asm/inter-core-comm.h>
 
 #define GPIO2_ADDR	0x02310000
 #define GPIO2_DIR	(GPIO2_ADDR + 0x00)
@@ -65,7 +66,7 @@ static void gpio2_irq(int hw_irq, int src_coreid)
 	val = in_be32((u32 *)gpio2_event);
 	if (val & (1 << GPIO2_02_OFFSET)) {
 		out_be32(gpio2_event, val);
-		gic_set_sgi(dest_core, SGI8_NUM);
+		icc_dump_time(dest_core);
 	}
 	printf("Time(us): 0x%llx, GPIO event: 0x%x\n", time_us, val);
 }
