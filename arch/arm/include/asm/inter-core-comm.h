@@ -82,7 +82,7 @@ struct icc_ring {
 	/* statistic: total interrupt number triggered */
 	unsigned long interrupt_counts;
 	/* status of the ring, set by producer, reset by consumer */
-	bool irq_status;
+	unsigned int irq_status;
 };
 
 /*
