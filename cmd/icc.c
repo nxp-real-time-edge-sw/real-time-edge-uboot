@@ -143,15 +143,15 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 		k = 0;
 		for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 			if (((dest_core >> i) & 0x1) && (i != mycoreid)) {
-				if (icc_ring_state(i))
+				if (icc_ring_state(i)) {
 					k++;
+					if (icc_ring_state(i) == ICC_IRQ_IDLE)
+						icc_set_sgi(0x01 << i, ICC_SGI);
+				}
 			}
 		}
 		if (!k)
 			break;
-		if (icc_ring_irq_status(i) == ICC_IRQ_IDLE) {
-			icc_set_sgi(dest_core, ICC_SGI);
-		}
 	}
 
 	end = get_ticks();
@@ -252,15 +252,15 @@ static void do_icc_send(unsigned long core_mask,
 		k = 0;
 		for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 			if (((dest_core >> i) & 0x1) && (i != mycoreid)) {
-				if (icc_ring_state(i))
+				if (icc_ring_state(i)) {
 					k++;
+					if (icc_ring_irq_status(i) == ICC_IRQ_IDLE)
+						icc_set_sgi(0x01 << i, ICC_SGI);
+				}
 			}
 		}
 		if (!k)
 			break;
-		if (icc_ring_irq_status(i) == ICC_IRQ_IDLE) {
-			icc_set_sgi(dest_core, ICC_SGI);
-		}
 	}
 
 	printf(
