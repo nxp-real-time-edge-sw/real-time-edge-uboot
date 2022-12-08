@@ -6,39 +6,46 @@
 
 #include <common.h>
 #include <asm-generic/gpio.h>
+#include <dm.h>
 
 int test_set_gpio(int value)
 {
+	struct gpio_desc desc;
+
+	desc.flags = GPIOD_IS_OUT;
 #ifdef CONFIG_ARCH_IMX8M
-	int ngpio = 135;  /* GPIO5_7 is the pin 8 of J1003 */
-	char label[] = "output135";
+	dm_gpio_lookup_name("GPIO5_7", &desc);		/* GPIO5_7 is the pin 8 of J1003 */
+	char label[] = "output7";
 #else
-	int ngpio = 25;		/* GPIO3_25 is the pin 3 of J502 */
-	char label[] = "output25";
+	dm_gpio_lookup_name("MPC@023100001", &desc);
+	char label[] = "output1";
 #endif
 
-	gpio_request(ngpio, label);
-	gpio_direction_output(ngpio, value);
-	gpio_free(ngpio);
+	dm_gpio_request(&desc, label);
+	dm_gpio_set_dir_flags(&desc, GPIOD_IS_OUT | GPIOD_IS_OUT_ACTIVE);
+	dm_gpio_set_value(&desc, value);
+	dm_gpio_free(desc.dev, &desc);
 
 	return 0;
 }
 
 int test_get_gpio(void)
 {
+	struct gpio_desc desc;
+
+	desc.flags = GPIOD_IS_IN;
 #ifdef CONFIG_ARCH_IMX8M
-	int ngpio = 136;  /* GPIO5_8 is the pin 7 of J1003 */
-	char label[] = "input136";
+	dm_gpio_lookup_name("GPIO5_8", &desc);	/* GPIO5_8 is the pin 7 of J1003 */
+	char label[] = "input8";
 #else
-	int ngpio = 24;		/* GPIO3_24 is the pin 5 of J502 */
-	char label[] = "input24";
+	dm_gpio_lookup_name("MPC@023100002", &desc);
+	char label[] = "input2";
 #endif
 	int value;
 
-	gpio_request(ngpio, label);
-	gpio_direction_input(ngpio);
-	value = gpio_get_value(ngpio);
-	gpio_free(ngpio);
+	dm_gpio_request(&desc, label);
+	value = dm_gpio_get_value(&desc);
+	dm_gpio_free(desc.dev, &desc);
 
 	return value;
 }
