@@ -17,7 +17,7 @@
 #define CONFIG_TEST_HW_IRQ 163
 #endif
 
-static void test_core_handler_ack(int hw_irq, int src_coreid)
+static void test_core_handler_ack(int hw_irq, int src_coreid, void *data)
 {
 	printf(
 			"SGI signal: Core[%u] ack irq : %d from core : %d\r\n",
@@ -26,7 +26,7 @@ static void test_core_handler_ack(int hw_irq, int src_coreid)
 	return;
 }
 
-static void test_core_handler_hw_ack(int hw_irq, int src_coreid)
+static void test_core_handler_hw_ack(int hw_irq, int src_coreid, void *data)
 {
 	printf(
 			"hardware IRQ: Core[%u] ack irq : %d\r\n",
@@ -38,7 +38,7 @@ static void test_core_handler_hw_ack(int hw_irq, int src_coreid)
 
 static void test_core_hw_irq_init(u32 coreid, u32 hw_irq)
 {
-	gic_irq_register(hw_irq, test_core_handler_hw_ack);
+	gic_irq_register(hw_irq, test_core_handler_hw_ack, NULL);
 	gic_set_type(hw_irq);
 	gic_set_target(1 << coreid, hw_irq);
 }
@@ -47,7 +47,7 @@ void test_irq_init(void)
 {
 	int coreid = 1;
 	/* irq 0-15 are used for SGI, irq 8 is used for IPC */
-	gic_irq_register(IRQ_SGI_TEST, test_core_handler_ack);
+	gic_irq_register(IRQ_SGI_TEST, test_core_handler_ack, NULL);
 	printf("IRQ %d has been registered as SGI\n", IRQ_SGI_TEST);
 	/* irq 195-201 are used for hardware interrupt */
 	test_core_hw_irq_init(coreid, CONFIG_TEST_HW_IRQ);

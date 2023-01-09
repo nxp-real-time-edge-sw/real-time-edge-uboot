@@ -294,7 +294,7 @@ int icc_irq_register(int src_coreid,
 	return 0;
 }
 
-static void icc_irq_handler(int hw_irq, int src_coreid)
+static void icc_irq_handler(int hw_irq, int src_coreid, void *data)
 {
 	struct icc_ring *ring;
 	struct icc_desc *desc;
@@ -365,7 +365,7 @@ static int icc_irq_init(int hw_irq)
 			hw_irq);
 		return -1;
 	}
-	gic_irq_register(hw_irq, icc_irq_handler);
+	gic_irq_register(hw_irq, icc_irq_handler, NULL);
 	return 0;
 }
 

@@ -367,7 +367,7 @@ struct can_init_t flexcan3 = {
 	.reg_esr = 0
 };
 
-static void flexcan_irq(int hw_irq, int src_coreid)
+static void flexcan_irq(int hw_irq, int src_coreid, void *data)
 {
 	u32 reg_iflag1, reg_esr;
 
@@ -411,7 +411,7 @@ static void flexcan_irq(int hw_irq, int src_coreid)
 
 static void flexcan_register_irq(u32 coreid, u32 hw_irq)
 {
-	gic_irq_register(hw_irq, flexcan_irq);
+	gic_irq_register(hw_irq, flexcan_irq, NULL);
 	gic_set_type(hw_irq);
 	gic_set_target(1 << coreid, hw_irq);
 	enable_interrupts();

@@ -383,10 +383,12 @@ static inline void gic_end_int(u32 ack)
 }
 
 void *g_gic_irq_cb[1024] = {NULL};
+void *g_gic_irq_data[1024] = {NULL};
 
-void gic_irq_register(int irq_num, void (*irq_handle)(int, int))
+void gic_irq_register(int irq_num, void (*irq_handle)(int, int, void *), void *data)
 {
 	g_gic_irq_cb[irq_num] = (void *)irq_handle;
+	g_gic_irq_data[irq_num] = data;
 }
 
 void gic_mask_irq(unsigned long hw_irq)
@@ -509,7 +511,8 @@ void do_irq(struct pt_regs *pt_regs)
 	u32 ack;
 	int hw_irq;
 	int src_coreid; /* just for SGI, will be 0 for other */
-	void (*irq_handle)(int, int);
+	void (*irq_handle)(int, int, void *);
+	void *data;
 
 READ_ACK:
 	ack = gic_ack_int();
@@ -519,9 +522,10 @@ READ_ACK:
 	if (hw_irq  >= 1021)
 		return;
 
-	irq_handle = (void (*)(int, int))g_gic_irq_cb[hw_irq];
+	irq_handle = (void (*)(int, int, void *))g_gic_irq_cb[hw_irq];
+	data = g_gic_irq_data[hw_irq];
 	if (irq_handle)
-		irq_handle(hw_irq, src_coreid);
+		irq_handle(hw_irq, src_coreid, data);
 
 
 	gic_end_int(ack);

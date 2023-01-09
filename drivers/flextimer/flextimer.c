@@ -76,7 +76,7 @@ static inline void ftm_irq_acknowledge(int hw_irq)
 }
 
 ftm_irq_func flextimer_overflow_handle = NULL;
-static void flextimer2_irq(int hw_irq, int src_coreid)
+static void flextimer2_irq(int hw_irq, int src_coreid, void *data)
 {
 	ftm_irq_acknowledge(hw_irq);
 	if (flextimer_overflow_handle != NULL)
@@ -99,7 +99,7 @@ static void flextimer_register_irq(u32 coreid, u32 hw_irq)
 		return;
 	}
 
-	gic_irq_register(hw_irq, irq_func);
+	gic_irq_register(hw_irq, irq_func, NULL);
 	gic_set_type(hw_irq);
 	gic_set_target(1 << coreid, hw_irq);
 	enable_interrupts();

@@ -60,7 +60,7 @@
 #define CORE3_MASK	(1 << 3)
 #define SGI8_NUM	8
 
-static void gpio2_irq(int hw_irq, int src_coreid)
+static void gpio2_irq(int hw_irq, int src_coreid, void *data)
 {
 	u32 val;
 	unsigned long time_us = timer_get_us();
@@ -77,7 +77,7 @@ static void gpio2_irq(int hw_irq, int src_coreid)
 
 static void gpio_register_irq(u32 coreid, u32 hw_irq)
 {
-	gic_irq_register(hw_irq, gpio2_irq);
+	gic_irq_register(hw_irq, gpio2_irq, NULL);
 	gic_set_type(hw_irq);
 	gic_set_target(1 << coreid, hw_irq);
 	enable_interrupts();

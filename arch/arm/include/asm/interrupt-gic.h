@@ -7,7 +7,7 @@
 #define _FSL_LAYERSCAPE_INT_GIC_H
 
 #ifndef __ASSEMBLY__
-void gic_irq_register(int irq_num, void (*irq_handle)(int, int));
+void gic_irq_register(int irq_num, void (*irq_handle)(int, int, void *), void *);
 void gic_set_target(u32 core_mask, unsigned long hw_irq);
 void gic_set_type(unsigned long hw_irq);
 void gic_set_pri_per_cpu(void);

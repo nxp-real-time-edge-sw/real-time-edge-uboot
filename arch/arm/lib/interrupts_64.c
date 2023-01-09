@@ -123,6 +123,7 @@ struct giccd_base gic_d;
 struct giccd_base get_gic_offset(void);
 
 void *g_gic_irq_cb[1024] __section(".data");
+void *g_gic_irq_data[1024] __section(".data");
 
 extern u32 gic_ack_int_v3(void);
 extern void gic_end_int_v3(u32 ack);
@@ -147,9 +148,10 @@ static inline void gic_end_int(u32 ack)
 		    GIC_CPU_EOI)) = (ack & GICC_IAR_MASK);
 }
 
-void gic_irq_register(int irq_num, void (*irq_handle)(int, int))
+void gic_irq_register(int irq_num, void (*irq_handle)(int, int, void *), void *data)
 {
 	g_gic_irq_cb[irq_num] = (void *)irq_handle;
+	g_gic_irq_data[irq_num] = data;
 }
 
 void gic_mask_irq(unsigned long hw_irq)
@@ -435,7 +437,8 @@ void do_irq(struct pt_regs *pt_regs, unsigned int esr)
 	u32 ack;
 	int hw_irq;
 	int src_coreid; /* just for SGI, will be 0 for other */
-	void (*irq_handle)(int, int);
+	void (*irq_handle)(int, int, void *);
+	void *data;
 
 #if defined(CONFIG_GICV3)
 #define ICC_IAR_INT_ID_MASK	0xffffff
@@ -447,11 +450,12 @@ void do_irq(struct pt_regs *pt_regs, unsigned int esr)
 	if (hw_irq  >= 1024 && hw_irq <= 8191)
 		return;
 
-	irq_handle = (void (*)(int, int))g_gic_irq_cb[hw_irq];
+	irq_handle = (void (*)(int, int, void *))g_gic_irq_cb[hw_irq];
+	data = g_gic_irq_data[hw_irq];
 	if (irq_handle) {
 		for(src_coreid = 0; src_coreid < CONFIG_MAX_CPUS; src_coreid++)
 			if(src_coreid != get_core_id())
-				irq_handle(hw_irq, src_coreid);
+				irq_handle(hw_irq, src_coreid, data);
 	}
 
 	gic_end_int_v3(ack);
@@ -465,9 +469,10 @@ READ_ACK:
 	if (hw_irq  >= 1021)
 		return;
 
-	irq_handle = (void (*)(int, int))g_gic_irq_cb[hw_irq];
+	irq_handle = (void (*)(int, int, void *))g_gic_irq_cb[hw_irq];
+	data = g_gic_irq_data[hw_irq];
 	if (irq_handle)
-		irq_handle(hw_irq, src_coreid);
+		irq_handle(hw_irq, src_coreid, data);
 
 	gic_end_int(ack);
 

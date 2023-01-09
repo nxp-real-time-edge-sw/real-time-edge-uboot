@@ -29,7 +29,7 @@ static void gpio_irq(void)
 }
 
 
-static void gpio_bank_irq(int hw_irq, int src_coreid)
+static void gpio_bank_irq(int hw_irq, int src_coreid, void *data)
 {
 	if (g_gic_gpio_irq_cb[gpio_in.offset])
 		gpio_irq();
@@ -38,7 +38,7 @@ static void gpio_bank_irq(int hw_irq, int src_coreid)
 
 static void gpio_register_irq(u32 coreid, u32 hw_irq, int offset)
 {
-	gic_irq_register(hw_irq, gpio_bank_irq);
+	gic_irq_register(hw_irq, gpio_bank_irq, NULL);
 	gpio_irq_register(offset, gpio_irq);
 	gic_set_type(hw_irq);
 	gic_set_target(1 << coreid, hw_irq);
