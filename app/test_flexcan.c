@@ -11,7 +11,8 @@
 #include <linux/delay.h>
 #include <common.h>
 #include <flexcan.h>
-#include <flextimer.h>
+#include <dm.h>
+#include <ftm_alarm.h>
 #include <env.h>
 
 #if CONFIG_CANFESTIVAL
@@ -80,10 +81,42 @@ void flextimer_overflow_irq(void)
 #endif
 }
 
+static int get_ftm_alarm_idx(char *comp_name)
+{
+    struct uclass *uc;
+    struct udevice *dev;
+    int target_idx = -1, idx = 0;
+
+    uclass_id_foreach_dev(UCLASS_RTC, dev, uc) {
+        if (!strcmp(dev_read_string(dev, "compatible"), comp_name)) {
+            target_idx = idx;
+            break;
+        }
+        idx++;
+    }
+    return target_idx;
+}
+
 void test_flexcan(void)
 {
+	char *comp_name = "fsl,ls1046a-ftm-alarm";
+	int ftm_dev_idx, ret;
+	struct udevicd *dev;
 	flexcan_rx_handle = flexcan_rx_irq;
-	flextimer_overflow_handle = flextimer_overflow_irq;
+
+	ftm_dev_idx = get_ftm_alarm_idx(comp_name);
+	if (ftm_dev_idx == -1) {
+		printf("[ERROR] No available ftm alarm device.\n");
+		return;
+	}
+
+	ret = uclass_get_device(UCLASS_RTC, ftm_dev_idx, &dev);
+	if (ret) {
+		printf("Cannot find RTC #%d, err=%d\n", ftm_dev_idx, ret);
+		return;
+	}
+
+	ftm_rtc_set_alarm(dev, 2000, flextimer_overflow_irq);
 
 #if CONFIG_CANFESTIVAL
 	u8 node_id = 0x02;
@@ -102,4 +135,6 @@ void test_flexcan(void)
 
 	flexcan_send(CAN3, &canfram_tx);
 #endif
+
+	ftm_rtc_alarm_stop(dev);
 }
