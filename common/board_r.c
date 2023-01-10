@@ -983,7 +983,6 @@ static void initcall_run_r(void)
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	INITCALL(flexcan_init);
-	INITCALL(flextimer_init);
 #endif
 	INITCALL(run_main_loop);
 };
@@ -1254,7 +1253,6 @@ static void initcall_run_r_slave(void)
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	INITCALL(flexcan_init);
-	INITCALL(flextimer_init);
 #endif
 	INITCALL(run_main_loop);
 };
