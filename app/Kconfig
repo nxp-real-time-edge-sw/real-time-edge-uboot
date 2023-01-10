@@ -198,4 +198,10 @@ config FEC_NIC0_COREID
 	default "1"
 endif
 
+if RTC_FSL_FTM_ALARM
+config FTM_ALARM_COREID
+	int "The core FTM ALARM assigned"
+	default "1"
+endif
+
 endmenu
