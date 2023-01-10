@@ -210,6 +210,12 @@ config CMD_SBI
 	help
 	  Display information about the SBI implementation.
 
+config CMD_FTM_ALARM_TEST
+	bool "ftm alarm test"
+	depends on RTC_FSL_FTM_ALARM
+	help
+	  Test about the Flextimer alarm implementation.
+
 endmenu
 
 menu "Boot commands"
