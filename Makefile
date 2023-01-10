@@ -859,7 +859,6 @@ libs-$(CONFIG_SYS_FSL_DDR) += drivers/ddr/fsl/
 libs-$(CONFIG_SYS_FSL_MMDC) += drivers/ddr/fsl/
 libs-$(CONFIG_$(SPL_)ALTERA_SDRAM) += drivers/ddr/altera/
 libs-y += drivers/flexcan/
-libs-y += drivers/flextimer/
 libs-y += drivers/usb/cdns3/
 libs-y += drivers/usb/imx/
 libs-y += drivers/usb/dwc3/
