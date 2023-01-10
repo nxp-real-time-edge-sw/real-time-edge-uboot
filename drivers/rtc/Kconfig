@@ -279,4 +279,12 @@ config RTC_HT1380
 	  day of the week, date, month and year information. It is to be
 	  connected via 3 GPIO pins which work as reset, clock, and data.
 
+config RTC_FSL_FTM_ALARM
+	bool "Enable Freescale FlexTimer alarm timer"
+	depends on DM_RTC
+	help
+	  For the Flextimer in LS1046A, we can use FTM as the wakeup source.
+	  Say y here to enable FTM alarm support. The FTM alarm provides
+	  alarm functions for wakeup system from deep sleep.
+
 endmenu
