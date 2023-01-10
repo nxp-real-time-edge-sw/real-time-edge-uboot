@@ -68,7 +68,6 @@
 #include <fb_fsl.h>
 #endif
 #include <flexcan.h>
-#include <flextimer.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -1020,7 +1019,6 @@ static init_fnc_t init_sequence_r[] = {
 #endif
 #if CONFIG_FS_FLEXCAN
 	flexcan_init,
-	flextimer_init,
 #endif
 	run_main_loop,
 };
@@ -1165,7 +1163,6 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	flexcan_init,
-	flextimer_init,
 #endif
 	run_main_loop,
 };
