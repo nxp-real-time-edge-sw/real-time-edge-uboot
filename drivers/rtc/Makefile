@@ -58,3 +58,4 @@ obj-$(CONFIG_SANDBOX) += sandbox_rtc.o
 obj-$(CONFIG_RTC_X1205) += x1205.o
 obj-$(CONFIG_RTC_ABX80X) += abx80x.o
 obj-$(CONFIG_RTC_ZYNQMP) += zynqmp_rtc.o
+obj-$(CONFIG_RTC_FSL_FTM_ALARM) += rtc-fsl-ftm-alarm.o

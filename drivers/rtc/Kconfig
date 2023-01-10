@@ -203,4 +203,13 @@ config RTC_ZYNQMP
 	  Say "yes" here to support the on chip real time clock
 	  present on Xilinx ZynqMP SoC.
 
+config RTC_FSL_FTM_ALARM
+	bool "Enable Freescale FlexTimer alarm timer"
+	depends on DM_RTC
+	help
+	  For the Flextimer in LS1046A, we can use FTM as the wakeup source.
+
+	  Say y here to enable FTM alarm support. The FTM alarm provides
+	  alarm functions for wakeup system from deep sleep.
+
 endmenu
