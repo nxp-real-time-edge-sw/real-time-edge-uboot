@@ -13,6 +13,7 @@ obj-y += version.o
 
 # command
 obj-${CONFIG_BAREMETAL} += gpio_int.o
+obj-$(CONFIG_CMD_FTM_ALARM_TEST) += ftm_alarm_test.o
 obj-$(CONFIG_CMD_ACPI) += acpi.o
 obj-$(CONFIG_CMD_ADDRMAP) += addrmap.o
 obj-$(CONFIG_CMD_AES) += aes.o
