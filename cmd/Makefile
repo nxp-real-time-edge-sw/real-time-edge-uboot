@@ -15,6 +15,7 @@ obj-y += version.o
 obj-${CONFIG_BAREMETAL} += gpio_int.o
 obj-$(CONFIG_CMD_ARMFFA) += armffa.o
 obj-$(CONFIG_CMD_2048) += 2048.o
+obj-$(CONFIG_CMD_FTM_ALARM_TEST) += ftm_alarm_test.o
 obj-$(CONFIG_CMD_ACPI) += acpi.o
 obj-$(CONFIG_CMD_ADDRMAP) += addrmap.o
 obj-$(CONFIG_CMD_AES) += aes.o
