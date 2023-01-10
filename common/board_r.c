@@ -942,7 +942,6 @@ static init_fnc_t init_sequence_r[] = {
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	flexcan_init,
-	flextimer_init,
 #endif
 	run_main_loop,
 };
@@ -1083,7 +1082,6 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	flexcan_init,
-	flextimer_init,
 #endif
 	run_main_loop,
 };
