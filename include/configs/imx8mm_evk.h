@@ -218,8 +218,8 @@
 
 /* Link Definitions */
 
-#define CONFIG_SYS_INIT_RAM_ADDR        0x40000000
-#define CONFIG_SYS_INIT_RAM_SIZE        0x200000
+#define CONFIG_SYS_INIT_RAM_ADDR        0x40080000
+#define CONFIG_SYS_INIT_RAM_SIZE        0x80000
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 #define CONFIG_SYS_INIT_SP_ADDR \
@@ -272,10 +272,6 @@
 #endif /* CONFIG_NAND_MXS */
 
 /* USB configs */
-#ifndef CONFIG_SPL_BUILD
-#define CONFIG_USBD_HS
-
-#endif
 
 #define CONFIG_USB_GADGET_VBUS_DRAW 2
 
@@ -285,5 +281,7 @@
 #ifdef CONFIG_ANDROID_SUPPORT
 #include "imx8mm_evk_android.h"
 #endif
+
+#include "imx8mm_baremetal.h"
 
 #endif
