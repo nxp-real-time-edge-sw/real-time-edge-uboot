@@ -19,6 +19,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 static struct serial_device *serial_devices;
 static struct serial_device *serial_current;
+
 /*
  * Table with supported baudrates (defined in config_xyz.h)
  */
@@ -438,7 +439,15 @@ void serial_putc(const char c)
  */
 void serial_puts(const char *s)
 {
+#ifdef CONFIG_ENABLE_WRITE_LOCK
+	sgd_t *sgd = (sgd_t *)(CFG_BAREMETAL_SYS_SDRAM_RESERVE_BASE);
+
+	arch_write_lock(&sgd->consol_lock_puts);
+#endif
 	get_current()->puts(s);
+#ifdef CONFIG_ENABLE_WRITE_LOCK
+	arch_write_unlock(&sgd->consol_lock_puts);
+#endif
 }
 
 /**
