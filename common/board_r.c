@@ -661,6 +661,10 @@ static int run_main_loop(void)
 	return 0;
 }
 
+#if defined(CONFIG_ICC)
+int icc_init(void);
+#endif
+
 /*
  * We hope to remove most of the driver-related init and do it if/when
  * the driver is later used.
@@ -980,6 +984,10 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
+
+#if defined(CONFIG_ICC)
+	icc_init,
+#endif
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,

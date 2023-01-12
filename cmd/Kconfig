@@ -2093,6 +2093,13 @@ config CMD_MP
 	  This enables commands to bringup different processors
 	  in multiprocessor cases.
 
+config CMD_ICC
+	bool "support for multiprocessor communication commands"
+	depends on ICC
+	default y
+	help
+	  This enables commands to send the message to other cores.
+
 config CMD_TIMER
 	bool "timer"
 	help
