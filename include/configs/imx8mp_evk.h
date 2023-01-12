@@ -212,4 +212,6 @@
 #include "imx8mp_evk_android.h"
 #endif
 
+#include "imx8mp_baremetal.h"
+
 #endif
