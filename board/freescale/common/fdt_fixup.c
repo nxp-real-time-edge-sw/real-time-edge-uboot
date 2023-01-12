@@ -46,10 +46,10 @@ int fdt_baremetal_setup_usb(void)
 		if (node_offset > 0) {
 			if (get_core_id() != usb_core[i])
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_DISABLED, 0);
+					FDT_STATUS_DISABLED);
 			else
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_OKAY, 0);
+					FDT_STATUS_OKAY);
 
 			start_offset = node_offset;
 		} else
@@ -93,10 +93,10 @@ int fdt_baremetal_setup_pcie(void)
 		if (node_offset > 0) {
 			if (get_core_id() != pcie_core[i])
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_DISABLED, 0);
+					FDT_STATUS_DISABLED);
 			else
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_OKAY, 0);
+					FDT_STATUS_OKAY);
 
 			start_offset = node_offset;
 		} else
@@ -125,10 +125,10 @@ int fdt_baremetal_setup_enetc(void)
 		if (node_offset > 0) {
 			if (get_core_id() != enetc_core[i])
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_DISABLED, 0);
+					FDT_STATUS_DISABLED);
 			else
 				ret = fdt_set_node_status(blob, node_offset,
-					FDT_STATUS_OKAY, 0);
+					FDT_STATUS_OKAY);
 
 			start_offset = node_offset;
 		} else
