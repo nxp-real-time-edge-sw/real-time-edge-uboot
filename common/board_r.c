@@ -490,6 +490,11 @@ static int initr_gic_init(void)
 
 	if (get_core_id() == CONFIG_BAREMETAL_FIRST_CORE)
 		gic_set_pri_common();
+#ifdef CONFIG_ARCH_IMX8M
+	if (get_core_id() == 1)
+		gic_set_pri_common();
+#endif
+
 	gic_set_pri_per_cpu();
 	gic_enable_dist();
 	return 0;

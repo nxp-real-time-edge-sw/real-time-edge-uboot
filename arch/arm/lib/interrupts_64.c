@@ -14,6 +14,7 @@
 #include <irq_func.h>
 #include <linux/compiler.h>
 #include <efi_loader.h>
+#include <asm/io.h>
 #ifndef CONFIG_ARCH_IMX8M
 #include <asm/arch/soc.h>
 #endif
@@ -107,6 +108,17 @@ struct giccd_base {
 #define GICH_MISR_EOI			(1 << 0)
 #define GICH_MISR_U			(1 << 1)
 
+#if defined(CONFIG_GICV3)
+#define GICD_CTLR           0x0000
+#define GICD_IROUTER            0x6000
+#define GICD_CTLR_RWP           (1U << 31)
+#define MPIDR_LEVEL_BITS 8
+#define MPIDR_LEVEL_MASK ((1 << MPIDR_LEVEL_BITS) - 1)
+#define MPIDR_AFFINITY_LEVEL(mpidr, level) \
+		((mpidr >> (MPIDR_LEVEL_BITS * level)) & MPIDR_LEVEL_MASK)
+#endif
+
+
 struct giccd_base gic_d;
 struct giccd_base get_gic_offset(void);
 
@@ -161,14 +173,50 @@ u32 gic_get_pending(unsigned long hw_irq)
 	return pending;
 }
 
+#if defined(CONFIG_GICV3)
+static u64 gic_mpidr_to_affinity(unsigned long mpidr)
+{
+	u64 aff;
+
+	aff = ((u64)MPIDR_AFFINITY_LEVEL(mpidr, 3) << 32 |
+			MPIDR_AFFINITY_LEVEL(mpidr, 2) << 16 |
+			MPIDR_AFFINITY_LEVEL(mpidr, 1) << 8  |
+			MPIDR_AFFINITY_LEVEL(mpidr, 0));
+
+	return aff;
+}
+#endif
+
 void gic_set_target(u32 core_mask, unsigned long hw_irq)
 {
+#if defined(CONFIG_GICV2)
 	u32 val = core_mask << ((hw_irq % 4) * 8);
 	u32 mask = 0xff << ((hw_irq % 4) * 8);
 	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_TARGET + (hw_irq / 4) * 4)) &= ~mask;
 	*((volatile unsigned int *)(gic_d.gicd_base +
 		    GIC_DIST_TARGET + (hw_irq / 4) * 4)) |= val;
+#elif defined(CONFIG_GICV3)
+	unsigned int phy_core;
+	int i;
+	void *reg;
+	void __iomem *base = gic_d.gicd_base;
+	u32 val;
+
+    /* convert core mask to physical core */
+	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+		if ((core_mask >> i) & 0x1) {
+			phy_core = i;
+			break;
+		}
+	}
+	gic_mask_irq(hw_irq);
+	reg = base + GICD_IROUTER + (hw_irq * 8);
+	val = gic_mpidr_to_affinity(phy_core);
+	writeq_relaxed(val, reg);
+	gic_unmask_irq(hw_irq);
+
+#endif
 }
 
 void gic_set_type(unsigned long hw_irq)
