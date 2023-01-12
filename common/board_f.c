@@ -362,9 +362,11 @@ static int setup_dest_addr(void)
 	 */
 	debug("Ram size: %08llX\n", (unsigned long long)gd->ram_size);
 
+#ifndef CONFIG_ARCH_LX2160A
 #if defined(CONFIG_BAREMETAL)
 	if (get_core_id() == 0)
 		gd->ram_size = CFG_BAREMETAL_SYS_SDRAM_MASTER_SIZE;
+#endif
 #endif
 
 #if CONFIG_VAL(SYS_MEM_TOP_HIDE)
