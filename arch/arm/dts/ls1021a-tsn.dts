@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-/* Copyright 2016-2018 NXP
+/* Copyright 2016-2018, 2023 NXP
  * Copyright 2019 Vladimir Oltean <olteanv@gmail.com>
  */
 
@@ -122,6 +122,14 @@
 };
 
 &i2c0 {
+	status = "okay";
+};
+
+&lpuart0 {
+	status = "okay";
+};
+
+&lpuart3 {
 	status = "okay";
 };
 
