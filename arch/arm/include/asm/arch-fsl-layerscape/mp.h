@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2014-2015, Freescale Semiconductor
+ * Copyright 2023 NXP
  */
 
 #ifndef _FSL_LAYERSCAPE_MP_H
@@ -38,6 +39,7 @@ extern void *secondary_boot_code_start;
 extern size_t secondary_boot_code_size;
 #ifdef CONFIG_MP
 int fsl_layerscape_wake_seconday_cores(void);
+int fsl_layerscape_wakeup_fixed_core(u32 coreid, u64 addr);
 #else
 static inline int fsl_layerscape_wake_seconday_cores(void) { return 0; }
 #endif
