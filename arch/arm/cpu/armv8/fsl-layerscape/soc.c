@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2014-2015 Freescale Semiconductor
- * Copyright 2019-2021 NXP
+ * Copyright 2019-2021, 2023 NXP
  */
 
 #include <common.h>
@@ -41,36 +41,31 @@ DECLARE_GLOBAL_DATA_PTR;
 #endif
 
 #ifdef CONFIG_GIC_V3_ITS
-#define PENDTABLE_MAX_SZ	ALIGN(BIT(ITS_MAX_LPI_NRBITS), SZ_64K)
-#define PROPTABLE_MAX_SZ	ALIGN(BIT(ITS_MAX_LPI_NRBITS) / 8, SZ_64K)
-#define GIC_LPI_SIZE		ALIGN(cpu_numcores() * PENDTABLE_MAX_SZ + \
-				PROPTABLE_MAX_SZ, SZ_1M)
-static int fdt_add_resv_mem_gic_rd_tables(void *blob, u64 base, size_t size)
-{
-	int err;
-	struct fdt_memory gic_rd_tables;
-
-	gic_rd_tables.start = base;
-	gic_rd_tables.end = base + size - 1;
-	err = fdtdec_add_reserved_memory(blob, "gic-rd-tables", &gic_rd_tables,
-					 NULL, 0, NULL, 0);
-	if (err < 0)
-		debug("%s: failed to add reserved memory: %d\n", __func__, err);
-
-	return err;
-}
-
 int ls_gic_rd_tables_init(void *blob)
 {
-	u64 gic_lpi_base;
-	int ret;
+	struct fdt_memory gic_lpi_table;
+	fdt_addr_t addr;
+	fdt_size_t size;
+	int offset, ret;
 
-	gic_lpi_base = ALIGN(gd->arch.resv_ram - GIC_LPI_SIZE, SZ_64K);
-	ret = fdt_add_resv_mem_gic_rd_tables(blob, gic_lpi_base, GIC_LPI_SIZE);
-	if (ret)
+	offset = fdt_node_offset_by_compatible(gd->fdt_blob, -1, "fsl,gic-lpi-table");
+	if (offset < 0) {
+		debug("%s: Not find node with compatible fsl,gic-lpi-table\n", __func__);
+		return offset;
+	}
+
+	addr = fdtdec_get_addr_size_auto_noparent(gd->fdt_blob, offset, "reg",
+						  0, &size, false);
+	gic_lpi_table.start = addr;
+	gic_lpi_table.end = addr + size - 1;
+	ret = fdtdec_add_reserved_memory(blob, "fsl,gic-lpi-table", &gic_lpi_table,
+					 NULL, 0, NULL, 0);
+	if (ret) {
+		debug("%s: Failed to add reserved memory\n", __func__);
 		return ret;
+	}
 
-	ret = gic_lpi_tables_init(gic_lpi_base, cpu_numcores());
+	ret = gic_lpi_tables_init(addr, cpu_numcores());
 	if (ret)
 		debug("%s: failed to init gic-lpi-tables\n", __func__);
 
