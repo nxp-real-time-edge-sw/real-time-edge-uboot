@@ -937,6 +937,9 @@ static void initcall_run_r_slave(void)
 	 */
 #endif
 	INITCALL(initr_reloc_global_data);
+#if defined(CONFIG_BAREMETAL)
+	INITCALL(fdt_baremetal_setup);
+#endif
 #if CONFIG_IS_ENABLED(SYS_INIT_RAM_LOCK) && CONFIG_IS_ENABLED(E500)
 	INITCALL(initr_unlock_ram_in_cache);
 #endif
