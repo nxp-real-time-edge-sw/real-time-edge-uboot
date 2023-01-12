@@ -38,6 +38,8 @@ source "drivers/dma/Kconfig"
 
 source "drivers/fastboot/Kconfig"
 
+source "drivers/flexcan/Kconfig"
+
 source "drivers/firmware/Kconfig"
 
 source "drivers/fuzz/Kconfig"
