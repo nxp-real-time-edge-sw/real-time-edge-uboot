@@ -16,9 +16,14 @@ PLATFORM_RELFLAGS += -ffunction-sections -fdata-sections
 endif
 
 PLATFORM_RELFLAGS += -fno-common -ffixed-r9
+ifdef CONFIG_SOUND_SGTL5000
+PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
+      $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,))
+else
 PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
 		     $(call cc-option,-mgeneral-regs-only) \
       $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,))
+endif
 
 # LLVM support
 LLVM_RELFLAGS		:= $(call cc-option,-mllvm,) \
