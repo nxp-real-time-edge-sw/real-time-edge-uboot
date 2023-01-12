@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2016 Freescale Semiconductor
- * Copyright 2019-2021 NXP
+ * Copyright 2019-2021, 2023 NXP
  */
 
 #ifndef __LS1046A_COMMON_H
@@ -82,6 +82,11 @@
 	"boot_scripts=ls1046ardb_boot.scr\0"	\
 	"boot_script_hdr=hdr_ls1046ardb_bs.out\0"
 #endif
+
+#define JAILHOUSE_ENV \
+	"jh_mmcboot=setenv dtb fsl-ls1046a-rdb-sdk-jailhouse.dtb;" \
+		"run bootcmd \0"
+
 #ifndef SPL_NO_MISC
 /* Initial environment variables */
 #define CFG_EXTRA_ENV_SETTINGS		\
@@ -112,6 +117,7 @@
 	 CONFIG_MTDPARTS_DEFAULT "\0"		\
 	BOOTENV					\
 	LS1046A_BOOT_SRC_AND_HDR		\
+	JAILHOUSE_ENV \
 	"scan_dev_for_boot_part="               \
 		"part list ${devtype} ${devnum} devplist; "   \
 		"env exists devplist || setenv devplist 1; "  \
