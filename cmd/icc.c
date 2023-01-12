@@ -81,7 +81,7 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 
 	if (counts > ICC_CORE_BLOCK_COUNT * ICC_BLOCK_UNIT_SIZE) {
 		printf(
-			"ICC performance test error! Max bytes: %d, input bytes: %ld",
+			"ICC performance test error! Max bytes: %ld, input bytes: %ld",
 			ICC_CORE_BLOCK_COUNT * ICC_BLOCK_UNIT_SIZE, counts);
 		return;
 	}
@@ -183,7 +183,7 @@ static void do_icc_send(unsigned long core_mask,
 
 	if (counts > ICC_CORE_BLOCK_COUNT * ICC_BLOCK_UNIT_SIZE) {
 		printf(
-			"ICC send error! Max bytes: %d, input bytes: %ld",
+			"ICC send error! Max bytes: %ld, input bytes: %ld",
 			ICC_CORE_BLOCK_COUNT * ICC_BLOCK_UNIT_SIZE, counts);
 		return;
 	}
