@@ -63,6 +63,7 @@
 #include <wdt.h>
 #include <asm-generic/gpio.h>
 #include <efi_loader.h>
+#include <asm/interrupt-gic.h>
 #ifdef CONFIG_FSL_FASTBOOT
 #include <fb_fsl.h>
 #endif
@@ -464,6 +465,17 @@ static int initr_malloc_bootparams(void)
 		puts("WARNING: Cannot allocate space for boot parameters\n");
 		return -ENOMEM;
 	}
+	return 0;
+}
+#endif
+
+#if defined(CONFIG_BAREMETAL)
+static int initr_gic_init(void)
+{
+	if (get_core_id() == CONFIG_BAREMETAL_FIRST_CORE)
+		gic_set_pri_common();
+	gic_set_pri_per_cpu();
+	gic_enable_dist();
 	return 0;
 }
 #endif
@@ -976,6 +988,10 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
+#if defined(CONFIG_BAREMETAL)
+	initr_gic_init,
+#endif
+
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,
