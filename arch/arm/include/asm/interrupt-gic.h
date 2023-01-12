@@ -18,5 +18,6 @@ void gic_enable_dist(void);
 void gic_set_pri_common(void);
 void gic_set_pri_irq(u32 hw_irq, u8 pri);
 void gic_set_sgi(int core_mask, u32 hw_irq);
+void gic_send_sgi_test(u32 hw_irq, int core_mask);
 #endif
 #endif /* _FSL_LAYERSCAPE_INT_GIC_H */
