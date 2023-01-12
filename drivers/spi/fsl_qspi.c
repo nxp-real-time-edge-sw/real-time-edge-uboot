@@ -7,7 +7,7 @@
  * Copyright (C) 2018 Bootlin
  * Copyright (C) 2018 exceet electronics GmbH
  * Copyright (C) 2018 Kontron Electronics GmbH
- * Copyright 2019-2020 NXP
+ * Copyright 2019-2020, 2023 NXP
  *
  * This driver is a ported version of Linux Freescale QSPI driver taken from
  * v5.5-rc1 tag having following information.
@@ -797,6 +797,13 @@ static int fsl_qspi_probe(struct udevice *bus)
 	int node = dev_of_offset(bus);
 	struct fdt_resource res;
 	int ret;
+
+#ifdef CONFIG_QSPI_COREID_SET
+	if (get_core_id() != CONFIG_QSPI_QSPI0_COREID) {
+		printf("QSPI is not assigned on this core\n");
+		return -1;
+	}
+#endif
 
 	q->dev = bus;
 	q->devtype_data = (struct fsl_qspi_devtype_data *)
