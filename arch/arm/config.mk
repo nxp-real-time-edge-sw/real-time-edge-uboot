@@ -26,7 +26,9 @@ PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
       $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,))
 
 ifeq ($(CONFIG_ARM64),y)
+ifneq ($(CONFIG_SOUND_SGTL5000),y)
 PLATFORM_RELFLAGS += $(call cc-option,-mgeneral-regs-only)
+endif
 endif
 
 # LLVM support
