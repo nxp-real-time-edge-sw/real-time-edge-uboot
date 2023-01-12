@@ -34,6 +34,7 @@
 
 /* common/board_f.c */
 void board_init_f(ulong dummy);
+void board_init_f_slave(ulong dummy);
 
 /**
  * arch_cpu_init() - basic cpu-dependent setup for an architecture
