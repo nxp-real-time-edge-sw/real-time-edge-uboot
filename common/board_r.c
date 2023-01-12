@@ -675,6 +675,10 @@ static int run_main_loop(void)
 	return 0;
 }
 
+#if defined(CONFIG_ICC)
+int icc_init(void);
+#endif
+
 /*
  * We hope to remove most of the driver-related init and do it if/when
  * the driver is later used.
@@ -995,7 +999,9 @@ init_fnc_t init_sequence_r_slave[] = {
 #if defined(CONFIG_BAREMETAL)
 	initr_gic_init,
 #endif
-
+#if defined(CONFIG_ICC)
+	icc_init,
+#endif
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,
