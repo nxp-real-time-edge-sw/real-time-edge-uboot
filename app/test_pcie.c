@@ -235,22 +235,7 @@ void test_pcie(void)
 	printf("\nPCIe bus information:\n");
 	pciinfo(busnum, 1);
 	pciinfo(busnum + 1, 1);
-#endif
 	if (pci_eth_init(gd->bd) <= 0)
 		printf("Not found Net device\n");
-	else {
-		printf("Found Net device, start to ping ...\n");
-
-		net_ping_ip = string_to_ip(server_ip);
-		net_ip = string_to_ip(ipaddr);
-
-		if (net_ping_ip.s_addr == 0)
-			return;
-		udelay(3000);
-		if (net_loop(PING) < 0)
-			printf("ping Failed; host %s is not alive\n",
-					server_ip);
-		else
-			printf("host %s is alive\n", server_ip);
-	}
+#endif
 }
