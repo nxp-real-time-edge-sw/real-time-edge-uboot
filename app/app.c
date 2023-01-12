@@ -22,6 +22,10 @@ void core1_main(void)
 	test_i2c();
 #endif
 
+#ifdef CONFIG_IRQ_COREID_SET
+	test_irq_init();
+#endif
+
 	return;
 }
 
