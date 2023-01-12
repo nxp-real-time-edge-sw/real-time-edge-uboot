@@ -274,7 +274,7 @@ icc_cmd(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 		if (strncmp(argv[1], "send", 4) == 0)
 			do_icc_send(simple_strtoul(argv[2], NULL, 16),
 				    simple_strtoul(argv[3], NULL, 0),
-				    simple_strtoul(argv[4], NULL, 10));
+				    simple_strtoul(argv[4], NULL, 0));
 		else
 			return CMD_RET_USAGE;
 
