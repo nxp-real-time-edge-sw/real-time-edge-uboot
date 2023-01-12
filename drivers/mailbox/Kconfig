@@ -66,4 +66,11 @@ config IMX_MU
       Enable support for i.MX Messaging Unit for communication with other
       processors on the SoC
 
+config ICC
+    bool "inter-core communication"
+    depends on BAREMETAL && IRQ
+	default y
+	help
+	  inter-core communication
+
 endmenu
