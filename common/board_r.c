@@ -511,11 +511,15 @@ static int initr_boot_led_on(void)
 #if CONFIG_IS_ENABLED(NET) || CONFIG_IS_ENABLED(NET_LWIP)
 static int initr_net(void)
 {
-	puts("Net:   ");
-	eth_initialize();
+#ifdef CONFIG_FMAN_FMAN1_COREID
+	if (get_core_id() == CONFIG_FMAN_FMAN1_COREID) {
+		puts("Net:   ");
+		eth_initialize();
 #if defined(CONFIG_RESET_PHY_R)
-	debug("Reset Ethernet PHY\n");
-	reset_phy();
+		debug("Reset Ethernet PHY\n");
+		reset_phy();
+#endif
+	}
 #endif
 	return 0;
 }
@@ -909,6 +913,10 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 }
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+#if defined(CONFIG_FMAN_COREID_SET)
+int eth_early_init_r(void);
+#endif
+
 static void initcall_run_r_slave(void)
 {
 	/*
@@ -934,6 +942,7 @@ static void initcall_run_r_slave(void)
 #endif
 	INITCALL(initr_barrier);
 	INITCALL(initr_malloc);
+	INITCALL(initr_env);
 	INITCALL(log_init);
 	INITCALL(initr_bootstage); /* Needs malloc() but has its own timer */
 #if CONFIG_IS_ENABLED(CONSOLE_RECORD)
@@ -998,6 +1007,9 @@ static void initcall_run_r_slave(void)
 #endif
 #if CONFIG_IS_ENABLED(ARCH_EARLY_INIT_R)
 	INITCALL(arch_early_init_r);
+#endif
+#ifdef CONFIG_FMAN_COREID_SET
+	INITCALL(eth_early_init_r);
 #endif
 	INITCALL(power_init_board);
 #if CONFIG_IS_ENABLED(MTD_NOR_FLASH)
@@ -1090,6 +1102,9 @@ static void initcall_run_r_slave(void)
 	WATCHDOG_RESET();
 	/* TODO: need add initr_net after add ethernet feature */
 	//INITCALL(initr_net);
+#ifdef CONFIG_FMAN_COREID_SET
+	INITCALL(initr_net);
+#endif
 #endif
 #if CONFIG_IS_ENABLED(POST)
 	INITCALL(initr_post);
