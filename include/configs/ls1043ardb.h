@@ -244,4 +244,6 @@
 
 #include <asm/fsl_secure_boot.h>
 
+#include "ls1043a_baremetal.h"
+
 #endif /* __LS1043ARDB_H__ */
