@@ -146,4 +146,9 @@ config PCIE_CTL_NUM
 	default "3"
 endif
 
+config CAN_COREID_SET
+	bool "Enable FlexCAN for BareMetal"
+	depends on BAREMETAL
+	default n
+
 endmenu

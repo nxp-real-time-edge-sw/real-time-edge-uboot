@@ -43,6 +43,10 @@ void core1_main(void)
 	test_pcie();
 #endif
 
+#ifdef CONFIG_CAN_COREID_SET
+	test_flexcan();
+#endif
+
 	return;
 }
 
