@@ -12,6 +12,14 @@ config SYS_SOC
 config SYS_CONFIG_NAME
 	default "ls1021aiot"
 
+config BM_CAN
+	bool "Can3/4 supported"
+	depends on BAREMETAL
+
+config BM_GPIO
+	bool "GPIO3_15/27 supported"
+	depends on BAREMETAL
+
 source "board/freescale/common/Kconfig"
 
 endif
