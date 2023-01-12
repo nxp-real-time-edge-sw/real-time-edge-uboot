@@ -108,6 +108,14 @@ int i2c_set_bus_num(unsigned int bus)
 	if ((bus == I2C_BUS) && (I2C_ADAP->init_done > 0))
 		return 0;
 
+#ifdef CONFIG_I2C_COREID_SET
+	if (get_core_id() != I2C_ADAP_NR(bus)->coreid) {
+		printf("Error, i2c bus[%d] is not assigned in this core",
+		       bus);
+		return -1;
+	}
+#endif
+
 	max = ll_entry_count(struct i2c_adapter, i2c);
 	if (I2C_ADAPTER(bus) >= max) {
 		printf("Error, wrong i2c adapter %d max %d possible\n",
