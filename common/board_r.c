@@ -777,6 +777,9 @@ static void initcall_run_r(void)
 	 */
 #endif
 	INITCALL(initr_reloc_global_data);
+#if defined(CONFIG_BAREMETAL)
+	INITCALL(fdt_baremetal_setup);
+#endif
 #if CONFIG_IS_ENABLED(SYS_INIT_RAM_LOCK) && CONFIG_IS_ENABLED(E500)
 	INITCALL(initr_unlock_ram_in_cache);
 #endif
@@ -914,6 +917,9 @@ static void initcall_run_r(void)
 	INITCALL(kgdb_init);
 #endif
 	INITCALL(interrupt_init);
+#if defined(CONFIG_ICC)
+	INITCALL(icc_init);
+#endif
 #if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
 	INITCALL(timer_init);		/* initialize timer */
 #endif
