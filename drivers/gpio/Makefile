@@ -69,3 +69,4 @@ obj-$(CONFIG_MSCC_SGPIO)	+= mscc_sgpio.o
 obj-$(CONFIG_NX_GPIO)		+= nx_gpio.o
 obj-$(CONFIG_SIFIVE_GPIO)	+= sifive-gpio.o
 obj-$(CONFIG_ADP5585_GPIO)	+= adp5585_gpio.o
+obj-$(CONFIG_GPIO_INT) += gpio_int.o
