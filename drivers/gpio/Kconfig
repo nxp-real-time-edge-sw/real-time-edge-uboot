@@ -277,6 +277,11 @@ config MXC_GPIO
 	help
 	  Support GPIO controllers on various i.MX platforms
 
+config GPIO_INT
+    bool "Freescale/NXP GPIO INT driver"
+    help
+      Support GPIO interrupt
+
 config MXS_GPIO
 	bool "Freescale/NXP MXS GPIO driver"
 	help
