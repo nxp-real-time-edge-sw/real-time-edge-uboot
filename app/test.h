@@ -19,6 +19,8 @@ void test_icc_func_init(void);
 
 int test_qspi(void);
 
+int test_net(void);
+
 #endif
 
 #endif /* _BAREMETAL_APP_TEST_H */
