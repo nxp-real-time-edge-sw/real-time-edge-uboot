@@ -3,7 +3,7 @@
  * Freescale ls1021a SOC common device tree source
  *
  * Copyright 2013-2015 Freescale Semiconductor, Inc.
- * Copyright 2021 NXP
+ * Copyright 2021, 2023 NXP
  */
 
 #include "skeleton.dtsi"
@@ -121,6 +121,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio1: gpio@2310000 {
@@ -131,6 +132,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio2: gpio@2320000 {
@@ -141,6 +143,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio3: gpio@2330000 {
@@ -151,6 +154,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		scfg: scfg@1570000 {
