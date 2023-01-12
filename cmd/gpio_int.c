@@ -54,6 +54,7 @@
 
 #define GPIO2_INT_NUM	99
 
+#define CORE0_MASK	(1 << 0)
 #define CORE1_MASK	(1 << 1)
 #define CORE2_MASK	(1 << 2)
 #define CORE3_MASK	(1 << 3)
@@ -64,7 +65,7 @@ static void gpio2_irq(int hw_irq, int src_coreid)
 	u32 val;
 	unsigned long time_us = timer_get_us();
 	void *gpio2_event = (void *)GPIO2_INT_EVENT;
-	u32 dest_core = (CORE2_MASK | CORE3_MASK);
+	u32 dest_core = (CORE0_MASK | CORE1_MASK | CORE2_MASK | CORE3_MASK);
 
 	val = in_be32((u32 *)gpio2_event);
 	if (val & (1 << GPIO2_02_OFFSET)) {
@@ -73,7 +74,6 @@ static void gpio2_irq(int hw_irq, int src_coreid)
 	}
 	printf("Time(us): 0x%lx, GPIO event: 0x%x\n", time_us, val);
 }
-
 
 static void gpio_register_irq(u32 coreid, u32 hw_irq)
 {
