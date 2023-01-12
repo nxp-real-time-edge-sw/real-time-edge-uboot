@@ -171,4 +171,15 @@ config SAI_COREID_SET
 	depends on BAREMETAL
 	default n
 
+config IFC_COREID_SET
+	bool "Enable IFC for BareMetal"
+	depends on BAREMETAL
+	default n
+
+if IFC_COREID_SET
+config IFC_COREID
+	int "The core IFC assigned"
+	default "1"
+endif
+
 endmenu
