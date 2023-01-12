@@ -26,6 +26,7 @@ ifdef CONFIG_FSL_USE_PCA9547_MUX
 I2C_COMMON=y
 endif
 
+obj-${CONFIG_BAREMETAL}	+= fdt_fixup.o
 obj-$(CONFIG_FSL_CADMUS)	+= cadmus.o
 obj-$(CONFIG_FSL_VIA)		+= cds_via.o
 obj-$(CONFIG_FMAN_ENET)	+= fman.o
