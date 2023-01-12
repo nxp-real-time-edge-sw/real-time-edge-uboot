@@ -15,6 +15,8 @@ void test_i2c(void);
 
 void test_irq_init(void);
 
+void test_icc_func_init(void);
+
 #endif
 
 #endif /* _BAREMETAL_APP_TEST_H */
