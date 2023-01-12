@@ -628,6 +628,10 @@ static int run_main_loop(void)
 	return 0;
 }
 
+#if defined(CONFIG_ICC)
+int icc_init(void);
+#endif
+
 /*
  * Over time we hope to remove these functions with code fragments and
  * stub functions, and instead call the relevant function directly.
@@ -923,6 +927,10 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
 	interrupt_init,
+
+#if defined(CONFIG_ICC)
+	icc_init,
+#endif
 
 #ifdef CONFIG_CMD_NET
 	initr_ethaddr,

@@ -65,4 +65,11 @@ config ZYNQMP_IPI
 	help
 	  This enables support for the Xilinx ZynqMP Inter Processor Interrupt
 	  communication controller.
+
+config ICC
+    bool "inter-core communication"
+    depends on BAREMETAL && IRQ
+	default y
+	help
+	  inter-core communication
 endmenu
