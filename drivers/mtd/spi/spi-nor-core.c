@@ -7,6 +7,8 @@
  * Copyright (C) 2014, Freescale Semiconductor, Inc.
  *
  * Synced from Linux v4.19
+ *
+ * Copyright 2023 NXP
  */
 
 #include <display_options.h>
@@ -914,7 +916,7 @@ static int spi_nor_wait_till_ready_with_timeout(struct spi_nor *nor,
 static int spi_nor_wait_till_ready(struct spi_nor *nor)
 {
 	return spi_nor_wait_till_ready_with_timeout(nor,
-						    DEFAULT_READY_WAIT_JIFFIES);
+						    DEFAULT_READY_WAIT_JIFFIES * 2);
 }
 
 static int spi_nor_erase_chip_wait_till_ready(struct spi_nor *nor, unsigned long size)
