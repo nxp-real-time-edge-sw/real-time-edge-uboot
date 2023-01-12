@@ -340,6 +340,11 @@ static int initr_flash(void)
 	if (!is_flash_available())
 		return 0;
 
+#ifdef CONFIG_IFC_COREID_SET
+	if (get_core_id() != CONFIG_IFC_COREID)
+		return 0;
+#endif
+
 	puts("Flash: ");
 
 	if (board_flash_wp_on())
@@ -390,6 +395,11 @@ static int initr_flash(void)
 /* go init the NAND */
 static int initr_nand(void)
 {
+#ifdef CONFIG_IFC_COREID_SET
+	if (get_core_id() != CONFIG_IFC_COREID)
+		return 0;
+#endif
+
 	puts("NAND:  ");
 	nand_init();
 	printf("%lu MiB\n", nand_size() / 1024);
@@ -1040,6 +1050,12 @@ init_fnc_t init_sequence_r_slave[] = {
 	serial_initialize,
 	initr_announce,
 	INIT_FUNC_WATCHDOG_RESET
+#ifdef CONFIG_CMD_NAND
+	initr_nand,
+#endif
+#ifdef CONFIG_MTD_NOR_FLASH
+	initr_flash,
+#endif
 #if defined(CONFIG_PCI) && defined(CONFIG_SYS_EARLY_PCI_INIT)
 	/*
 	 * Do early PCI configuration _before_ the flash gets initialised,
