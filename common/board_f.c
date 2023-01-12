@@ -399,7 +399,13 @@ static int setup_dest_addr(void)
 	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
 #endif
 #ifdef CFG_SYS_SDRAM_BASE
-	gd->ram_base = CFG_SYS_SDRAM_BASE;
+	if (get_core_id() == 0) {
+		gd->ram_base = CFG_SYS_SDRAM_BASE;
+	} else {
+		gd->ram_base = CFG_SYS_SDRAM_BASE +
+			CFG_BAREMETAL_SYS_SDRAM_MASTER_SIZE +
+			CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (get_core_id() - 1);
+	}
 #endif
 	gd->ram_top = gd->ram_base + get_effective_memsize();
 	gd->ram_top = board_get_usable_ram_top(gd->mon_len);

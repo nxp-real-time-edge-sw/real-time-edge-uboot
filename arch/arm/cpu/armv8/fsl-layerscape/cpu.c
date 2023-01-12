@@ -125,7 +125,7 @@ static struct mm_region early_map[] = {
 	(defined(CONFIG_SPL) && !defined(CONFIG_SPL_BUILD))
 	  PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 #else	/* Start with nGnRnE and PXN and UXN to prevent speculative access */
-	  PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) | PTE_BLOCK_PXN | PTE_BLOCK_UXN |
+	  PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 #endif
 	  PTE_BLOCK_OUTER_SHARE | PTE_BLOCK_NS
 	},
@@ -184,7 +184,7 @@ static struct mm_region early_map[] = {
 	(defined(CONFIG_SPL) && !defined(CONFIG_SPL_BUILD))
 	  PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 #else	/* Start with nGnRnE and PXN and UXN to prevent speculative access */
-	  PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) | PTE_BLOCK_PXN | PTE_BLOCK_UXN |
+	  PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 #endif
 	  PTE_BLOCK_OUTER_SHARE | PTE_BLOCK_NS
 	},
