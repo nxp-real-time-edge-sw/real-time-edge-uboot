@@ -284,6 +284,7 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 	unsigned long block_addr;
 	unsigned int byte_count;
 	int i, valid;
+	unsigned long time_us = timer_get_us();
 	void (*irq_handle)(int, unsigned long, unsigned int);
 
 	if (hw_irq != ICC_SGI) {
@@ -291,7 +292,9 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 				"Get the wrong SGI number: %d, expect: %d\n",
 				hw_irq, ICC_SGI);
 		return;
-	}
+	} else
+		printf("Time(us): 0x%llx, Get the SGI from CoreID: %d\n",
+				time_us, src_coreid);
 
 #ifdef	CONFIG_ARCH_LX2160A
 	src_coreid = ICC_TRG_CORE;
