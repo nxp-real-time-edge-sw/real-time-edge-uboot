@@ -619,7 +619,7 @@ void fdt_fixup_pfe_firmware(void *blob)
 }
 #endif
 
-#if defined(CONFIG_ARCH_LS1043A) || defined(CONFIG_ARCH_LS1046A)
+#if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
 #include <net.h>
 
 struct ec_port_t {
@@ -893,7 +893,7 @@ void ft_cpu_setup(void *blob, struct bd_info *bd)
 	fdt_fixup_ecam(blob);
 #endif
 
-#if defined(CONFIG_ARCH_LS1043A) || defined(CONFIG_ARCH_LS1046A)
+#if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
 	fdt_fixup_ethercat_prop(blob);
 #endif
 }
