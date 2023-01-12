@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2014-2015 Freescale Semiconductor, Inc.
- * Copyright 2020-2021 NXP
+ * Copyright 2020-2021, 2023 NXP
  */
 
 #include <common.h>
@@ -619,6 +619,205 @@ void fdt_fixup_pfe_firmware(void *blob)
 }
 #endif
 
+#if defined(CONFIG_ARCH_LS1043A) || defined(CONFIG_ARCH_LS1046A)
+#include <net.h>
+
+struct ec_port_t {
+	char *name;
+	u8 *mac;
+	u8 cpuid;
+	u8 backup;
+};
+
+static struct ec_port_t ec_ports[16];
+static int ec_port_num;
+static char ec_env[256];
+
+static inline int is_same_mac(u8 *mac1, u8 *mac2)
+{
+	int i = 0;
+
+	if (!mac1 || !mac2)
+		return 0;
+
+	for (i = 0; i < ARP_HLEN; i++) {
+		if (mac1[i] != mac2[i])
+			return 0;
+	}
+
+	return 1;
+}
+
+static inline void pri_mac(u8 *mac)
+{
+	int i = 0;
+
+	if (!mac)
+		return;
+
+	for (i = 0; i < ARP_HLEN; i++) {
+		if (i > 0)
+			printf(":");
+		printf("%02x", mac[i]);
+	}
+	printf("\n");
+}
+
+static int get_para_from_env(char *penv)
+{
+	char *token = NULL;
+	int port_cnt = 0;
+	char *triad[16];
+	int cpuid = 0;
+	int idx = 0;
+	int cnt = 0;
+	int len = 0;
+
+	if (!penv)
+		return -1;
+
+	snprintf(ec_env, sizeof(ec_env) - 1, "%s", penv);
+
+	/* get the selected triad from environment variable */
+	token = strtok(ec_env, ";");
+	while (token != NULL) {
+		cnt = 0;
+		len = strlen(token);
+
+		if (port_cnt >= 16)
+			break;
+
+		triad[cnt++] = token;
+		for (idx = 0; idx <= len; idx++) {
+			if ((token[idx] == ',') || (token[idx] == '\0')) {
+				token[idx] = '\0';
+				triad[cnt++] = token + idx + 1;
+			}
+
+			if (cnt > 2)
+				break;
+		}
+
+		if ((strlen(triad[2]) > 0) && (triad[2][0] >= '0') && (triad[2][0] <= '9'))
+			cpuid = triad[2][0] - '0';
+		else
+			cpuid = 3;
+
+		for (idx = 0; idx < cnt - 1; idx++) {
+			if (strlen(triad[idx]) == 0)
+				continue;
+
+			ec_ports[port_cnt].name = triad[idx];
+			ec_ports[port_cnt].mac = NULL;
+			ec_ports[port_cnt].backup = idx;
+			ec_ports[port_cnt].cpuid = cpuid;
+			port_cnt++;
+		}
+
+		token = strtok(NULL, ";");
+	}
+
+	if (!port_cnt)
+		return -2;
+
+	ec_port_num = port_cnt;
+
+	return 0;
+}
+
+static void fdt_fixup_ethercat_prop(void *blob)
+{
+	char *compat = "fsl,dpa-ethernet";
+	struct eth_pdata *pdata = NULL;
+	const u32 *fm_handle = NULL;
+	struct udevice *dev = NULL;
+	u8 mac_addr[ARP_HLEN];
+	u8 *enetaddr = NULL;
+	char *penv = NULL;
+	int ret, node = -1;
+	int offset = 0;
+	int found = 0;
+	int idx = 0;
+
+	penv = env_get("ethercat_port");
+	if (!penv)
+		return;
+
+	if (get_para_from_env(penv))
+		return;
+
+	/* loop to check all ethernet devices */
+	uclass_first_device_check(UCLASS_ETH, &dev);
+	while (dev) {
+#ifdef CONFIG_DM_ETH
+		pdata = dev_get_plat(dev);
+		enetaddr = pdata->enetaddr;
+#else
+		enetaddr = &dev->enetaddr[0];
+#endif
+
+		for (idx = 0; idx < ec_port_num; idx++) {
+			if (!strcmp(ec_ports[idx].name, dev->name)) {
+				ec_ports[idx].mac = enetaddr;
+				break;
+			}
+		}
+
+		uclass_next_device_check(&dev);
+	}
+
+	/* loop to check the related fdt nodes */
+	node = fdt_node_offset_by_compatible(blob, -1, compat);
+	while (node != -FDT_ERR_NOTFOUND) {
+		fm_handle = (u32 *)fdt_getprop(blob, node, "fsl,fman-mac", NULL);
+		if (!fm_handle)
+			goto loop_tag;
+
+		offset = fdt_node_offset_by_phandle(blob, fdt32_to_cpu(*fm_handle));
+		if (offset < 0)
+			goto loop_tag;
+
+		ret = fdtdec_get_byte_array(blob, offset, "local-mac-address", mac_addr, ARP_HLEN);
+		if (ret)
+			goto loop_tag;
+
+		found = 0;
+		for (idx = 0; idx < ec_port_num; idx++) {
+			if (is_same_mac(ec_ports[idx].mac, mac_addr)) {
+				found = 1;
+				break;
+			}
+		}
+
+		if (!found)
+			goto loop_tag;
+
+		printf("ethercat port:%s cpuid:%d mac:", ec_ports[idx].name, ec_ports[idx].cpuid);
+		pri_mac(ec_ports[idx].mac);
+
+		ret = fdt_setprop_string(blob, node, "compatible", "fsl,dpa-ethercat");
+		if (ret < 0) {
+			printf("%s: Could not add compatible property\n", __func__);
+			return;
+		}
+
+		ret = fdt_appendprop_u32(blob, node, "fsl,bpid", 7);
+		if (ret < 0) {
+			printf("%s: Counld not append property \"fsl,bpid\"\n", __func__);
+			return;
+		}
+
+		ret = fdt_appendprop_u32(blob, node, "fsl,cpuid", ec_ports[idx].cpuid);
+		if (ret < 0) {
+			printf("%s: Counld not append property \"fsl,cpuid\"\n", __func__);
+			return;
+		}
+loop_tag:
+		node = fdt_node_offset_by_compatible(blob, node, compat);
+	}
+}
+#endif
+
 void ft_cpu_setup(void *blob, struct bd_info *bd)
 {
 	struct ccsr_gur __iomem *gur = (void *)(CFG_SYS_FSL_GUTS_ADDR);
@@ -692,6 +891,10 @@ void ft_cpu_setup(void *blob, struct bd_info *bd)
 #endif
 #ifdef CONFIG_PCIE_ECAM_GENERIC
 	fdt_fixup_ecam(blob);
+#endif
+
+#if defined(CONFIG_ARCH_LS1043A) || defined(CONFIG_ARCH_LS1046A)
+	fdt_fixup_ethercat_prop(blob);
 #endif
 }
 
