@@ -506,11 +506,15 @@ static int initr_scsi(void)
 #ifdef CONFIG_CMD_NET
 static int initr_net(void)
 {
-	puts("Net:   ");
-	eth_initialize();
+#ifdef CONFIG_FMAN_FMAN1_COREID
+	if (get_core_id() == CONFIG_FMAN_FMAN1_COREID) {
+		puts("Net:   ");
+		eth_initialize();
 #if defined(CONFIG_RESET_PHY_R)
-	debug("Reset Ethernet PHY\n");
-	reset_phy();
+		debug("Reset Ethernet PHY\n");
+		reset_phy();
+#endif
+	}
 #endif
 	return 0;
 }
@@ -925,6 +929,10 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 
+#if defined(CONFIG_FMAN_COREID_SET)
+int eth_early_init_r(void);
+#endif
+
 init_fnc_t init_sequence_r_slave[] = {
 	initr_trace,
 	initr_reloc,
@@ -944,6 +952,7 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 	initr_barrier,
 	initr_malloc,
+	initr_env,
 #if defined(CONFIG_CONSOLE_RECORD)
 	console_record_init,
 #endif
@@ -965,6 +974,9 @@ init_fnc_t init_sequence_r_slave[] = {
 	 * because PCU ressources are crucial for flash access on some boards.
 	 */
 	pci_init,
+#endif
+#ifdef CONFIG_FMAN_COREID_SET
+	eth_early_init_r,
 #endif
 #if defined(CONFIG_ID_EEPROM) || defined(CONFIG_SYS_I2C_MAC_OFFSET)
 	mac_read_from_eeprom,
@@ -997,6 +1009,9 @@ init_fnc_t init_sequence_r_slave[] = {
 	/* TODO: need add initr_net after add ethernet feature */
 	/* initr_net,
 	 */
+#ifdef CONFIG_FMAN_COREID_SET
+	initr_net,
+#endif
 #endif
 	run_main_loop,
 };
