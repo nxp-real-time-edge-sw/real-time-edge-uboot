@@ -69,6 +69,10 @@
 #ifdef CONFIG_FSL_FASTBOOT
 #include <fb_fsl.h>
 #endif
+#ifdef CONFIG_FSL_FLEXCAN
+#include <flexcan.h>
+#include <flextimer.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -1129,6 +1133,10 @@ static void initcall_run_r_slave(void)
 #endif
 #ifdef CONFIG_DUAL_BOOTLOADER
 	INITCALL(initr_check_spl_recovery);
+#endif
+#ifdef CONFIG_FSL_FLEXCAN
+	INITCALL(flexcan_init);
+	INITCALL(flextimer_init);
 #endif
 	INITCALL(run_main_loop);
 };
