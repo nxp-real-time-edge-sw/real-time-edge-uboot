@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2017-2021 NXP
+ * Copyright 2017-2021, 2023 NXP
  * Copyright 2014-2015 Freescale Semiconductor, Inc.
  * Layerscape PCIe driver
  */
@@ -517,6 +517,9 @@ static void fdt_fixup_pcie_ls(void *blob)
 		    !device_is_compatible(bus, CONFIG_FSL_PCIE_COMPAT))
 			continue;
 
+		/* check that this is the LS PCI controller */
+		if (strcmp(bus->driver->name, PCI_LS_DRV_NAME))
+			continue;
 		pcie_rc = dev_get_priv(bus);
 
 		/* the DT fixup must be relative to the hose first_busno */

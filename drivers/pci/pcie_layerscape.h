@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2017-2020 NXP
+ * Copyright 2017-2020, 2023 NXP
  * Copyright 2014-2015 Freescale Semiconductor, Inc.
  * Layerscape PCIe driver
  */
@@ -136,6 +136,8 @@
 
 /* layerscape PF1 offset */
 #define LS_PCIE_PF1_OFFSET	0x20000
+
+#define PCI_LS_DRV_NAME			"pci_layerscape"
 
 struct ls_pcie {
 	void __iomem *dbi;
