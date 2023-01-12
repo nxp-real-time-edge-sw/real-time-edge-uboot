@@ -297,6 +297,20 @@ struct dm_gpio_ops {
 	 */
 	int (*set_value)(struct udevice *dev, unsigned offset, int value);
 	/**
+	 * set_interrupt() - Enable GPIO interrupt
+	 *
+	 * @dev:     Device to check
+	 * @offset:  GPIO offset within that device
+     */
+	int (*set_interrupt)(struct udevice *dev, unsigned offset);
+	/**
+	  * clr_interrupt() - Disable GPIO interrupt
+	  *
+	  * @dev:     Device to check
+	  * @offset:  GPIO offset within that device
+	  */
+	int (*clr_interrupt)(struct udevice *dev, unsigned offset);
+	/**
 	 * get_function() Get the GPIO function
 	 *
 	 * @dev:     Device to check
@@ -730,6 +744,10 @@ int gpio_free_list_nodev(struct gpio_desc *desc, int count);
 int dm_gpio_get_value(const struct gpio_desc *desc);
 
 int dm_gpio_set_value(const struct gpio_desc *desc, int value);
+
+int dm_gpio_set_interrupt(const struct gpio_desc *desc);
+
+int dm_gpio_clr_interrupt(const struct gpio_desc *desc);
 
 /**
  * dm_gpio_clrset_flags() - Update flags
