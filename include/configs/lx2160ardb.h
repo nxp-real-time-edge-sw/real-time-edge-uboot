@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2018-2022 NXP
+ * Copyright 2018-2023 NXP
  */
 
 #ifndef __LX2_RDB_H
@@ -60,5 +60,7 @@
 		"bootm $load_addr#$BOARD\0"
 
 #include <asm/fsl_secure_boot.h>
+
+#include "lx2160a_baremetal.h"
 
 #endif /* __LX2_RDB_H */
