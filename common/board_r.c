@@ -1015,7 +1015,9 @@ init_fnc_t init_sequence_r_slave[] = {
 
 	interrupt_init,
 #if defined(CONFIG_BAREMETAL)
+#ifndef CONFIG_ARCH_LS1028A
 	initr_gic_init,
+#endif
 #endif
 #if defined(CONFIG_ICC)
 	icc_init,
