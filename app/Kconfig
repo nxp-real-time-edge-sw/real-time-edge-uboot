@@ -18,6 +18,10 @@ config BAREMETAL_SLAVE_MODE
 	help
 	  the slave mode running on the slave cores
 
+config ENABLE_WRITE_LOCK
+	bool "lock the consol output for a core"
+	default n
+
 endif
 
 config GPIO_COREID_SET
