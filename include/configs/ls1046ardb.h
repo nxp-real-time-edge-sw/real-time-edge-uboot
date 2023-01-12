@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2016 Freescale Semiconductor
- * Copyright 2019 NXP
+ * Copyright 2019, 2023 NXP
  */
 
 #ifndef __LS1046ARDB_H__
@@ -131,5 +131,7 @@
 #endif
 
 #include <asm/fsl_secure_boot.h>
+
+#include "ls1046a_baremetal.h"
 
 #endif /* __LS1046ARDB_H__ */
