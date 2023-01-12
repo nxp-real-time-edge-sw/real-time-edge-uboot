@@ -1334,6 +1334,7 @@ phys_size_t get_effective_memsize(void)
 		ea_size = gd->ram_size;
 	}
 
+#ifndef CONFIG_ARCH_LX2160A
 #ifdef CFG_SYS_MEM_RESERVE_SECURE
 	/* Check if we have enough space for secure memory */
 	if (ea_size > CFG_SYS_MEM_RESERVE_SECURE)
@@ -1349,6 +1350,7 @@ phys_size_t get_effective_memsize(void)
 		else
 			printf("Error: No enough space for reserved memory.\n");
 	}
+#endif
 
 	return ea_size;
 }
