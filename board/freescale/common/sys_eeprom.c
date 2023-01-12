@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2006, 2008-2009, 2011 Freescale Semiconductor
+ * Copyright 2023 NXP
  * York Sun (yorksun@freescale.com)
  * Haiying Wang (haiying.wang@freescale.com)
  * Timur Tabi (timur@freescale.com)
@@ -163,7 +164,9 @@ static int read_eeprom(void)
 #ifdef CONFIG_SYS_EEPROM_BUS_NUM
 #if !CONFIG_IS_ENABLED(DM_I2C)
 	bus = i2c_get_bus_num();
-	i2c_set_bus_num(CONFIG_SYS_EEPROM_BUS_NUM);
+	ret = i2c_set_bus_num(CONFIG_SYS_EEPROM_BUS_NUM);
+	if (ret)
+		return 0;
 #endif
 #endif
 
