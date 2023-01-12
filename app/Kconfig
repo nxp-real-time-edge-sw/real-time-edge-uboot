@@ -22,6 +22,10 @@ config ENABLE_WRITE_LOCK
 	bool "lock the consol output for a core"
 	default n
 
+config ENABLE_COREID_DEBUG
+	bool "Add coreid to the log"
+	default n
+
 endif
 
 config GPIO_COREID_SET
