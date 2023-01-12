@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2019, 2021 NXP
+ * Copyright 2019, 2021, 2023 NXP
  */
 
 #ifndef __LS1028A_RDB_H
@@ -62,6 +62,10 @@
 #define CONFIG_SCSI_DEV_LIST {SCSI_VEND_ID, SCSI_DEV_ID}
 #define CONFIG_SYS_SATA1                        AHCI_BASE_ADDR1
 
+#define JAILHOUSE_ENV \
+	"jh_mmcboot=setenv dtb fsl-ls1028a-rdb-jailhouse.dtb;" \
+		"run bootcmd \0"
+
 /* Initial environment variables */
 #ifndef SPL_NO_ENV
 #undef CONFIG_EXTRA_ENV_SETTINGS
@@ -93,6 +97,7 @@
 	"console=ttyS0,115200\0"                \
 	"mtdparts=" CONFIG_MTDPARTS_DEFAULT "\0"	\
 	BOOTENV					\
+	JAILHOUSE_ENV \
 	"boot_scripts=ls1028ardb_boot.scr\0"    \
 	"boot_script_hdr=hdr_ls1028ardb_bs.out\0"	\
 	"scan_dev_for_boot_part="               \
