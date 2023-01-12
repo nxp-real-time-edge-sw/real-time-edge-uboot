@@ -141,4 +141,7 @@
 		"mmc dev 1;mmcinfo;mmc read $load_addr 0x4a00 0x200 "	\
 		"&& hdp load $load_addr 0x2000\0"
 #endif
+
+#include "ls1028a_baremetal.h"
+
 #endif /* __LS1028A_RDB_H */
