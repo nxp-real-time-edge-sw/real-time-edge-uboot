@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2019 NXP
+ * Copyright 2019, 2023 NXP
  */
 
 #ifndef __IMX8MP_EVK_H
@@ -58,6 +58,25 @@
 	"emmc_dev=2\0"\
 	"sd_dev=1\0"
 
+#ifdef CONFIG_BAREMETAL
+#define BOOT_BAREMETAL_ENV \
+	"boot_bm_enable=yes\0" \
+	"bmimage=bm-u-boot.bin\0" \
+	"bm_addr=50200000\0" \
+	"baremetal_args=setenv bootargs ${jh_clk} console=${console} root=${mmcroot} maxcpus=1 clk_ignore_unused\0 " \
+	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
+	"startbm=dcache flush;cpu 1 release 50200000;sleep 6; \
+		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 2\0" \
+	"boot_bm=" \
+		"if run loadbmimage; then " \
+			"run startbm; "	\
+		"else " \
+			"echo WARN: Cannot load the Baremetal Image; " \
+		"fi;\0"
+#else
+#define BOOT_BAREMETAL_ENV \
+	"boot_bm_enable=no\0"
+#endif
 
 #ifdef CONFIG_NAND_BOOT
 #define MFG_NAND_PARTITION "mtdparts=gpmi-nand:64m(nandboot),16m(nandfit),32m(nandkernel),16m(nanddtb),8m(nandtee),-(nandrootfs)"
@@ -87,6 +106,7 @@
 	JAILHOUSE_ENV \
 	SR_IR_V2_COMMAND \
 	BOOTENV \
+	BOOT_BAREMETAL_ENV \
 	"prepare_mcore=setenv mcore_clk clk-imx8mp.mcore_booted;\0" \
 	"scriptaddr=0x43500000\0" \
 	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
@@ -112,6 +132,9 @@
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_r} ${fdtfile}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
+		"if test ${boot_bm_enable} = yes; then " \
+			"setenv mmcargs ${baremetal_args}; " \
+		"fi;" \
 		"run mmcargs; " \
 		"if test ${boot_fit} = yes || test ${boot_fit} = try; then " \
 			"bootm ${loadaddr}; " \
@@ -144,15 +167,18 @@
 		"fi;\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
-		   "if run loadbootscript; then " \
-			   "run bootscript; " \
-		   "else " \
-			   "if run loadimage; then " \
-				   "run mmcboot; " \
-			   "else run netboot; " \
-			   "fi; " \
-		   "fi; " \
-	   "fi;"
+			"if test ${boot_bm_enable} = yes; then " \
+				"run boot_bm; " \
+			"fi;" \
+			"if run loadbootscript; then " \
+				"run bootscript; " \
+			"else " \
+				"if run loadimage; then " \
+					"run mmcboot; " \
+				"else run netboot; " \
+				"fi; " \
+			"fi; " \
+		"fi;"
 #endif
 
 /* Link Definitions */
