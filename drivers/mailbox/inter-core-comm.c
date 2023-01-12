@@ -17,6 +17,7 @@ int mycoreid;
 int blocks[ICC_CORE_BLOCK_COUNT];
 unsigned int block_idx;
 void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
+bool icc_debug_switch = false;
 
 #define block2index(x) ((x - ICC_CORE_BLOCK_BASE(mycoreid)) / \
 		ICC_BLOCK_UNIT_SIZE)
@@ -149,8 +150,7 @@ void icc_block_free(unsigned long block)
 void icc_set_sgi(int core_mask, unsigned int hw_irq)
 {
 #if defined(CONFIG_GICV3)
-
-#ifdef CONFIG_ARCH_LX2160A
+#ifdef	CONFIG_ARCH_LX2160A
 	unsigned long i, cluster, mask, val;
 
 	ICC_TRG_CORE = mycoreid;
@@ -165,7 +165,6 @@ void icc_set_sgi(int core_mask, unsigned int hw_irq)
 #else
 	gic_send_sgi_test(hw_irq, core_mask);
 #endif
-
 #else
 	gic_set_sgi(core_mask, hw_irq);
 #endif
@@ -212,6 +211,7 @@ int icc_set_block(int core_mask, unsigned int byte_count, unsigned long block)
 				blocks[block2index(desc->block_addr)] &=
 					~(0x1 << ring[i]->dest_coreid);
 			}
+			desc->option_mode = ICC_CMD_TX_DATA;
 			desc->block_addr = block;
 			desc->byte_count = byte_count;
 			ring[i]->desc_head = (ring[i]->desc_head + 1) %
@@ -299,7 +299,7 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 	struct icc_ring *ring;
 	struct icc_desc *desc;
 	unsigned long block_addr;
-	unsigned int byte_count;
+	unsigned int byte_count, option_mode;
 	int i, valid;
 	unsigned long time_us = timer_get_us();
 	void (*irq_handle)(int, unsigned long, unsigned int);
@@ -309,11 +309,7 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 				"Get the wrong SGI number: %d, expect: %d\n",
 				hw_irq, ICC_SGI);
 		return;
-	} else
-		printf("Time(us): 0x%llx, Get the SGI from CoreID: %d\n",
-				time_us, src_coreid);
-
-		ring->irq_status = ICC_IRQ_IDLE;
+	}
 
 #ifdef	CONFIG_ARCH_LX2160A
 	src_coreid = ICC_TRG_CORE;
@@ -330,21 +326,30 @@ static void icc_irq_handler(int hw_irq, int src_coreid)
 	valid = icc_ring_valid(ring);
 	for (i = 0; i < valid; i++) {
 		desc = ring->desc + ring->desc_tail;
-		block_addr = desc->block_addr;
-		byte_count = desc->byte_count;
+		option_mode = desc->option_mode;
 
-		irq_handle = (void (*)(int, unsigned long, unsigned int))
-			g_icc_irq_cb[src_coreid];
-		if (irq_handle)
-			irq_handle(src_coreid, block_addr, byte_count);
-		else
-			printf(
-				"Get the SGI %d from core %d; block: 0x%lx, byte: %d\n",
-				hw_irq, src_coreid, block_addr, byte_count);
+		if (option_mode & ICC_CMD_DUMP_TIME) {
+			printf("Time(us): 0x%lx, Get the SGI from CoreID: %d\n",
+					time_us, src_coreid);
+		} else {
+			block_addr = desc->block_addr;
+			byte_count = desc->byte_count;
+
+			irq_handle = (void (*)(int, unsigned long, unsigned int))
+				g_icc_irq_cb[src_coreid];
+			if (irq_handle)
+				irq_handle(src_coreid, block_addr, byte_count);
+			else
+				printf(
+					"Get the SGI %d from core %d; block: 0x%lx, byte: %d\n",
+					hw_irq, src_coreid, block_addr, byte_count);
+		}
 
 		/* add desc_tail */
 		ring->desc_tail = (ring->desc_tail + 1) % ring->desc_num;
 	}
+
+	ring->irq_status = ICC_IRQ_IDLE;
 #ifdef CONFIG_ARCH_LS1021A
 	invalidate_dcache_range(CFG_BAREMETAL_SYS_SDRAM_SHARE_BASE,
 		CFG_BAREMETAL_SYS_SDRAM_SHARE_BASE +
@@ -411,4 +416,65 @@ void icc_show(void)
 		printf("busy_counts: %ld; interrupt_counts: %ld\n",
 			ring[i]->busy_counts, ring[i]->interrupt_counts);
 	}
+	printf("\n");
+	icc_debug_switch_show();
+}
+
+void icc_debug_switch_on(void)
+{
+	icc_debug_switch = true;
+	return;
+}
+
+void icc_debug_switch_off(void)
+{
+	icc_debug_switch = false;
+	return;
+}
+
+void icc_debug_switch_show(void)
+{
+	printf("icc debug switch: %s\n", icc_debug_switch ? "on" : "off");
+	return;
+}
+
+int icc_dump_time(int dest_core)
+{
+	struct icc_desc *desc = NULL;
+	bool full = false;
+	int i;
+
+	if (!dest_core)
+		return -1;
+
+	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+		if ((dest_core >> i) & 0x1) {
+			if (icc_ring_full(ring[i])) {
+				ring[i]->busy_counts++;
+				full = true;
+				break;
+			}
+
+			desc = ring[i]->desc + ring[i]->desc_head;
+			desc->block_addr = 0;
+			desc->byte_count = 0;
+			desc->option_mode = ICC_CMD_DUMP_TIME;
+			ring[i]->desc_head = (ring[i]->desc_head + 1) %
+				ring[i]->desc_num;
+			ring[i]->interrupt_counts++;
+		}
+	}
+	if (full)
+		return -1;
+
+	dsb();
+#ifdef CONFIG_ARCH_LS1021A
+	invalidate_dcache_range(CFG_BAREMETAL_SYS_SDRAM_SHARE_BASE,
+			CFG_BAREMETAL_SYS_SDRAM_SHARE_BASE +
+			CFG_BAREMETAL_SYS_SDRAM_SHARE_SIZE);
+#endif
+	/* trigger the inter-core interrupt */
+	icc_set_sgi(dest_core, ICC_SGI);
+
+	return 0;
 }
