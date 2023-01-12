@@ -17,6 +17,11 @@ void core1_main(void)
 #ifdef CONFIG_GPIO_COREID_SET
 	test_gpio();
 #endif
+
+#ifdef CONFIG_I2C_COREID_SET
+	test_i2c();
+#endif
+
 	return;
 }
 
