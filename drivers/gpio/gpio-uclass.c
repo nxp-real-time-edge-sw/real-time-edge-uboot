@@ -614,6 +614,38 @@ int dm_gpio_set_value(const struct gpio_desc *desc, int value)
 	return 0;
 }
 
+int dm_gpio_set_interrupt(const struct gpio_desc *desc)
+{
+	const struct dm_gpio_ops *ops;
+	int ret;
+
+	ret = check_reserved(desc, "set_interrupt");
+	if (ret)
+		return ret;
+	ops = gpio_get_ops(desc->dev);
+	ret = ops->set_interrupt(desc->dev, desc->offset);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
+int dm_gpio_clr_interrupt(const struct gpio_desc *desc)
+{
+	const struct dm_gpio_ops *ops;
+	int ret;
+
+	ret = check_reserved(desc, "clr_interrupt");
+	if (ret)
+		return ret;
+	ops = gpio_get_ops(desc->dev);
+	ret = ops->clr_interrupt(desc->dev, desc->offset);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
 /* check dir flags invalid configuration */
 static int check_dir_flags(ulong flags)
 {
