@@ -73,4 +73,9 @@ config IRQ_COREID_SET
 	depends on BAREMETAL && IRQ
 	default n
 
+config ICC_COREID_SET
+	bool "Enable ICC test for BareMetal"
+	depends on BAREMETAL && IRQ
+	default y
+
 endmenu
