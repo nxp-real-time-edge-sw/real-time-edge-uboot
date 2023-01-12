@@ -20,4 +20,21 @@ config BAREMETAL_SLAVE_MODE
 
 endif
 
+config GPIO_COREID_SET
+	bool "Enable GPIO for BareMetal"
+	depends on BAREMETAL
+if GPIO_COREID_SET
+config GPIO_GPIO0_COREID
+	int "The core GPIO0 assigned"
+	default 0
+
+config GPIO_GPIO1_COREID
+	int "The core GPIO1 assigned"
+	default 0
+
+config GPIO_GPIO2_COREID
+	int "The core GPIO2 assigned"
+	default 0
+endif
+
 endmenu
