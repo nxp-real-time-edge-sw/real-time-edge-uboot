@@ -19,6 +19,9 @@ PLATFORM_RELFLAGS += -fno-common -ffixed-r9
 ifdef CONFIG_SOUND_SGTL5000
 PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
       $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,))
+else ifeq ($(CONFIG_CMD_MATH), y)
+PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
+      $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,))
 else
 PLATFORM_RELFLAGS += $(call cc-option, -msoft-float) \
 		     $(call cc-option,-mgeneral-regs-only) \
