@@ -60,4 +60,9 @@ config SYS_I2C_MXC_I2C3_COREID
 	default 0
 endif
 
+config IRQ_COREID_SET
+	bool "Enable IRQ for BareMetal"
+	depends on BAREMETAL && IRQ
+	default n
+
 endmenu
