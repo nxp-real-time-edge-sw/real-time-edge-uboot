@@ -682,6 +682,7 @@ void fdt_fixup_pfe_firmware(void *blob)
 #endif
 
 #if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
+#ifdef CONFIG_DM_ETH
 #include <net.h>
 
 struct ec_port_t {
@@ -879,6 +880,7 @@ loop_tag:
 	}
 }
 #endif
+#endif
 
 void ft_cpu_setup(void *blob, struct bd_info *bd)
 {
@@ -959,7 +961,9 @@ void ft_cpu_setup(void *blob, struct bd_info *bd)
 #endif
 
 #if defined(CONFIG_TARGET_LS1046ARDB) || defined(CONFIG_TARGET_LS1043ARDB)
+#ifdef CONFIG_DM_ETH
 	fdt_fixup_ethercat_prop(blob);
+#endif
 #endif
 }
 
