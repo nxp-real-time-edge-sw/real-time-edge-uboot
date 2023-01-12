@@ -25,6 +25,8 @@ void test_usb(void);
 
 void test_pcie(void);
 
+void test_flexcan(void);
+
 #endif
 
 #endif /* _BAREMETAL_APP_TEST_H */
