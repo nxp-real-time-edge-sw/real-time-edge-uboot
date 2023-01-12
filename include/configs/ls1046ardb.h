@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2016 Freescale Semiconductor
- * Copyright 2019 NXP
+ * Copyright 2019, 2023 NXP
  */
 
 #ifndef __LS1046ARDB_H__
@@ -141,5 +141,7 @@
 	"image=Image\0"					\
 	"console_dbg=earlycon=uart8250,mmio,0x21c0500\0"
 #endif
+
+#include "ls1046a_baremetal.h"
 
 #endif /* __LS1046ARDB_H__ */
