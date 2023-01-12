@@ -110,6 +110,8 @@ struct giccd_base {
 struct giccd_base gic_d;
 struct giccd_base get_gic_offset(void);
 
+void *g_gic_irq_cb[1024] __section(".data");
+
 void gic_set_offset(void)
 {
 	gic_d = get_gic_offset();
@@ -129,8 +131,6 @@ static inline void gic_end_int(u32 ack)
 	*((volatile unsigned int *)(gic_d.gicc_base +
 		    GIC_CPU_EOI)) = (ack & GICC_IAR_MASK);
 }
-
-void *g_gic_irq_cb[1024];
 
 void gic_irq_register(int irq_num, void (*irq_handle)(int, int))
 {
