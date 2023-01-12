@@ -842,6 +842,7 @@ libs-y += boot/
 libs-y += cmd/
 libs-y += common/
 libs-$(CONFIG_OF_EMBED) += dts/
+libs-y += app/
 libs-y += env/
 libs-y += lib/
 libs-y += fs/
