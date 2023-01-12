@@ -112,6 +112,9 @@ struct giccd_base get_gic_offset(void);
 
 void *g_gic_irq_cb[1024] __section(".data");
 
+extern u32 gic_ack_int_v3(void);
+extern void gic_end_int_v3(u32 ack);
+
 void gic_set_offset(void)
 {
 	gic_d = get_gic_offset();
