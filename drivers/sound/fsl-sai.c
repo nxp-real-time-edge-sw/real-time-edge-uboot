@@ -490,7 +490,7 @@ static const struct i2s_ops fsl_sai_ops = {
 };
 
 static const struct udevice_id fsl_sai_ids[] = {
-	{ .compatible = "fsl,ls1028a-sai" },
+	{ .compatible = "fsl,vf610-sai"},
 	{ }
 };
 
