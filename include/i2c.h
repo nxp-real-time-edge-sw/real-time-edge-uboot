@@ -651,6 +651,13 @@ void i2c_early_init_f(void);
 #define CONFIG_SYS_SPD_BUS_NUM		0
 #endif
 
+#ifdef CONFIG_I2C_COREID_SET
+#define I2C_MXC_BUS_GET_CORE_ID(bus) \
+		CONFIG_SYS_I2C_MXC_I2C##bus##_COREID
+#else
+#define I2C_MXC_BUS_GET_CORE_ID(bus) 0
+#endif
+
 struct i2c_adapter {
 	void		(*init)(struct i2c_adapter *adap, int speed,
 				int slaveaddr);
@@ -668,6 +675,7 @@ struct i2c_adapter {
 	int		slaveaddr;
 	int		init_done;
 	int		hwadapnr;
+	int		coreid;
 	char		*name;
 };
 
@@ -683,6 +691,7 @@ struct i2c_adapter {
 		.slaveaddr	=	_slaveaddr, \
 		.init_done	=	0, \
 		.hwadapnr	=	_hwadapnr, \
+		.coreid		=	I2C_MXC_BUS_GET_CORE_ID(_hwadapnr), \
 		.name		=	#_name \
 };
 
