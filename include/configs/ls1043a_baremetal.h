@@ -44,6 +44,8 @@
 
 #endif /* CONFIG_BAREMETAL_SLAVE_MODE */
 
+#define SHARED_GPIO_REQUEST_INFO
+
 #endif /* CONFIG_BAREMETAL */
 
 #endif /* _LS1043A_BAREMETAL_H_ */
