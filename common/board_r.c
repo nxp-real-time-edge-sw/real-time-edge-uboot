@@ -472,6 +472,10 @@ static int initr_malloc_bootparams(void)
 #if defined(CONFIG_BAREMETAL)
 static int initr_gic_init(void)
 {
+#ifdef CONFIG_ARM64
+	gic_set_offset();
+#endif
+
 	if (get_core_id() == CONFIG_BAREMETAL_FIRST_CORE)
 		gic_set_pri_common();
 	gic_set_pri_per_cpu();
