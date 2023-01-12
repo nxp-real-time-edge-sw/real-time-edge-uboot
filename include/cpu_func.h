@@ -3,6 +3,8 @@
  * (C) Copyright 2000-2009
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  * Copyright 2019 Google LLC
+ *
+ * Copyright 2023 NXP
  */
 
 #ifndef __CPU_LEGACY_H
@@ -37,6 +39,7 @@ int cpu_numcores(void);
 int cpu_num_dspcores(void);
 u32 cpu_mask(void);
 u32 cpu_dsp_mask(void);
+u32 get_core_id(void);
 int is_core_valid(unsigned int core);
 
 /**
