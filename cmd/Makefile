@@ -110,6 +110,7 @@ obj-$(CONFIG_CMD_LICENSE) += license.o
 obj-y += load.o
 obj-$(CONFIG_CMD_LOG) += log.o
 obj-$(CONFIG_CMD_LSBLK) += lsblk.o
+obj-$(CONFIG_CMD_MATH) += math.o
 obj-$(CONFIG_CMD_MD5SUM) += md5sum.o
 obj-$(CONFIG_CMD_MEMORY) += mem.o
 obj-$(CONFIG_CMD_IO) += io.o

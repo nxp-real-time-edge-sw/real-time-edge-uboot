@@ -841,6 +841,10 @@ UBOOTINCLUDE    := \
 
 NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
+ifeq ($(CONFIG_CMD_MATH),y)
+UBOOTINCLUDE += -I$(srctree)/math/include
+endif
+
 # FIX ME
 cpp_flags := $(KBUILD_CPPFLAGS) $(PLATFORM_CPPFLAGS) $(UBOOTINCLUDE) \
 							$(NOSTDINC_FLAGS)
@@ -915,7 +919,13 @@ ifndef CONFIG_CC_IS_CLANG
 PLATFORM_LIBGCC := -L $(shell dirname `$(CC) $(c_flags) -print-libgcc-file-name`) -lgcc
 endif
 endif
+ifeq ($(CONFIG_CMD_MATH),y)
+PLATFORM_LIBS += -L $(srctree)/math/lib
+endif
 PLATFORM_LIBS += $(PLATFORM_LIBGCC)
+ifeq ($(CONFIG_CMD_MATH),y)
+PLATFORM_LIBS += -lm
+endif
 
 ifdef CONFIG_CC_COVERAGE
 KBUILD_CFLAGS += --coverage

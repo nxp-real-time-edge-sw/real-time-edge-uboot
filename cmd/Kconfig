@@ -2957,4 +2957,9 @@ config CMD_MESON
 	help
 	  Enable useful commands for the Meson Soc family developed by Amlogic Inc.
 
+config CMD_MATH
+	bool "math - test math functions"
+	help
+	  Test math functions based on toolchain's math library
+
 endif
