@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2019 NXP
+ * Copyright 2019, 2023 NXP
  */
 
 #ifndef __IMX8MM_EVK_H
@@ -63,6 +63,26 @@
 			   "else run jh_netboot; fi; \0" \
 	"jh_netboot=mw 0x303d0518 0xff; setenv fdtfile ${jh_root_dtb}; setenv jh_clk clk_ignore_unused mem=1212MB; run netboot; \0 "
 
+#ifdef CONFIG_BAREMETAL
+#define BOOT_BAREMETAL_ENV \
+	"boot_bm_enable=yes\0" \
+	"bmimage=bm-u-boot.bin\0" \
+	"bm_addr=50200000\0" \
+	"baremetal_args=setenv bootargs ${jh_clk} console=${console} root=${mmcroot} maxcpus=1 clk_ignore_unused\0 " \
+	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
+	"startbm=dcache flush;cpu 1 release 50200000;sleep 6; \
+		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 17\0" \
+	"boot_bm=" \
+		"if run loadbmimage; then " \
+			"run startbm; "	\
+		"else " \
+			"echo WARN: Cannot load the BareMetal Image; " \
+		"fi;\0"
+#else
+#define BOOT_BAREMETAL_ENV \
++	"boot_bm_enable=no\0"
+#endif
+
 #define SR_IR_V2_COMMAND \
 	"nodes=/usbg1 /usbg2 /wdt-reboot /soc@0/caam-sm@100000 /soc@0/bus@30000000/caam_secvio /soc@0/bus@30000000/caam-snvs@30370000 /soc@0/bus@32c00000/lcdif@32e00000 /soc@0/bus@32c00000/csi1_bridge@32e20000 /soc@0/bus@32c00000/mipi_dsi@32e10000 /soc@0/bus@32c00000/mipi_csi@32e30000 /soc@0/bus@32c00000/display-subsystem /audio-codec-bt-sco /sound-bt-sco /audio-codec /sound-wm8524 /dsi-host /rm67199_panel /soc@0/bus@30800000/i2c@30a20000/pca9450@25 /soc@0/bus@30800000/i2c@30a30000/adv7535@3d /soc@0/bus@30800000/i2c@30a30000/tcpc@50 /soc@0/memory-controller@3d400000 /soc@0/bus@30800000/spi@30830000/spi@0 /binman /vpu_h1@38320000 /vpu_g1@38300000 /vpu_g2@38310000 /vpu_v4l2 /gpu@38000000 \0" \
 	"sr_ir_v2_cmd=cp.b ${fdtcontroladdr} ${fdt_addr_r} 0x10000;"\
@@ -99,6 +119,7 @@
 	CFG_MFG_ENV_SETTINGS \
 	BOOTENV \
 	JAILHOUSE_ENV \
+	BOOT_BAREMETAL_ENV \
 	SR_IR_V2_COMMAND \
 	"prepare_mcore=setenv mcore_clk clk-imx8mm.mcore_booted;\0" \
 	"scriptaddr=0x43500000\0" \
@@ -124,6 +145,9 @@
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_r} ${fdtfile}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
+		"if test ${boot_bm_enable} = yes; then " \
+			"setenv mmcargs ${baremetal_args}; " \
+		"fi;" \
 		"run mmcargs; " \
 		"if test ${boot_fit} = yes || test ${boot_fit} = try; then " \
 			"bootm ${loadaddr}; " \
@@ -156,15 +180,18 @@
 		"fi;\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
-		   "if run loadbootscript; then " \
-			   "run bootscript; " \
-		   "else " \
-			   "if run loadimage; then " \
-				   "run mmcboot; " \
-			   "else run netboot; " \
-			   "fi; " \
-		   "fi; " \
-	   "fi;"
+			"if test ${boot_bm_enable} = yes; then " \
+				"run boot_bm; " \
+			"fi;" \
+			"if run loadbootscript; then " \
+				"run bootscript; " \
+			"else " \
+				"if run loadimage; then " \
+					"run mmcboot; " \
+				"else run netboot; " \
+				"fi; " \
+			"fi; " \
+		"fi;\0"
 #endif
 
 /* Link Definitions */
