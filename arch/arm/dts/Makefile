@@ -465,7 +465,8 @@ dtb-$(CONFIG_TARGET_AM57XX_EVM) += am57xx-beagle-x15.dtb \
 dtb-$(CONFIG_ARCH_LS1021A) += ls1021a-qds-duart.dtb \
 	ls1021a-qds-lpuart.dtb \
 	ls1021a-twr-duart.dtb ls1021a-twr-lpuart.dtb \
-	ls1021a-iot-duart.dtb ls1021a-tsn.dtb
+	ls1021a-iot-duart.dtb ls1021a-tsn.dtb \
+	ls1021a-tsn-lpuart.dtb
 dtb-$(CONFIG_TARGET_PG_WCOM_SELI8) += ls1021a-pg-wcom-seli8.dtb
 dtb-$(CONFIG_TARGET_PG_WCOM_EXPU1) += ls1021a-pg-wcom-expu1.dtb
 
