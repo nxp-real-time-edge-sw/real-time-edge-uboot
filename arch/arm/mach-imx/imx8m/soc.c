@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2017-2019, 2021-2022 NXP
+ * Copyright 2017-2019, 2021-2023 NXP
  *
  * Peng Fan <peng.fan@nxp.com>
  */
@@ -531,6 +531,19 @@ u32 get_cpu_rev(void)
 	}
 
 	return (type << 12) | reg;
+}
+
+u32 get_core_id(void)
+{
+	u32 aff;
+
+	asm volatile("mrs %0, mpidr_el1\n"
+		     :"=r" (aff)
+		     :
+		     :"memory");
+
+	aff = aff & 0xFFFF;
+	return aff;
 }
 
 static void imx_set_wdog_powerdown(bool enable)
