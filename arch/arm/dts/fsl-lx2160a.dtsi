@@ -20,6 +20,17 @@
 		      /* DRAM space - 1, size : 2 GB DRAM */
 	};
 
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gic_lpi_table: gic-lpi-table@0x80000000 {
+			compatible = "fsl,gic-lpi-table";
+			reg = <0 0x80000000 0 0x200000>;
+		};
+	};
+
 	sysclk: sysclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
