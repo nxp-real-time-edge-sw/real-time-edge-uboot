@@ -56,6 +56,7 @@
 
 #define JAILHOUSE_ENV \
 	"jh_mmcboot=setenv dtb fsl-ls1028a-rdb-jailhouse.dtb;" \
+		"setenv othbootargs mem=1024MB;" \
 		"run bootcmd \0"
 
 
