@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (C) 2015 Freescale Semiconductor
- * Copyright 2019-2021 NXP
+ * Copyright 2019-2021, 2023 NXP
  */
 
 #ifndef __LS1043A_COMMON_H
@@ -87,6 +87,11 @@
 	func(DHCP, dhcp, na)
 #include <config_distro_bootcmd.h>
 
+#define JAILHOUSE_ENV \
+	"jh_mmcboot=setenv dtb fsl-ls1043a-rdb-sdk-jailhouse.dtb;" \
+		"setenv othbootargs mem=1024MB;" \
+		"run bootcmd \0"
+
 /* Initial environment variables */
 #define CFG_EXTRA_ENV_SETTINGS		\
 	"hwconfig=fsl_ddr:bank_intlv=auto\0"	\
@@ -113,6 +118,7 @@
 	"console=ttyS0,115200\0"		\
 	"boot_os=y\0"				\
 	BOOTENV					\
+	JAILHOUSE_ENV				\
 	"boot_scripts=ls1043ardb_boot.scr\0"	\
 	"boot_script_hdr=hdr_ls1043ardb_bs.out\0"	\
 	"scan_dev_for_boot_part="		\
