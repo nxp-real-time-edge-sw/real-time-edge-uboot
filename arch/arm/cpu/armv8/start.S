@@ -2,6 +2,8 @@
 /*
  * (C) Copyright 2013
  * David Feng <fenghua@phytium.com.cn>
+ *
+ * Copyright 2023 NXP
  */
 
 #include <asm-offsets.h>
@@ -188,12 +190,22 @@ slave_cpu:
 	wfe
 	ldr	x1, =CPU_RELEASE_ADDR
 	ldr	x0, [x1]
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE) && defined(CONFIG_ARCH_IMX8M)
+	cbz	x0, slave_cpu_imx
+#else
 	cbz	x0, slave_cpu
+#endif
 	br	x0			/* branch to the given address */
 #endif /* CONFIG_ARMV8_MULTIENTRY */
+
+if defined(CONFIG_BAREMETAL_SLAVE_MODE) && defined(CONFIG_ARCH_IMX8M)
+slave_cpu_imx:
+	bl	_main_slave
+#else
 master_cpu:
 	msr	SPSel, #1		/* make sure we use SP_ELx */
 	bl	_main
+#endif
 
 /*-----------------------------------------------------------------------*/
 
