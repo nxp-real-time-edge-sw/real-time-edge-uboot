@@ -299,6 +299,7 @@
 		reg = <0x0 0x3100000 0x0 0x10000>;
 		interrupts = <0 80 0x4>; /* Level high type */
 		dr_mode = "host";
+		status = "disabled";
 	};
 
 	usb1: usb3@3110000 {
@@ -306,6 +307,7 @@
 		reg = <0x0 0x3110000 0x0 0x10000>;
 		interrupts = <0 81 0x4>; /* Level high type */
 		dr_mode = "host";
+		status = "disabled";
 	};
 
 	esdhc0: esdhc@2140000 {
