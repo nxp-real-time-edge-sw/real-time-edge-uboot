@@ -42,11 +42,24 @@
  * 0-7 are used by Linux SMP.
  */
 
+#ifdef CONFIG_ARCH_IMX8M
+#define ICC_SGI 9
+#define IRQ_SGI_TEST 10
+#else
 #define ICC_SGI 8
+#define IRQ_SGI_TEST 9
+#endif
+
+#define ICC_IRQ_IDLE		0x00
+#define ICC_IRQ_BUSY		0x01
+
+#define ICC_CMD_TX_DATA		0x00
+#define ICC_CMD_DUMP_TIME	0x01
 
 struct icc_desc {
 	unsigned long block_addr;	/* block address */
 	unsigned int byte_count;	/* available bytes in the block */
+	unsigned int option_mode;	/* option mode for this icc irq */
 };
 
 struct icc_ring {
@@ -68,6 +81,8 @@ struct icc_ring {
 	unsigned long busy_counts;
 	/* statistic: total interrupt number triggered */
 	unsigned long interrupt_counts;
+	/* status of the ring, set by producer, reset by consumer */
+	unsigned int irq_status;
 };
 
 /*
@@ -76,6 +91,14 @@ struct icc_ring {
  *         !0 - the working block address currently
  */
 unsigned long icc_ring_state(int coreid);
+
+/*
+ * get ring's irq status of the target core.
+ * return:
+ * 			ICC_IRQ_IDLE - idle
+ *			ICC_IRQ_BUSY - busy
+ */
+unsigned int icc_ring_irq_status(int coreid);
 
 /*
  * Request a block which is ICC_BLOCK_UNIT_SIZE size.
@@ -145,4 +168,12 @@ int icc_set_block(int core_mask, unsigned int byte_count, unsigned long block);
 /* Show the icc ring state */
 void icc_show(void);
 
+void icc_debug_switch_on(void);
+
+void icc_debug_switch_off(void);
+
+void icc_debug_switch_show(void);
+
+/* Set dump time request at send side */
+int icc_dump_time(int dest_core);
 #endif /* _ARM_INTER_CORE_COMM_H */
