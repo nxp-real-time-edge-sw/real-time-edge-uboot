@@ -224,4 +224,6 @@
 #include "imx8mm_evk_android.h"
 #endif
 
+#include "imx8mm_baremetal.h"
+
 #endif
