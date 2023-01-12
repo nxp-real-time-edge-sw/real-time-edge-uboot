@@ -33,23 +33,39 @@ void test_i2c(void)
 	/* I2C_CHIP_ADDR is address of the i2c device. */
 	int chip = I2C_CHIP_ADDR;
 	int devaddr = 0;
-	unsigned char  linebuf[10];
+	uint8_t linebuf[10];
 	int bus_no = I2C_BUS_NUM;
 	int alen = I2C_ADDR_LEN;
 	int length = I2C_DATA_LEN;
 
 	int ret;
 
+#if CONFIG_IS_ENABLED(DM_I2C)
+	struct udevice *dev;
+
+	ret = i2c_get_chip_for_busnum(bus_no, chip, 1, &dev);
+	if (ret) {
+		printf("%s: Cannot find udev for a bus %d\n", __func__,
+		       bus_no);
+		return;
+	}
+
+	ret = dm_i2c_read(dev, devaddr, linebuf, length);
+#else /* Non DM I2C support - will be removed */
 	ret = i2c_set_bus_num(bus_no);
 	if (ret != 0) {
 		printf("[error]i2c test error, set bus error\n");
 		return;
 	}
+
 	ret = i2c_read(chip, devaddr, alen, linebuf, length);
+#endif
+
 	if (ret != 0) {
 		printf("[error]i2c test error, read error\n");
 		return;
 	}
+
 	printf("i2c read: 0x%x\n", linebuf[0]);
 
 	/* TODO: use i2c_write(uint8_t chip_addr,
