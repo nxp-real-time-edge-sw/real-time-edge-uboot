@@ -15,7 +15,7 @@
 	compatible = "fii,ls1028a-tsn", "fsl,ls1028a";
 
 	aliases {
-		ethernet0 = &enetc2;
+		ethernet0 = &enetc_port2;
 		ethernet1 = &mscc_felix_port0;
 		ethernet2 = &mscc_felix_port2;
 		ethernet3 = &sja1105_switch0_port0;
@@ -143,11 +143,11 @@
 	};
 };
 
-&enetc2 {
+&enetc_port2 {
 	status = "okay";
 };
 
-&esdhc0 {
+&esdhc {
 	status = "okay";
 };
 
@@ -211,19 +211,19 @@
 	status = "okay";
 };
 
-&serial0 {
+&duart0 {
 	status = "okay";
 };
 
-&serial1 {
+&duart1 {
+	status = "okay";
+};
+
+&usb0 {
 	status = "okay";
 };
 
 &usb1 {
-	status = "okay";
-};
-
-&usb2 {
 	status = "okay";
 };
 
@@ -256,11 +256,11 @@
 };
 
 &mscc_felix_port4 {
-	ethernet = <&enetc2>;
+	ethernet = <&enetc_port2>;
 	status = "okay";
 };
 
-&mdio0 {
+&enetc_mdio_pf3 {
 	status = "okay";
 
 	/*
