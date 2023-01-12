@@ -2,7 +2,7 @@
 /*
  * NXP ls1088a SOC common device tree source
  *
- * Copyright 2017, 2020-2021 NXP
+ * Copyright 2017, 2020-2021, 2023 NXP
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -16,6 +16,17 @@
 		device_type = "memory";
 		reg = <0x00000000 0x80000000 0 0x80000000>;
 		      /* DRAM space - 1, size : 2 GB DRAM */
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gic_lpi_table: gic-lpi-table@0x80000000 {
+			compatible = "fsl,gic-lpi-table";
+			reg = <0 0x80000000 0 0x100000>;
+		};
 	};
 
 	gic: interrupt-controller@6000000 {

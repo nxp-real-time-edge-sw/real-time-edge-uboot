@@ -2,7 +2,7 @@
 /*
  * Device Tree Include file for NXP Layerscape-1028A family SoC.
  *
- * Copyright 2018-2020 NXP
+ * Copyright 2018-2020, 2023 NXP
  *
  * Harninder Rai <harninder.rai@nxp.com>
  *
@@ -185,6 +185,17 @@
 						<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 				};
 			};
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gic_lpi_table: gic-lpi-table@0x90000000 {
+			compatible = "fsl,gic-lpi-table";
+			reg = <0 0x90000000 0 0x100000>;
 		};
 	};
 
