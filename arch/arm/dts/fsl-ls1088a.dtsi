@@ -2,7 +2,7 @@
 /*
  * Device Tree Include file for NXP Layerscape-1088A family SoC.
  *
- * Copyright 2017-2020 NXP
+ * Copyright 2017-2020, 2023 NXP
  *
  * Harninder Rai <harninder.rai@nxp.com>
  *
@@ -106,6 +106,17 @@
 			entry-latency-us = <1000>;
 			exit-latency-us = <1000>;
 			min-residency-us = <3000>;
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gic_lpi_table: gic-lpi-table@0x80000000 {
+			compatible = "fsl,gic-lpi-table";
+			reg = <0 0x80000000 0 0x100000>;
 		};
 	};
 
