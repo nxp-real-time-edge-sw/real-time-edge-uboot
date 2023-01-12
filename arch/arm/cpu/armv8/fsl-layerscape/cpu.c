@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2017-2021 NXP
+ * Copyright 2017-2021, 2023 NXP
  * Copyright 2014-2015 Freescale Semiconductor, Inc.
  */
 
@@ -1478,8 +1478,9 @@ int dram_init_banksize(void)
 	} else
 #endif
 	{
-		if (gd->bd->bi_dram[1].size >=
-		    board_reserve_ram_top(gd->bd->bi_dram[1].size)) {
+		if (gd->bd->bi_dram[1].size > 0 &&
+				gd->bd->bi_dram[1].size >=
+				board_reserve_ram_top(gd->bd->bi_dram[1].size)) {
 			gd->arch.resv_ram = gd->bd->bi_dram[1].start +
 				gd->bd->bi_dram[1].size -
 				board_reserve_ram_top(gd->bd->bi_dram[1].size);
