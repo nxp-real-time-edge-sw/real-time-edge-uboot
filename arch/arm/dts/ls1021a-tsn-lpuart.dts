@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright 2023 NXP
+ */
+
+/dts-v1/;
+#include "ls1021a-tsn.dts"
+
+/ {
+	chosen {
+		stdout-path = &lpuart0;
+	};
+};
