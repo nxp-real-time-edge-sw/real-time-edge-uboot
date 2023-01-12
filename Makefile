@@ -1057,7 +1057,9 @@ UBOOTINCLUDE    := \
 	-include $(srctree)/include/linux/kconfig.h \
 	-I$(srctree)/dts/upstream/include \
 	$(if $(CONFIG_NET_LWIP), -I$(srctree)/lib/lwip/lwip/src/include \
-		-I$(srctree)/lib/lwip/u-boot)
+		-I$(srctree)/lib/lwip/u-boot) \
+	-I./app/canfestival/include \
+	-I./app/canfestival/include/timers_ls1021aiot
 
 NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
