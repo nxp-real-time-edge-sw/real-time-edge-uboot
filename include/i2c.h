@@ -18,6 +18,13 @@
 
 #include <linker_lists.h>
 
+#ifdef CONFIG_I2C_COREID_SET
+#define I2C_MXC_BUS_GET_CORE_ID(bus) \
+		CONFIG_SYS_I2C_MXC_I2C##bus##_COREID
+#else
+#define I2C_MXC_BUS_GET_CORE_ID(bus) 0
+#endif
+
 /*
  * For now there are essentially two parts to this file - driver model
  * here at the top, and the older code below (with CONFIG_SYS_I2C_LEGACY being
@@ -665,6 +672,7 @@ struct i2c_adapter {
 	int		slaveaddr;
 	int		init_done;
 	int		hwadapnr;
+	int		coreid;
 	char		*name;
 };
 
@@ -680,6 +688,7 @@ struct i2c_adapter {
 		.slaveaddr	=	_slaveaddr, \
 		.init_done	=	0, \
 		.hwadapnr	=	_hwadapnr, \
+		.coreid		=	I2C_MXC_BUS_GET_CORE_ID(_hwadapnr), \
 		.name		=	#_name \
 };
 
