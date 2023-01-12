@@ -60,7 +60,7 @@ static void do_icc_irq_set(unsigned long core_mask, unsigned long irq)
 
 static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 {
-	int i, k, ret, check_cnt;
+	int i, k, ret;
 	unsigned int dest_core = 0;
 	int mycoreid = get_core_id();
 	unsigned long block;
@@ -140,32 +140,25 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 		bytes = 0;
 	}
 
-	check_cnt = 0;
 	while (1) {
 		k = 0;
 		for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 			if (((dest_core >> i) & 0x1) && (i != mycoreid)) {
-				if (icc_ring_state(i))
+				if (icc_ring_state(i)) {
 					k++;
+					if (icc_ring_state(i) == ICC_IRQ_IDLE)
+						icc_set_sgi(0x01 << i, ICC_SGI);
+				}
 			}
 		}
 		if (!k)
 			break;
-		if (check_cnt == 1000)
-			break;
-		if (check_cnt%50 == 0)
-			icc_set_sgi(dest_core, ICC_SGI);
-		check_cnt++;
 	}
 
 	end = get_ticks();
 	utime = lldiv(1000000 * (end - start), freq);
-	if(!k) {
-		printf("ICC performance: %ld bytes to 0x%x cores in %lld us with %lld KB/s\n",
-				counts, dest_core, utime, lldiv((((unsigned long long)counts) * 1000), utime));
-	} else {
-		printf("ICC performance test fail after %lld us\n", utime);
-	}
+	printf("ICC performance: %ld bytes to 0x%x cores in %lld us with %lld KB/s\n",
+			counts, dest_core, utime, lldiv((((unsigned long long)counts) * 1000), utime));
 
 	printf("\n");
 	icc_show();
@@ -177,7 +170,7 @@ static void do_icc_send(unsigned long core_mask,
 	unsigned long dest_core = 0;
 	unsigned long bytes, block;
 	int mycoreid = get_core_id();
-	int i, k, ret, check_cnt;
+	int i, k, ret;
 
 	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 		if (((core_mask >> i) & 0x1) && (i != mycoreid))
@@ -243,33 +236,24 @@ static void do_icc_send(unsigned long core_mask,
 		bytes = 0;
 	}
 
-	check_cnt = 0;
 	while (1) {
 		k = 0;
 		for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 			if (((dest_core >> i) & 0x1) && (i != mycoreid)) {
-				if (icc_ring_state(i))
+				if (icc_ring_state(i)) {
 					k++;
+					if (icc_ring_irq_status(i) == ICC_IRQ_IDLE)
+						icc_set_sgi(0x01 << i, ICC_SGI);
+				}
 			}
 		}
 		if (!k)
 			break;
-		if (check_cnt == 1000)
-			break;
-		if (check_cnt%50 == 0)
-			icc_set_sgi(dest_core, ICC_SGI);
-		check_cnt++;
 	}
 
-	if (!k) {
-		printf(
-			"ICC send: %ld bytes to 0x%lx cores success\n",
-			counts, dest_core);
-	} else {
-		printf(
-			"ICC send: %ld bytes to 0x%lx cores failed\n",
-			counts, dest_core);
-	}
+	printf(
+		"ICC send: %ld bytes to 0x%lx cores success\n",
+		counts, dest_core);
 
 	printf("\n");
 	icc_show();
