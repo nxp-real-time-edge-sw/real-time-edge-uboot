@@ -3,7 +3,7 @@
  * Device Tree Include file for Freescale Layerscape-1046A family SoC.
  *
  * Copyright (C) 2016, Freescale Semiconductor
- * Copyright 2021 NXP
+ * Copyright 2021, 2023 NXP
  *
  * Mingkai Hu <mingkai.hu@nxp.com>
  */
@@ -94,6 +94,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio1: gpio@2310000 {
@@ -104,6 +105,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio2: gpio@2320000 {
@@ -114,6 +116,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		gpio3: gpio@2330000 {
@@ -124,6 +127,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			status = "disabled";
 		};
 
 		ifc: ifc@1530000 {
