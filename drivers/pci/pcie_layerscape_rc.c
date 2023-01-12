@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2020,2021 NXP
+ * Copyright 2020,2021, 2023 NXP
  * Layerscape PCIe driver
  */
 
@@ -407,7 +407,7 @@ static const struct udevice_id ls_pcie_ids[] = {
 };
 
 U_BOOT_DRIVER(pci_layerscape) = {
-	.name = "pci_layerscape",
+	.name = PCI_LS_DRV_NAME,
 	.id = UCLASS_PCI,
 	.of_match = ls_pcie_ids,
 	.ops = &ls_pcie_ops,
