@@ -397,13 +397,13 @@ void icc_show(void)
 {
 	int i;
 
-	printf("all cores: reserved_share_memory_base: 0x%lx; size: %d\n",
+	printf("all cores: reserved_share_memory_base: 0x%lx; size: %ld\n",
 		CFG_BAREMETAL_SYS_SDRAM_RESERVE_BASE,
 		CFG_BAREMETAL_SYS_SDRAM_RESERVE_SIZE);
 	printf("\n");
-	printf("mycoreid: %d; ICC_SGI: %d; share_memory_size: %d\n",
+	printf("mycoreid: %d; ICC_SGI: %d; share_memory_size: %ld\n",
 		mycoreid, ICC_SGI, ICC_CORE_MEM_SPACE);
-	printf("block_unit_size: %d; block number: %d; block_idx: %d\n",
+	printf("block_unit_size: %d; block number: %ld; block_idx: %d\n",
 		ICC_BLOCK_UNIT_SIZE, ICC_CORE_BLOCK_COUNT, block_idx);
 
 	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
