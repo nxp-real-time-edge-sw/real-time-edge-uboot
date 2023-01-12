@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2017 NXP
+ * Copyright 2017, 2023 NXP
  */
 
 #include <config.h>
@@ -71,4 +71,42 @@ armv8_el2_to_aarch32:
 	ldr x0, =0xc20000fd
 0:
 	smc #0
+	ret
+
+/* Get GIC offset
+* For LS1043a rev1.0, GIC base address align with 4k.
+* For LS1043a rev1.1, if DCFG_GIC400_ALIGN[GIC_ADDR_BIT]
+* is set, GIC base address align with 4K, or else align
+* with 64k.
+* output:
+*	x0: the base address of GICD
+*	x1: the base address of GICC
+*/
+.global get_gic_offset
+get_gic_offset:
+	ldr     x0, =GICD_BASE
+#ifdef CONFIG_GICV2
+	ldr     x1, =GICC_BASE
+#endif
+#ifdef CONFIG_HAS_FEATURE_GIC64K_ALIGN
+	ldr     x2, =DCFG_CCSR_SVR
+	ldr	w2, [x2]
+	rev	w2, w2
+	lsr	w3, w2, #16
+	ldr	w4, =SVR_DEV(SVR_LS1043A)
+	cmp	w3, w4
+	b.ne	1f
+	ands	w2, w2, #0xff
+	cmp	w2, #REV1_0
+	b.eq	1f
+	ldr	x2, =SCFG_GIC400_ALIGN
+	ldr	w2, [x2]
+	rev	w2, w2
+	tbnz	w2, #GIC_ADDR_BIT, 1f
+	ldr     x0, =GICD_BASE_64K
+#ifdef CONFIG_GICV2
+	ldr     x1, =GICC_BASE_64K
+#endif
+1:
+#endif
 	ret
