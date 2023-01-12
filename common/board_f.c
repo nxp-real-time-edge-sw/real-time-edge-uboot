@@ -328,9 +328,11 @@ static int setup_dest_addr(void)
 	 * Ram is setup, size stored in gd !!
 	 */
 	debug("Ram size: %08lX\n", (ulong)gd->ram_size);
+#ifndef CONFIG_ARCH_LX2160A
 #if defined(CONFIG_BAREMETAL)
 	if (get_core_id() == 0)
 		gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_MASTER_SIZE;
+#endif
 #endif
 #if defined(CONFIG_SYS_MEM_TOP_HIDE)
 	/*
