@@ -78,4 +78,15 @@ config ICC_COREID_SET
 	depends on BAREMETAL && IRQ
 	default y
 
+config QSPI_COREID_SET
+	bool "Enable QSPI for BareMetal"
+	depends on BAREMETAL
+	default n
+
+if QSPI_COREID_SET
+config QSPI_QSPI0_COREID
+	int "The core QSPI0 assigned"
+	default 1
+endif
+
 endmenu
