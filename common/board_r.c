@@ -779,6 +779,9 @@ static init_fnc_t init_sequence_r[] = {
 	 */
 #endif
 	initr_reloc_global_data,
+#if defined(CONFIG_BAREMETAL)
+	fdt_baremetal_setup,
+#endif
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 	initr_unlock_ram_in_cache,
 #endif
@@ -914,6 +917,15 @@ static init_fnc_t init_sequence_r[] = {
 	kgdb_init,
 #endif
 	interrupt_init,
+#if defined(CONFIG_BAREMETAL)
+#if !defined(CONFIG_ARCH_LS1028A) && !defined(CONFIG_ARCH_LX2160A)
+	initr_gic_init,
+#endif
+#endif
+#if defined(CONFIG_ICC)
+	icc_init,
+#endif
+
 #if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
 	timer_init,		/* initialize timer */
 #endif
