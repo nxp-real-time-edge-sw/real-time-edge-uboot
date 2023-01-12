@@ -2,6 +2,8 @@
 /*
  * (C) Copyright 2000
  * Paolo Scaffardi, AIRVENT SAM s.p.a - RIMINI(ITALY), arsenio@tin.it
+ *
+ * Copyright 2023 NXP
  */
 
 #include <common.h>
@@ -685,6 +687,7 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
+char printbuffer[2048];
 void putc(const char c)
 {
 	if (!gd)
@@ -760,6 +763,22 @@ void puts(const char *s)
 	if (!gd->have_console)
 		return pre_console_puts(s);
 
+#ifdef CONFIG_ENABLE_COREID_DEBUG
+	char channel = '0';
+	int outbool = 0;
+	int coreid = get_core_id();
+
+	channel += coreid;
+	if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
+		outbool = 1;
+	if (!outbool && printbuffer[0] == 0)
+		sprintf(printbuffer, "%c:", channel);
+	sprintf(printbuffer, "%s%s", printbuffer, s);
+	if (!outbool && s[strlen(s) - 1] != '\n')
+		return;
+	s = printbuffer;
+#endif
+
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
 		fputs(stdout, s);
@@ -768,6 +787,10 @@ void puts(const char *s)
 		pre_console_puts(s);
 		serial_puts(s);
 	}
+
+#ifdef CONFIG_ENABLE_COREID_DEBUG
+	memset(printbuffer, 0, sizeof(printbuffer));
+#endif
 }
 
 #ifdef CONFIG_CONSOLE_FLUSH_SUPPORT
@@ -1006,6 +1029,8 @@ int console_init_f(void)
 	console_update_silent();
 
 	print_pre_console_buffer(PRE_CONSOLE_FLUSHPOINT1_SERIAL);
+
+	memset(printbuffer, 0, sizeof(printbuffer));
 
 	return 0;
 }
