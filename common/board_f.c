@@ -121,6 +121,27 @@ static int init_baud_rate(void)
 	return 0;
 }
 
+#if defined(CONFIG_BAREMETAL)
+sgd_t *sgd = (sgd_t *)(CFG_BAREMETAL_SYS_SDRAM_RESERVE_BASE);
+
+static int core_share_global_data_init(void)
+{
+	u32 coreid = get_core_id();
+
+	if (coreid != CFG_BAREMETAL_FIRST_CORE)
+		return 0;
+
+	memset(sgd, 0, sizeof(sgd_t));
+#ifdef CONFIG_ENABLE_WRITE_LOCK
+	arch_write_lock_init(&sgd->consol_lock_putc);
+	arch_write_lock_init(&sgd->consol_lock_puts);
+	arch_write_lock_init(&sgd->consol_lock_getc);
+#endif
+	sgd->stream_channel = 0xFFFF;
+	return 0;
+}
+#endif
+
 static int display_text_info(void)
 {
 #if !defined(CONFIG_SANDBOX) && !defined(CONFIG_EFI_APP)
@@ -903,6 +924,9 @@ static const init_fnc_t init_sequence_f[] = {
 #endif
 	env_init,		/* initialize environment */
 	init_baud_rate,		/* initialze baudrate settings */
+#if defined(CONFIG_BAREMETAL)
+	core_share_global_data_init,
+#endif
 #ifndef CONFIG_ANDROID_AUTO_SUPPORT
 	serial_init,		/* serial communications setup */
 #endif
@@ -1110,6 +1134,10 @@ static const init_fnc_t init_sequence_f_slave[] = {
 #endif
 	env_init,		/* initialize environment */
 	init_baud_rate,		/* initialze baudrate settings */
+#if defined(CONFIG_BAREMETAL)
+	core_share_global_data_init,
+#endif
+
 	serial_init,		/* serial communications setup */
 	console_init_f,		/* stage 1 init of console */
 	display_options,	/* say that we are here */
