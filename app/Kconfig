@@ -1,0 +1,23 @@
+#
+# BareMetal configuration
+#
+
+menu "BareMetal"
+
+config BAREMETAL
+	bool "Support BareMetal features"
+	help
+	  This provides a command to start BareMetal on slave
+	  cores, and add some features to support BareMetal.
+
+if BAREMETAL
+
+config BAREMETAL_SLAVE_MODE
+	bool "The slave core running BareMetal binary"
+	default n
+	help
+	  the slave mode running on the slave cores
+
+endif
+
+endmenu
