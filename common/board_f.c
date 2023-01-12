@@ -234,6 +234,11 @@ static int print_cpuinfo(void)
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 int dram_init_slave(void)
 {
+#ifdef CONFIG_ARCH_IMX8M
+	u32 coreid = get_core_id();
+
+	gd->ram_base = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_BASE(coreid);
+#endif
 	gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
 	return 0;
 }
@@ -270,8 +275,10 @@ static int show_dram_config(void)
 
 __weak int dram_init_banksize(void)
 {
+#ifndef CONFIG_ARCH_IMX8M
 	gd->bd->bi_dram[0].start = gd->ram_base;
 	gd->bd->bi_dram[0].size = get_effective_memsize();
+#endif
 
 	return 0;
 }
@@ -358,7 +365,7 @@ static int setup_dest_addr(void)
 	 * Ram is setup, size stored in gd !!
 	 */
 	debug("Ram size: %08lX\n", (ulong)gd->ram_size);
-#ifndef CONFIG_ARCH_LX2160A
+#if !defined(CONFIG_ARCH_LX2160A) && !defined(CONFIG_ARCH_IMX8M)
 #if defined(CONFIG_BAREMETAL)
 	if (get_core_id() == 0)
 		gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_MASTER_SIZE;
@@ -377,17 +384,36 @@ static int setup_dest_addr(void)
 	 */
 	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
 #endif
-#ifdef CONFIG_SYS_SDRAM_BASE
-	if (get_core_id() == 0) {
+
+#if defined(CONFIG_BAREMETAL)
+	u32 id = get_core_id();
+
+	if (id == 0) {
 		gd->ram_base = CONFIG_SYS_SDRAM_BASE;
-	} else{
-		gd->ram_base = CONFIG_SYS_DDR_SDRAM_BASE +
+	} else {
+#ifdef CONFIG_ARCH_IMX8M
+		gd->ram_top = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_RAMTOP_BASE(id);
+#else
+		gd->ram_base = CONFIG_SYS_SDRAM_BASE +
 			CONFIG_BAREMETAL_SYS_SDRAM_MASTER_SIZE +
-			CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (get_core_id() - 1);
+			CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (id - 1);
+#endif
 	}
+#ifndef CONFIG_ARCH_IMX8M
+	gd->ram_top = gd->ram_base + get_effective_memsize();
+	gd->ram_top = board_get_usable_ram_top(gd->mon_len);
+#endif
+
+#else
+
+#ifdef CONFIG_SYS_SDRAM_BASE
+	gd->ram_base = CONFIG_SYS_SDRAM_BASE;
 #endif
 	gd->ram_top = gd->ram_base + get_effective_memsize();
 	gd->ram_top = board_get_usable_ram_top(gd->mon_len);
+
+#endif
+
 	gd->relocaddr = gd->ram_top;
 	debug("Ram top: %08lX\n", (ulong)gd->ram_top);
 #if defined(CONFIG_MP) && (defined(CONFIG_MPC86xx) || defined(CONFIG_E500))
