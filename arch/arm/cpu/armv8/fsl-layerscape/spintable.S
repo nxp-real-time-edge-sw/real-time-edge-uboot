@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * (C) Copyright 2014-2015 Freescale Semiconductor
- * Copyright 2019 NXP
+ * Copyright 2019, 2023 NXP
  */
 
 #include <config.h>
@@ -71,6 +71,9 @@ __secondary_boot_func:
 	mov	x4, #1
 	str	x4, [x11, #8]	/* STATUS */
 	dsb	sy
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	bl	_main_slave
+#endif
 
 1:
 	wfe
