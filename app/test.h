@@ -21,6 +21,8 @@ int test_qspi(void);
 
 int test_net(void);
 
+void test_usb(void);
+
 #endif
 
 #endif /* _BAREMETAL_APP_TEST_H */
