@@ -67,6 +67,7 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 	unsigned long bytes = counts;
 	unsigned long long start, end, utime;
 	unsigned long freq;
+	unsigned long data;
 
 	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 		if (((core_mask >> i) & 0x1) && (i != mycoreid))
@@ -102,6 +103,11 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 				(counts - bytes));
 			continue;
 		} else {
+			/* Process data to delay a few time to send data */
+			data = 0x5a;
+			data /= 3;
+			data *= 3;
+			memset((void *)block, data, ICC_BLOCK_UNIT_SIZE);
 			ret = icc_set_block(dest_core,
 					    ICC_BLOCK_UNIT_SIZE, block);
 			if (ret) {
@@ -120,6 +126,11 @@ static void do_icc_perf(unsigned long core_mask, unsigned long counts)
 				(counts - bytes));
 			continue;
 		} else {
+			/* Process data to delay a few time to send data */
+			data = 0x5a;
+			data /= 3;
+			data *= 3;
+			memset((void *)block, data, bytes);
 			ret = icc_set_block(dest_core, bytes, block);
 			if (ret) {
 				icc_block_free(block);
