@@ -5,6 +5,8 @@
  * (C) Copyright 2008 Armadeus Systems nc
  * (C) Copyright 2007 Pengutronix, Sascha Hauer <s.hauer@pengutronix.de>
  * (C) Copyright 2007 Pengutronix, Juergen Beisert <j.beisert@pengutronix.de>
+ *
+ * Copyright 2023 NXP
  */
 #include <common.h>
 #include <cpu_func.h>
@@ -562,6 +564,8 @@ static int fec_open(struct udevice *dev)
 	return 0;
 }
 
+static bool sfec_flag = true;
+
 static int fecmxc_init(struct udevice *dev)
 {
 	struct fec_priv *fec = dev_get_priv(dev);
@@ -592,7 +596,7 @@ static int fecmxc_init(struct udevice *dev)
 	writel(0x00000000, &fec->eth->gaddr2);
 
 	/* Do not access reserved register */
-	if (!is_mx6ul() && !is_mx6ull() && !is_imx8() && !is_imx8m() && !is_imx8ulp() &&
+	if (sfec_flag && !is_mx6ul() && !is_mx6ull() && !is_imx8() && !is_imx8m() && !is_imx8ulp() &&
 	    !is_imx93()) {
 		/* clear MIB RAM */
 		for (i = mib_ptr; i <= mib_ptr + 0xfc; i += 4)
@@ -601,6 +605,9 @@ static int fecmxc_init(struct udevice *dev)
 		/* FIFO receive start register */
 		writel(0x520, &fec->eth->r_fstart);
 	}
+#if defined(CONFIG_TARGET_IMX8MM_EVK) || defined(CONFIG_TARGET_IMX8MP_EVK)
+	sfec_flag = false;
+#endif
 
 	/* size and address of each buffer */
 	writel(FEC_MAX_PKT_SIZE, &fec->eth->emrbr);
