@@ -664,6 +664,10 @@ static int run_main_loop(void)
 	return 0;
 }
 
+#if defined(CONFIG_ICC)
+int icc_init(void);
+#endif
+
 /*
  * Over time we hope to remove most of the driver-related init and do it
  * if/when the driver is later used.
@@ -1062,6 +1066,11 @@ static void initcall_run_r_slave(void)
 	INITCALL(kgdb_init);
 #endif
 	INITCALL(interrupt_init);
+
+#if defined(CONFIG_ICC)
+	INITCALL(icc_init);
+#endif
+
 #if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
 	INITCALL(timer_init);		/* initialize timer */
 #endif
