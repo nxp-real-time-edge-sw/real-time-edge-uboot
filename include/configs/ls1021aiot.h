@@ -162,4 +162,6 @@
 #define CONFIG_BOOTCOMMAND "run distro_bootcmd; run sd_bootcmd; "	\
 			   "env exists secureboot && esbc_halt;"
 
+#include "ls1021a_baremetal.h"
+
 #endif
