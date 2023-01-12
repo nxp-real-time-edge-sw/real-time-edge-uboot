@@ -11,5 +11,8 @@
 
 int test_gpio(void);
 
+void test_i2c(void);
+
 #endif
+
 #endif /* _BAREMETAL_APP_TEST_H */
