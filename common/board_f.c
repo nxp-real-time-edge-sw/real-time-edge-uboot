@@ -7,6 +7,8 @@
  * (C) Copyright 2002
  * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
  * Marius Groeger <mgroeger@sysgo.de>
+ *
+ * Copyright 2023 NXP
  */
 
 #include <common.h>
@@ -359,6 +361,12 @@ static int setup_dest_addr(void)
 	 * Ram is setup, size stored in gd !!
 	 */
 	debug("Ram size: %08llX\n", (unsigned long long)gd->ram_size);
+
+#if defined(CONFIG_BAREMETAL)
+	if (get_core_id() == 0)
+		gd->ram_size = CFG_BAREMETAL_SYS_SDRAM_MASTER_SIZE;
+#endif
+
 #if CONFIG_VAL(SYS_MEM_TOP_HIDE)
 	/*
 	 * Subtract specified amount of memory to hide so that it won't
