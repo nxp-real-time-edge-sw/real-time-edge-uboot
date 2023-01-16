@@ -1051,8 +1051,6 @@ int console_init_f(void)
 
 	print_pre_console_buffer(PRE_CONSOLE_FLUSHPOINT1_SERIAL);
 
-	memset(printbuffer, 0, sizeof(printbuffer));
-
 	return 0;
 }
 
