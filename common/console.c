@@ -687,7 +687,8 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-char printbuffer[2048];
+char printbuffer[CONFIG_SYS_PBSIZE] __section(".data");
+unsigned int offset __section(".data") = 0;
 void putc(const char c)
 {
 	if (!gd)
@@ -729,6 +730,18 @@ void putc(const char c)
 	}
 }
 
+static void puts_to_console(const char *s)
+{
+	if (gd->flags & GD_FLG_DEVINIT) {
+		/* Send to the standard output */
+		fputs(stdout, s);
+	} else {
+		/* Send directly to the handler */
+		pre_console_puts(s);
+		serial_puts(s);
+	}
+}
+
 void puts(const char *s)
 {
 	if (!gd)
@@ -764,21 +777,32 @@ void puts(const char *s)
 		return pre_console_puts(s);
 
 #ifdef CONFIG_ENABLE_COREID_DEBUG
-	char channel = '0';
 	int outbool = 0;
 	int coreid = get_core_id();
 
-	channel += coreid;
-	if (strlen(s) == 1 || (s[0] == '=' && s[1] == '>'))
+	if (strlen(s) == 1 || !strncmp(s, "=>", strlen("=>")) ||
+			!strncmp(s, "u-boot=>", strlen("u-boot=>")))
 		outbool = 1;
-	if (!outbool && printbuffer[0] == 0)
-		sprintf(printbuffer, "%c:", channel);
-	sprintf(printbuffer, "%s%s", printbuffer, s);
-	if (!outbool && s[strlen(s) - 1] != '\n')
-		return;
-	s = printbuffer;
-#endif
 
+	if (!outbool && offset == 0) {
+		sprintf(printbuffer, "%d:", coreid);
+		offset = strlen(printbuffer);
+	}
+
+	if (offset + strlen(s) + 1 > sizeof(printbuffer) ) {
+		if (offset > 0)
+			puts_to_console(printbuffer);
+		puts_to_console(s);
+		offset = 0;
+	} else {
+		sprintf(printbuffer + offset, "%s", s);
+		offset += strlen(s);
+		if (!outbool && printbuffer[offset - 1] != '\n')
+			return;
+		puts_to_console(printbuffer);
+		offset = 0;
+	}
+#else
 	if (gd->flags & GD_FLG_DEVINIT) {
 		/* Send to the standard output */
 		fputs(stdout, s);
@@ -787,9 +811,6 @@ void puts(const char *s)
 		pre_console_puts(s);
 		serial_puts(s);
 	}
-
-#ifdef CONFIG_ENABLE_COREID_DEBUG
-	memset(printbuffer, 0, sizeof(printbuffer));
 #endif
 }
 
