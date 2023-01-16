@@ -517,22 +517,43 @@ static int initr_scsi(void)
 }
 #endif
 
-#ifdef CONFIG_CMD_NET
+#if defined(CONFIG_FMAN_COREID_SET)
+
 static int initr_net(void)
 {
-#ifdef CONFIG_FMAN_FMAN1_COREID
-	if (get_core_id() == CONFIG_FMAN_FMAN1_COREID) {
-		puts("Net:   ");
+	u32 id = get_core_id();
+
+	puts("Net:   ");
+
+	if(id == 0 || id == CONFIG_FMAN_FMAN1_COREID)
 		eth_initialize();
+
+	if(id == 0) {
 #if defined(CONFIG_RESET_PHY_R)
 		debug("Reset Ethernet PHY\n");
 		reset_phy();
 #endif
 	}
+
+	return 0;
+}
+
+#else /* CONFIG_FMAN_COREID_SET */
+
+#ifdef CONFIG_CMD_NET
+static int initr_net(void)
+{
+	puts("Net:   ");
+	eth_initialize();
+#if defined(CONFIG_RESET_PHY_R)
+	debug("Reset Ethernet PHY\n");
+	reset_phy();
 #endif
 	return 0;
 }
 #endif
+
+#endif /* CONFIG_FMAN_COREID_SET */
 
 #ifdef CONFIG_POST
 static int initr_post(void)
@@ -1101,11 +1122,7 @@ init_fnc_t init_sequence_r_slave[] = {
 #ifdef CONFIG_CMD_NET
 	INIT_FUNC_WATCHDOG_RESET
 	/* TODO: need add initr_net after add ethernet feature */
-	/* initr_net,
-	 */
-#ifdef CONFIG_FMAN_COREID_SET
 	initr_net,
-#endif
 #endif
 #ifdef CONFIG_FSL_FLEXCAN
 	flexcan_init,
