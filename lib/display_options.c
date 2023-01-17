@@ -48,6 +48,12 @@ int display_options(void)
 	display_options_get_banner(true, buf, sizeof(buf));
 	printf("%s", buf);
 
+#if defined(CONFIG_BAREMETAL)
+	uint32_t coreid = get_core_id();
+
+	printf("BareMetal Core ID: %d\n", coreid);
+#endif
+
 	return 0;
 }
 
