@@ -981,6 +981,10 @@ static void initcall_run_r(void)
 #ifdef CONFIG_DUAL_BOOTLOADER
 	INITCALL(initr_check_spl_recovery);
 #endif
+#ifdef CONFIG_FSL_FLEXCAN
+	INITCALL(flexcan_init);
+	INITCALL(flextimer_init);
+#endif
 	INITCALL(run_main_loop);
 };
 
