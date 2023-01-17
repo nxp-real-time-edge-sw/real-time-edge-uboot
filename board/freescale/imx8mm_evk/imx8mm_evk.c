@@ -99,11 +99,13 @@ int board_early_init_f(void)
 
 	set_wdog_reset(wdog);
 
+#if !defined(CONFIG_BAREMETAL_SLAVE_MODE)
 	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
 	imx_iomux_v3_setup_multiple_pads(uart4_pads, ARRAY_SIZE(uart4_pads));
 
 	init_uart_clk(1);
 	init_uart_clk(3);
+#endif
 
 #ifdef CONFIG_NAND_MXS
 	setup_gpmi_nand(); /* SPL will call the board_early_init_f */
