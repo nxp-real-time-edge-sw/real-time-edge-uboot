@@ -1013,6 +1013,10 @@ static init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_DUAL_BOOTLOADER
 	initr_check_spl_recovery,
 #endif
+#if CONFIG_FS_FLEXCAN
+	flexcan_init,
+	flextimer_init,
+#endif
 	run_main_loop,
 };
 
