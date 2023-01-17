@@ -237,6 +237,12 @@ void enable_caches(void)
 	dcache_enable();
 }
 
+void enable_caches_slave(void)
+{
+	icache_enable();
+	dcache_enable();
+}
+
 __weak int board_phys_sdram_size(phys_size_t *size)
 {
 	if (!size)
@@ -271,6 +277,15 @@ int dram_init(void)
 int dram_init_banksize(void)
 {
 	int bank = 0;
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	u32 coreid = get_core_id();
+
+	gd->bd->bi_dram[bank].start = CFG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_BASE(coreid);
+	gd->bd->bi_dram[bank].size = CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+
+	return 0;
+#endif
+
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size, sdram_b2_size;
