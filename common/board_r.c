@@ -1018,6 +1018,18 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 }
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+
+#ifdef CONFIG_ARCH_IMX8M
+extern void enable_caches_slave(void);
+
+static int initr_caches_slave(void)
+{
+	/* Enable caches */
+	enable_caches_slave();
+	return 0;
+}
+#endif
+
 #if defined(CONFIG_FMAN_COREID_SET)
 int eth_early_init_r(void);
 #endif
@@ -1033,7 +1045,11 @@ static void initcall_run_r_slave(void)
 	INITCALL(event_init);
 	/* TODO: could x86/PPC have this also perhaps? */
 #if CONFIG_IS_ENABLED(ARM) || CONFIG_IS_ENABLED(RISCV)
+#ifdef CONFIG_ARCH_IMX8M
+	INITCALL(initr_caches_slave);
+#else
 	INITCALL(initr_caches);
+#endif
 	/* Note: For Freescale LS2 SoCs, new MMU table is created in DDR.
 	 *	 A temporary mapping of IFC high region is since removed,
 	 *	 so environmental variables in NOR flash is not available
