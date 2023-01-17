@@ -49,6 +49,14 @@
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 
+#undef CONFIG_EXTRA_ENV_SETTINGS
+
+#undef  CONFIG_MXC_UART_BASE
+#define CONFIG_MXC_UART_BASE	UART4_BASE_ADDR
+
+#undef CONFIG_ETHPRIME
+#define CONFIG_ETHPRIME	"eth0" /* Set eqos to primary since we use its MDIO */
+
 #endif /* CONFIG_BAREMETAL_SLAVE_MODE */
 
 #undef CONFIG_EXTRA_ENV_SETTINGS
