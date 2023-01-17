@@ -40,6 +40,9 @@
 			"eth7addr=68:05:ca:35:cc:61\0" \
 			"ethact=FM1@DTSEC5\0"
 
+#undef CONFIG_ETHPRIME
+#define CONFIG_ETHPRIME	"FM1@DTSEC5"
+
 #endif /* CONFIG_BAREMETAL_SLAVE_MODE */
 
 #endif /* CONFIG_BAREMETAL */
