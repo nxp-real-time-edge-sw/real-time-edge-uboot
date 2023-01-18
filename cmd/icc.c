@@ -55,7 +55,10 @@ static void do_icc_irq_set(unsigned long core_mask, unsigned long irq)
 		return;
 	};
 
-	icc_set_sgi(dest_core, irq);
+	if (irq == ICC_SGI)
+		icc_dump_time(dest_core);
+	else
+		icc_set_sgi(dest_core, irq);
 }
 
 static void do_icc_perf(unsigned long core_mask, unsigned long counts)
