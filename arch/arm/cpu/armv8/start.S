@@ -172,7 +172,8 @@ pie_fixup_done:
 
 	/* Processor specific initialization */
 	bl	lowlevel_init
-#if defined(CONFIG_BAREMETAL) && defined(CONFIG_ARCH_IMX8M)
+
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE) && defined(CONFIG_ARCH_IMX8M)
 #if defined(CONFIG_GICV2) || defined(CONFIG_GICV3)
 	mrs x0, mpidr_el1
 	and x0, x0, #0xffff
