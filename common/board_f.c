@@ -231,19 +231,6 @@ static int print_cpuinfo(void)
 }
 #endif
 
-#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-int dram_init_slave(void)
-{
-#ifdef CONFIG_ARCH_IMX8M
-	u32 coreid = get_core_id();
-
-	gd->ram_base = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_BASE(coreid);
-#endif
-	gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
-	return 0;
-}
-#endif
-
 static int announce_dram_init(void)
 {
 	puts("DRAM:  ");
@@ -1146,9 +1133,8 @@ static const init_fnc_t init_sequence_f_slave[] = {
 	init_func_spi,
 #endif
 	announce_dram_init,
-#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-	dram_init_slave,		/* configure available RAM banks */
-#endif
+	dram_init,		/* configure available RAM banks */
+
 #ifdef CONFIG_POST
 	post_init_f,
 #endif
