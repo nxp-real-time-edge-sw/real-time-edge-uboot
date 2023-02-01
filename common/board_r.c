@@ -1087,7 +1087,8 @@ init_fnc_t init_sequence_r_slave[] = {
 	 */
 #endif
 	initr_reloc_global_data,
-#if defined(CONFIG_BAREMETAL)
+
+#ifndef CONFIG_ARCH_IMX8M
 	fdt_baremetal_setup,
 #endif
 
@@ -1096,10 +1097,6 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 	initr_barrier,
 	initr_malloc,
-	initr_env,
-#if defined(CONFIG_CONSOLE_RECORD)
-	console_record_init,
-#endif
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
@@ -1108,6 +1105,9 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_dm,
 #endif
 	initr_bootstage,
+#if defined(CONFIG_CONSOLE_RECORD)
+	console_record_init,
+#endif
 	stdio_init_tables,
 	serial_initialize,
 	initr_announce,
@@ -1133,15 +1133,10 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 
 	INIT_FUNC_WATCHDOG_RESET
-#if defined(CONFIG_PCI) && !defined(CONFIG_SYS_EARLY_PCI_INIT)
-	/*
-	 * Do pci configuration
-	 */
-	pci_init,
-#endif
 	stdio_add_devices,
 	jumptable_init,
 	console_init_r,		/* fully init console as a device */
+	initr_env,
 	INIT_FUNC_WATCHDOG_RESET
 	/* PPC has a udelay(20) here dating from 2002. Why? */
 
