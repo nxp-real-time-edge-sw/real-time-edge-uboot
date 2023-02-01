@@ -1093,16 +1093,6 @@ void board_init_f(ulong boot_flags)
 }
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-static int dram_init_slave(void)
-{
-#ifdef CONFIG_ARCH_IMX8M
-	u32 coreid = get_core_id();
-
-	gd->ram_base = CFG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_BASE(coreid);
-#endif
-	gd->ram_size = CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
-	return 0;
-}
 
 static void initcall_run_f_slave(void)
 {
@@ -1176,9 +1166,7 @@ static void initcall_run_f_slave(void)
 	INITCALL(init_func_i2c);
 #endif
 	INITCALL(announce_dram_init);
-#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-	INITCALL(dram_init_slave);		/* configure available RAM banks */
-#endif
+	INITCALL(dram_init);		/* configure available RAM banks */
 #if CONFIG_IS_ENABLED(POST)
 	INITCALL(post_init_f);
 #endif
