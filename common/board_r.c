@@ -1062,7 +1062,7 @@ static void initcall_run_r_slave(void)
 	 */
 #endif
 	INITCALL(initr_reloc_global_data);
-#if defined(CONFIG_BAREMETAL)
+#ifndef CONFIG_ARCH_IMX8M
 	INITCALL(fdt_baremetal_setup);
 #endif
 #if CONFIG_IS_ENABLED(SYS_INIT_RAM_LOCK) && CONFIG_IS_ENABLED(E500)
@@ -1070,12 +1070,8 @@ static void initcall_run_r_slave(void)
 #endif
 	INITCALL(initr_barrier);
 	INITCALL(initr_malloc);
-	INITCALL(initr_env);
 	INITCALL(log_init);
 	INITCALL(initr_bootstage); /* Needs malloc() but has its own timer */
-#if CONFIG_IS_ENABLED(CONSOLE_RECORD)
-	INITCALL(console_record_init);
-#endif
 #if CONFIG_IS_ENABLED(SYS_HAS_NONCACHED_MEMORY)
 	INITCALL(noncached_init);
 #endif
@@ -1109,6 +1105,9 @@ static void initcall_run_r_slave(void)
 	INITCALL(arch_fsp_init_r);
 #endif
 	INITCALL(initr_dm_devices);
+#if CONFIG_IS_ENABLED(CONSOLE_RECORD)
+	INITCALL(console_record_init);
+#endif
 	INITCALL(stdio_init_tables);
 	INITCALL(serial_initialize);
 	INITCALL(initr_announce);
@@ -1183,18 +1182,13 @@ static void initcall_run_r_slave(void)
 #endif
 	INITCALL_EVT(EVT_SETTINGS_R);
 	WATCHDOG_RESET();
-#if CONFIG_IS_ENABLED(PCI_INIT_R) && !CONFIG_IS_ENABLED(SYS_EARLY_PCI_INIT)
-	/*
-	 * Do pci configuration
-	 */
-	INITCALL(pci_init);
-#endif
 	INITCALL(stdio_add_devices);
 	INITCALL(jumptable_init);
 #if CONFIG_IS_ENABLED(API)
 	INITCALL(api_init);
 #endif
 	INITCALL(console_init_r);	/* fully init console as a device */
+	INITCALL(initr_env);
 #if CONFIG_IS_ENABLED(DISPLAY_BOARDINFO_LATE)
 	INITCALL(console_announce_r);
 	INITCALL(show_board_info);
