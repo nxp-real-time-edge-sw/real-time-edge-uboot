@@ -261,6 +261,12 @@ int dram_init(void)
 	phys_size_t sdram_size;
 	int ret;
 
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	gd->ram_size = CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+
+	return 0;
+#endif
+
 	ret = board_phys_sdram_size(&sdram_size);
 	if (ret)
 		return ret;
@@ -277,18 +283,21 @@ int dram_init(void)
 int dram_init_banksize(void)
 {
 	int bank = 0;
-#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-	u32 coreid = get_core_id();
-
-	gd->bd->bi_dram[bank].start = CFG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_BASE(coreid);
-	gd->bd->bi_dram[bank].size = CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
-
-	return 0;
-#endif
-
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size, sdram_b2_size;
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	u32 coreid = get_core_id();
+
+	gd->bd->bi_dram[bank].start =
+		CFG_SYS_SDRAM_BASE +
+		CFG_BAREMETAL_SYS_SDRAM_MASTER_SIZE +
+		CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (coreid - 1);
+	gd->bd->bi_dram[bank].size =
+		CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+
+	return 0;
+#endif
 
 	ret = board_phys_sdram_size(&sdram_size);
 	if (ret)
@@ -340,6 +349,11 @@ phys_size_t get_effective_memsize(void)
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size;
+
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	return CFG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+#endif
+
 	ret = board_phys_sdram_size(&sdram_size);
 	if (!ret) {
 		/* Bank 1 can't cross over 4GB space */
