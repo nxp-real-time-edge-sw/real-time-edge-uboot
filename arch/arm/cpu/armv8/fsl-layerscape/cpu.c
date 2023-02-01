@@ -1663,6 +1663,12 @@ void update_early_mmu_table(void)
 
 __weak int dram_init(void)
 {
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+       gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+
+       return 0;
+#endif
+
 	fsl_initdram();
 #if (!defined(CONFIG_SPL) && !defined(CONFIG_TFABOOT)) || \
 	defined(CONFIG_SPL_BUILD)
