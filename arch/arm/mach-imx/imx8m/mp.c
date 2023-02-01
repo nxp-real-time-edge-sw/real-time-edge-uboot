@@ -56,7 +56,12 @@
 #define IMX8M_SRC_SCR_M4C_NON_SCLR_RST_MASK	BIT(0)
 #define COREx_WFI_PDN(core_id) (1 << ((core_id) < 2 ? (core_id) * 2 : ((core_id) - 2) * 2 + 16))
 #define COREx_PGC_PCR(core_id) (0x800 + (core_id) * 0x40)
+
+#if defined(CONFIG_IMX8MM)
+#define CPU_PGC_UP_TRG 0xF0
+#else
 #define CPU_PGC_UP_TRG 0xD0
+#endif
 
 static struct src *src = (struct src *)SRC_BASE_ADDR;
 
