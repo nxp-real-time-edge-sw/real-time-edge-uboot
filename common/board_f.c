@@ -385,34 +385,24 @@ static int setup_dest_addr(void)
 	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
 #endif
 
+#ifdef CONFIG_SYS_SDRAM_BASE
+	gd->ram_base = CONFIG_SYS_SDRAM_BASE;
+
 #if defined(CONFIG_BAREMETAL)
 	u32 id = get_core_id();
 
 	if (id == 0) {
 		gd->ram_base = CONFIG_SYS_SDRAM_BASE;
 	} else {
-#ifdef CONFIG_ARCH_IMX8M
-		gd->ram_top = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_COREX_RAMTOP_BASE(id);
-#else
 		gd->ram_base = CONFIG_SYS_SDRAM_BASE +
 			CONFIG_BAREMETAL_SYS_SDRAM_MASTER_SIZE +
 			CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (id - 1);
-#endif
 	}
-#ifndef CONFIG_ARCH_IMX8M
-	gd->ram_top = gd->ram_base + get_effective_memsize();
-	gd->ram_top = board_get_usable_ram_top(gd->mon_len);
-#endif
+#endif /* CONFIG_BAREMETAL */
 
-#else
-
-#ifdef CONFIG_SYS_SDRAM_BASE
-	gd->ram_base = CONFIG_SYS_SDRAM_BASE;
 #endif
 	gd->ram_top = gd->ram_base + get_effective_memsize();
 	gd->ram_top = board_get_usable_ram_top(gd->mon_len);
-
-#endif
 
 	gd->relocaddr = gd->ram_top;
 	debug("Ram top: %08lX\n", (ulong)gd->ram_top);
