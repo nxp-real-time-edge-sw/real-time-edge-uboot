@@ -37,6 +37,11 @@ enum {
 	MPC5121_GPIO_TYPE,
 };
 
+enum gpio_interrupt_mode {
+	RISINGORFALLINGEDGE_INT,
+	FALLINGEDGE_INT,
+};
+
 inline u32 gpio_mask(uint gpio)
 {
 	return (1U << (31 - (gpio)));
@@ -134,6 +139,91 @@ static int mpc8xxx_gpio_set_value(struct udevice *dev, uint gpio, int value)
 	} else {
 		out_be32(&base->gpdat, gpdir & data->dat_shadow);
 		out_be32(&base->gpdir, gpdir);
+	}
+
+	return 0;
+}
+
+static int mpc8xxx_gpio_set_intmode(struct udevice *dev, uint gpio, enum gpio_interrupt_mode interrupt_mode)
+{
+	struct mpc8xxx_gpio_data *data = dev_get_priv(dev);
+	struct ccsr_gpio *base = data->base;
+	u32 l;
+	u32 mask = gpio_mask(gpio);
+
+	switch (interrupt_mode) {
+	case RISINGORFALLINGEDGE_INT:
+		if (data->little_endian) {
+		l = in_le32(&base->gpicr);
+		l |= mask;
+		out_le32(&base->gpicr, l);
+	} else {
+		l = in_be32(&base->gpicr);
+		l |= mask;
+		out_be32(&base->gpicr, l);
+	}
+		break;
+	case FALLINGEDGE_INT:
+		if (data->little_endian) {
+		l = in_le32(&base->gpicr);
+		l |= mask;
+		out_le32(&base->gpicr, l);
+	} else {
+		l = in_be32(&base->gpicr);
+		l |= mask;
+		out_be32(&base->gpicr, l);
+	}
+		break;
+	default:
+		if (data->little_endian) {
+		l = in_le32(&base->gpicr);
+		l |= mask;
+		out_le32(&base->gpicr, l);
+	} else {
+		l = in_be32(&base->gpicr);
+		l |= mask;
+		out_be32(&base->gpicr, l);
+	}
+		break;
+	}
+	return 0;
+}
+
+static int mpc8xxx_gpio_set_interrupt(struct udevice *dev, uint gpio)
+{
+	struct mpc8xxx_gpio_data *data = dev_get_priv(dev);
+	struct ccsr_gpio *base = data->base;
+	u32 mask = gpio_mask(gpio);
+	u32 l;
+
+	if (data->little_endian) {
+		l = in_le32(&base->gpimr);
+		l |= mask;
+		out_le32(&base->gpimr, l);
+	} else {
+		l = in_be32(&base->gpimr);
+		l |= mask;
+		out_be32(&base->gpimr, l);
+	}
+	mpc8xxx_gpio_set_intmode(dev, gpio, FALLINGEDGE_INT);
+	return 0;
+}
+
+static int mpc8xxx_gpio_clr_interrupt(struct udevice *dev, uint gpio)
+{
+	struct mpc8xxx_gpio_data *data = dev_get_priv(dev);
+	struct ccsr_gpio *base = data->base;
+	u32 mask = gpio_mask(gpio);
+	u32 l;
+
+	if (data->little_endian) {
+		l = in_le32(&base->gpimr);
+		l &= ~mask;
+		out_le32(&base->gpimr, l);
+	} else {
+		l = in_be32(&base->gpimr);
+		l &= ~mask;
+		out_be32(&base->gpimr, l);
 	}
 
 	return 0;
@@ -258,6 +348,8 @@ static const struct dm_gpio_ops gpio_mpc8xxx_ops = {
 	.direction_output	= mpc8xxx_gpio_direction_output,
 	.get_value		= mpc8xxx_gpio_get_value,
 	.set_value		= mpc8xxx_gpio_set_value,
+	.set_interrupt	= mpc8xxx_gpio_set_interrupt,
+	.clr_interrupt  = mpc8xxx_gpio_clr_interrupt,
 	.get_function		= mpc8xxx_gpio_get_function,
 };
 
