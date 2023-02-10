@@ -19,6 +19,17 @@
 	aliases {
 		spi0 = &flexspi;
 	};
+
+	gpio_int {
+		compatible = "fsl,gpio-int";
+		reg-names = <&gpio5 7 0>,
+					<&gpio5 8 0>;
+		interrupts = <0 104 0>;
+	};
+};
+
+&gpio5 {
+	status = "okay";
 };
 
 &ddrc {
