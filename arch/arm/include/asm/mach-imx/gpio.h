@@ -14,6 +14,11 @@ struct gpio_regs {
 	u32 gpio_dr;	/* data */
 	u32 gpio_dir;	/* direction */
 	u32 gpio_psr;	/* pad satus */
+	u32 gpio_icr1;
+	u32 gpio_icr2;
+	u32 gpio_imr;
+	u32 gpio_isr;
+	u32 gpio_edge_sel;
 };
 #endif
 
