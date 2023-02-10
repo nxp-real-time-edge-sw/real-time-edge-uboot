@@ -28,6 +28,14 @@ enum mxc_gpio_direction {
 	MXC_GPIO_DIRECTION_OUT,
 };
 
+enum gpio_interrupt_mode {
+	LOWLEVEL_INT,
+	HIGHLEVEL_INT,
+	RISINGEDGE_INT,
+	FALLINGEDGE_INT,
+	RISINGORFALLINGEDGE_INT,
+};
+
 #define GPIO_PER_BANK			32
 
 struct mxc_gpio_plat {
@@ -312,6 +320,124 @@ static int mxc_gpio_set_value(struct udevice *dev, unsigned offset,
 	return 0;
 }
 
+static int mxc_gpio_enableint(struct gpio_regs *regs, unsigned offset)
+{
+	u32 l;
+
+	l = readl(&regs->gpio_imr);
+	l |= 1 << offset;
+	writel(l, &regs->gpio_imr);
+
+	return 0;
+}
+
+static int mxc_gpio_disableint(struct gpio_regs *regs, unsigned offset)
+{
+	u32 l;
+
+	l = readl(&regs->gpio_imr);
+	l &= ~(1 << offset);
+	writel(l, &regs->gpio_imr);
+
+	return 0;
+}
+
+static int mxc_gpio_clr_intflags(struct gpio_regs *regs, unsigned offset)
+{
+	u32 l;
+
+	l = readl(&regs->gpio_isr);
+	l |= 1 << offset;
+	writel(l, &regs->gpio_isr);
+
+	return 0;
+}
+
+static int mxc_gpio_set_intmode(struct gpio_regs *regs, unsigned offset,
+				enum gpio_interrupt_mode interrupt_mode)
+{
+	u32 *icr;
+	u32 icrshift;
+	u32 l;
+
+	icrshift = offset;
+	l = readl(&regs->gpio_edge_sel);
+	l &= ~(1 << offset);
+	writel(l, &regs->gpio_edge_sel);
+
+	if (offset < 16) {
+		icr = &(regs->gpio_icr1);
+	} else {
+		icr = &(regs->gpio_icr2);
+		icrshift -= 16;
+	}
+	switch (interrupt_mode) {
+	case LOWLEVEL_INT:
+		l = readl(icr);
+		l &= ~(3 << (icrshift * 2));
+		writel(l, icr);
+		break;
+	case HIGHLEVEL_INT:
+		l = readl(icr);
+		l &= ~(3 << (icrshift * 2));
+		l |= 1 << (icrshift * 2);
+		writel(l, icr);
+		break;
+	case RISINGEDGE_INT:
+		l = readl(icr);
+		l &= ~(3 << (icrshift * 2));
+		l |= 2 << (icrshift * 2);
+		writel(l, icr);
+		break;
+	case FALLINGEDGE_INT:
+		l = readl(icr);
+		l &= ~(3 << (icrshift * 2));
+		l |= 3 << (icrshift * 2);
+		writel(l, icr);
+		break;
+	case RISINGORFALLINGEDGE_INT:
+		l = readl(&regs->gpio_edge_sel);
+		l &= ~(1 << offset);
+		writel(l, &regs->gpio_edge_sel);
+		break;
+	default:
+		l = readl(icr);
+		l &= ~(3 << (icrshift * 2));
+		writel(l, icr);
+		break;
+	}
+
+	return 0;
+}
+
+static int mxc_gpio_set_interrupt(struct udevice *dev, unsigned offset)
+{
+	struct mxc_bank_info *bank = dev_get_priv(dev);
+	struct gpio_regs *regs = bank->regs;
+	u32 l;
+
+	mxc_gpio_enableint(regs, offset);
+
+	l = readl(&regs->gpio_edge_sel);
+	l &= ~(1 << offset);
+	writel(l, &regs->gpio_edge_sel);
+
+	mxc_gpio_set_intmode(regs, offset, LOWLEVEL_INT);
+
+	return 0;
+}
+
+static int mxc_gpio_clr_interrupt(struct udevice *dev, unsigned offset)
+{
+	struct mxc_bank_info *bank = dev_get_priv(dev);
+	struct gpio_regs *regs = bank->regs;
+
+	mxc_gpio_disableint(regs, offset);
+	mxc_gpio_clr_intflags(regs, offset);
+
+	return 0;
+}
+
 static int mxc_gpio_get_function(struct udevice *dev, unsigned offset)
 {
 	struct mxc_bank_info *bank = dev_get_priv(dev);
@@ -328,6 +454,8 @@ static const struct dm_gpio_ops gpio_mxc_ops = {
 	.direction_output	= mxc_gpio_direction_output,
 	.get_value		= mxc_gpio_get_value,
 	.set_value		= mxc_gpio_set_value,
+	.set_interrupt  = mxc_gpio_set_interrupt,
+	.clr_interrupt  = mxc_gpio_clr_interrupt,
 	.get_function		= mxc_gpio_get_function,
 };
 
