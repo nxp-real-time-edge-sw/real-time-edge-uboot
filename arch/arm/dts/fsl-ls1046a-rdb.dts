@@ -20,6 +20,19 @@
 
 };
 
+&gpio1 {
+	status = "okay";
+};
+
+&soc {
+	gpio_int {
+		compatible = "fsl,gpio-int";
+		reg-names = <&gpio1 1 0>,
+					<&gpio1 2 0>;
+		interrupts = <0 99 0>;
+	};
+};
+
 &qspi {
 	status = "okay";
 
