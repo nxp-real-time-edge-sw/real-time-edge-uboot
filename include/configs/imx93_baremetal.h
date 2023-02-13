@@ -9,7 +9,10 @@
 
 /* Number of cores in each cluster */
 #define CORE_NUM_PER_CLUSTER    2
+
+#ifndef CONFIG_MAX_CPUS
 #define CONFIG_MAX_CPUS         2
+#endif
 
 #define CONFIG_GICV3
 
