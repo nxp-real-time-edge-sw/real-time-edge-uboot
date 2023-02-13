@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  */
 
 #ifndef __IMX93_EVK_H
@@ -39,10 +39,14 @@
 #endif
 
 #ifdef CONFIG_DISTRO_DEFAULTS
+#ifdef CONFIG_BAREMETAL
+#define BOOT_TARGET_DEVICES(func)
+#else
 #define BOOT_TARGET_DEVICES(func) \
 	func(MMC, mmc, 0) \
 	func(MMC, mmc, 1) \
 	func(USB, usb, 0)
+#endif
 
 #include <config_distro_bootcmd.h>
 #else
@@ -67,11 +71,30 @@
 	"emmc_dev=0\0"\
 	"sd_dev=1\0" \
 
+#ifdef CONFIG_BAREMETAL
+#define BOOT_BAREMTEL_ENV \
+	"boot_bm_enable=yes\0" \
+	"bmimage=bm-u-boot.bin\0" \
+	"bm_addr=90200000\0" \
+	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
+	"startbm=dcache flush;cpu 1 release 90200000;sleep 5\0" \
+	"boot_bm=" \
+		"if run loadbmimage; then " \
+			"run startbm; " \
+		"else " \
+			"echo WARN: Cannot load the Baremetal Image; " \
+		"fi;\0"
+#else
+#define BOOT_BAREMTEL_ENV \
+	"boot_bm_enable=no\0"
+#endif
+
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS		\
 	JAILHOUSE_ENV \
 	CONFIG_MFG_ENV_SETTINGS \
 	BOOTENV \
+	BOOT_BAREMTEL_ENV \
 	AHAB_ENV \
 	"scriptaddr=0x83500000\0" \
 	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
@@ -91,6 +114,7 @@
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 	"mmcautodetect=yes\0" \
 	"mmcargs=setenv bootargs ${jh_clk} console=${console} root=${mmcroot}\0 " \
+	"baremetal_args=setenv bootargs ${jh_clk} console=${console} root=${mmcroot} maxcpus=1 clk_ignore_unused\0 " \
 	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
@@ -100,6 +124,9 @@
 	"auth_os=auth_cntr ${cntr_addr}\0" \
 	"boot_os=booti ${loadaddr} - ${fdt_addr_r};\0" \
 	"mmcboot=echo Booting from mmc ...; " \
+		"if test ${boot_bm_enable} = yes; then " \
+			"setenv mmcargs ${baremetal_args}; " \
+		"fi;" \
 		"run mmcargs; " \
 		"if test ${sec_boot} = yes; then " \
 			"if run auth_os; then " \
@@ -149,6 +176,9 @@
 		"fi;\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
+		   "if test ${boot_bm_enable} = yes; then " \
+			   "run boot_bm; " \
+		   "fi;" \
 		   "if run loadbootscript; then " \
 			   "run bootscript; " \
 		   "else " \
@@ -212,8 +242,10 @@
 
 #define DWC_NET_PHYADDR			1
 
-#define PHY_ANEG_TIMEOUT 20000
+#define PHY_ANEG_TIMEOUT 10000
 
 #endif
+
+#include "imx93_baremetal.h"
 
 #endif
