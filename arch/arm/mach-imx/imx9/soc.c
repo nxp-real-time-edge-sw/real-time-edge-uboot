@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  *
  * Peng Fan <peng.fan@nxp.com>
  */
@@ -327,7 +327,8 @@ static struct mm_region imx93_mem_map[] = {
 		.phys = 0x80000000UL,
 		.size = PHYS_SDRAM_SIZE,
 		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
-			 PTE_BLOCK_OUTER_SHARE
+			 PTE_BLOCK_OUTER_SHARE |
+			 PTE_BLOCK_NS
 	}, {
 		/* empty entrie to split table entry 5 if needed when TEEs are used */
 		0,
@@ -381,6 +382,12 @@ void enable_caches(void)
 	dcache_enable();
 }
 
+void enable_caches_slave(void)
+{
+	icache_enable();
+	dcache_enable();
+}
+
 __weak int board_phys_sdram_size(phys_size_t *size)
 {
 	if (!size)
@@ -398,6 +405,10 @@ int dram_init(void)
 {
 	phys_size_t sdram_size;
 	int ret;
+
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	gd->ram_size = CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+#endif
 
 	ret = board_phys_sdram_size(&sdram_size);
 	if (ret)
@@ -418,6 +429,18 @@ int dram_init_banksize(void)
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size, sdram_b2_size;
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	u32 coreid = get_core_id();
+
+	gd->bd->bi_dram[bank].start =
+		CONFIG_SYS_SDRAM_BASE +
+		CONFIG_BAREMETAL_SYS_SDRAM_MASTER_SIZE +
+		CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE * (coreid - 1);
+	gd->bd->bi_dram[bank].size =
+		CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+
+	return 0;
+#endif
 
 	ret = board_phys_sdram_size(&sdram_size);
 	if (ret)
@@ -469,6 +492,11 @@ phys_size_t get_effective_memsize(void)
 	int ret;
 	phys_size_t sdram_size;
 	phys_size_t sdram_b1_size;
+
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+	return CONFIG_BAREMETAL_SYS_SDRAM_SLAVE_SIZE;
+#endif
+
 	ret = board_phys_sdram_size(&sdram_size);
 	if (!ret) {
 		/* Bank 1 can't cross over 4GB space */
@@ -493,6 +521,19 @@ phys_size_t get_effective_memsize(void)
 	}
 }
 
+u32 get_core_id(void)
+{
+	u32 aff;
+
+	asm volatile("mrs %0, mpidr_el1\n"
+		:"=r" (aff)
+		:
+		:"memory");
+
+	aff = (aff >> 8) & 0xFF;
+
+	return aff;
+}
 
 void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
 {

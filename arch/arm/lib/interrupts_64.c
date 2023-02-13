@@ -15,7 +15,7 @@
 #include <linux/compiler.h>
 #include <efi_loader.h>
 #include <asm/io.h>
-#ifndef CONFIG_ARCH_IMX8M
+#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
 #include <asm/arch/soc.h>
 #endif
 #include <cpu_func.h>

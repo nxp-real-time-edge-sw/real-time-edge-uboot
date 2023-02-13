@@ -943,7 +943,9 @@ static init_fnc_t init_sequence_r[] = {
 #endif
 	interrupt_init,
 #if defined(CONFIG_BAREMETAL)
-#if !defined(CONFIG_ARCH_LS1028A) && !defined(CONFIG_ARCH_LX2160A)
+#if !defined(CONFIG_ARCH_LS1028A) && \
+    !defined(CONFIG_ARCH_LX2160A) && \
+    !defined(CONFIG_ARCH_IMX9)
 	initr_gic_init,
 #endif
 #endif
@@ -1057,7 +1059,7 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 
-#ifdef CONFIG_ARCH_IMX8M
+#if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
 extern void enable_caches_slave(void);
 
 static int initr_caches_slave(void)
@@ -1077,7 +1079,7 @@ init_fnc_t init_sequence_r_slave[] = {
 	initr_reloc,
 	/* TODO: could x86/PPC have this also perhaps? */
 #ifdef CONFIG_ARM
-#ifdef CONFIG_ARCH_IMX8M
+#if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
 	initr_caches_slave,
 #else
 	initr_caches,
@@ -1091,7 +1093,7 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 	initr_reloc_global_data,
 
-#ifndef CONFIG_ARCH_IMX8M
+#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
 	fdt_baremetal_setup,
 #endif
 
@@ -1145,7 +1147,9 @@ init_fnc_t init_sequence_r_slave[] = {
 
 	interrupt_init,
 #if defined(CONFIG_BAREMETAL)
-#if !defined(CONFIG_ARCH_LS1028A) && !defined(CONFIG_ARCH_LX2160A)
+#if !defined(CONFIG_ARCH_LS1028A) && \
+    !defined(CONFIG_ARCH_LX2160A) && \
+    !defined(CONFIG_ARCH_IMX9)
 	initr_gic_init,
 #endif
 #endif
