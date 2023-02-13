@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  */
 
 #ifndef __IMX93_EVK_H
@@ -40,5 +40,7 @@
 #endif
 
 #define CONFIG_MAX_CPUS 2
+
+#include "imx93_baremetal.h"
 
 #endif
