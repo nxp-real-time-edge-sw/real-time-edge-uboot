@@ -1022,7 +1022,7 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 
-#ifdef CONFIG_ARCH_IMX8M
+#if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
 extern void enable_caches_slave(void);
 
 static int initr_caches_slave(void)
@@ -1048,7 +1048,7 @@ static void initcall_run_r_slave(void)
 	INITCALL(event_init);
 	/* TODO: could x86/PPC have this also perhaps? */
 #if CONFIG_IS_ENABLED(ARM) || CONFIG_IS_ENABLED(RISCV)
-#ifdef CONFIG_ARCH_IMX8M
+#if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
 	INITCALL(initr_caches_slave);
 #else
 	INITCALL(initr_caches);
@@ -1061,7 +1061,7 @@ static void initcall_run_r_slave(void)
 	 */
 #endif
 	INITCALL(initr_reloc_global_data);
-#ifndef CONFIG_ARCH_IMX8M
+#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
 	INITCALL(fdt_baremetal_setup);
 #endif
 #if CONFIG_IS_ENABLED(SYS_INIT_RAM_LOCK) && CONFIG_IS_ENABLED(E500)
