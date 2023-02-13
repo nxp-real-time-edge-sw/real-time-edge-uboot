@@ -42,7 +42,7 @@
  * 0-7 are used by Linux SMP.
  */
 
-#ifdef CONFIG_ARCH_IMX8M
+#if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
 #define ICC_SGI 9
 #define IRQ_SGI_TEST 10
 #else
