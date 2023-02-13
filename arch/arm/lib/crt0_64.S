@@ -195,6 +195,9 @@ ENTRY(_main_slave)
 	ldr	x0, =(CONFIG_SYS_INIT_SP_ADDR)
 	/* SRAM as stack for per slave core */
 	mrs	x1, mpidr_el1
+#if defined(CONFIG_ARCH_IMX9)
+	lsr	x1, x1, #8
+#endif
 	and	x1, x1, #0xff
 	ldr	x2, =0x1000	/* 4k SRAM as stack memory per core */
 	mul	x2, x1, x2

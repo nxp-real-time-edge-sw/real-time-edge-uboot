@@ -295,7 +295,7 @@ static int show_dram_config(void)
 
 __weak int dram_init_banksize(void)
 {
-#ifndef CONFIG_ARCH_IMX8M
+#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
 	gd->bd->bi_dram[0].start = gd->ram_base;
 	gd->bd->bi_dram[0].size = get_effective_memsize();
 #endif
@@ -394,7 +394,9 @@ static int setup_dest_addr(void)
 	 */
 	debug("Ram size: %08llX\n", (unsigned long long)gd->ram_size);
 
-#if !defined(CONFIG_ARCH_LX2160A) && !defined(CONFIG_ARCH_IMX8M)
+#if !defined(CONFIG_ARCH_LX2160A) && \
+    !defined(CONFIG_ARCH_IMX8M) && \
+    !defined(CONFIG_ARCH_IMX9)
 #if defined(CONFIG_BAREMETAL)
 	if (get_core_id() == 0)
 		gd->ram_size = CFG_BAREMETAL_SYS_SDRAM_MASTER_SIZE;
