@@ -1195,6 +1195,7 @@ dtb-$(CONFIG_ARCH_IMX9) += \
 	imx91-11x11-evk-spinand.dtb \
 	imx91-11x11-evk-tianma-wvga-panel.dtb \
 	imx93-11x11-evk.dtb \
+	imx93-11x11-evk-baremetal-slave.dtb \
 	imx93-11x11-evk-pmic-pf0900.dtb \
 	imx93-14x14-evk.dtb \
 	imx93-9x9-qsb.dtb \

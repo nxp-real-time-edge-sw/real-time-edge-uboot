@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2023 NXP
+ */
+
+/dts-v1/;
+
+#include "imx93-11x11-evk.dts"
+
+/{
+	chosen {
+		stdout-path = &lpuart2;
+	};
+};
