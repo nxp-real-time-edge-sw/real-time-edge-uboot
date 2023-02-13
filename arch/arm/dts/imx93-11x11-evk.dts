@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  */
 
 /dts-v1/;
@@ -370,6 +370,14 @@ dsi_host: dsi-host {
 &lpuart1 { /* console */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	clocks = <&clk IMX93_CLK_LPUART2_GATE>, <&clk IMX93_CLK_LPUART2_GATE>;
+	clock-names = "ipg", "per";
 	status = "okay";
 };
 
