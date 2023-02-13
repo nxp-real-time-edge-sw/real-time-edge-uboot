@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright 2021 NXP
+ * Copyright 2021, 2023 NXP
  */
 
 /dts-v1/;
@@ -336,7 +336,9 @@
 &lpuart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
-	status = "disabled";
+	clocks = <&clk IMX93_CLK_LPUART2_GATE>, <&clk IMX93_CLK_LPUART2_GATE>;
+	clock-names = "ipg", "per";
+	status = "okay";
 };
 
 &usbotg1 {
