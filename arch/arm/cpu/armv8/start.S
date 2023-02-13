@@ -190,7 +190,9 @@ slave_cpu:
 	wfe
 	ldr	x1, =CPU_RELEASE_ADDR
 	ldr	x0, [x1]
-#if defined(CONFIG_BAREMETAL_SLAVE_MODE) && defined(CONFIG_ARCH_IMX8M)
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE) && \
+	(defined(CONFIG_ARCH_IMX8M) || \
+	 defined(CONFIG_ARCH_IMX9))
 	cbz	x0, slave_cpu_imx
 #else
 	cbz	x0, slave_cpu
@@ -198,7 +200,9 @@ slave_cpu:
 	br	x0			/* branch to the given address */
 #endif /* CONFIG_ARMV8_MULTIENTRY */
 
-if defined(CONFIG_BAREMETAL_SLAVE_MODE) && defined(CONFIG_ARCH_IMX8M)
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE) && \
+	(defined(CONFIG_ARCH_IMX8M) || \
+	 defined(CONFIG_ARCH_IMX9))
 slave_cpu_imx:
 	bl	_main_slave
 #else
