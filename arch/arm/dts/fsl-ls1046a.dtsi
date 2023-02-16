@@ -438,6 +438,7 @@
 			compatible = "fsl,ls1046a-ftm-alarm";
 			reg = <0x0 0x29e0000 0x0 0x10000>;
 			interrupts = <0 119 4>;
+			clocks = <&clockgen 4 1>;
 			status = "okay";
 		};
 	};
