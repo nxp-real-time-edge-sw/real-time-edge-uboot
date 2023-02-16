@@ -648,7 +648,8 @@ static inline void pre_console_puts(const char *s) {}
 static inline void print_pre_console_buffer(int flushpoint) {}
 #endif
 
-char printbuffer[2048];
+char printbuffer[CONFIG_SYS_PBSIZE] __section(".data");
+unsigned int offset __section(".data") = 0;
 void putc(const char c)
 {
 	if (!gd)
@@ -737,7 +738,6 @@ void puts(const char *s)
 		return pre_console_puts(s);
 
 #ifdef CONFIG_ENABLE_COREID_DEBUG
-	static unsigned int offset = 0;
 	int outbool = 0;
 	int coreid = get_core_id();
 
