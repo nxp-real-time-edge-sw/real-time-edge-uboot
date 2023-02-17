@@ -329,6 +329,13 @@ int ftm_rtc_set_alarm_by_us(struct udevice *dev, unsigned long us, void (* func)
 	return 0;
 }
 
+unsigned long ftm_rtc_get_max_alarm_us(struct udevice *dev)
+{
+	struct rtc_ftm_alarm_priv *priv = dev_get_priv(dev);
+
+	return (priv->ns_per_count * 0xFFFF) / 1000;
+}
+
 void ftm_rtc_set_alarm(struct udevice *dev, u16 ticks, void (* func)(void *))
 {
 	struct rtc_ftm_alarm_priv *priv = dev_get_priv(dev);
