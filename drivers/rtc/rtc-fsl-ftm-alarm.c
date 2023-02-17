@@ -14,6 +14,7 @@
 #include <asm/mp.h>
 #endif
 #include <dm/device_compat.h>
+#include <asm/arch/speed.h>
 #include <cpu_func.h>
 #include <ftm_alarm.h>
 #include <asm/io.h>
@@ -124,6 +125,7 @@ struct rtc_ftm_alarm_priv {
     struct ftm_module *base;
 	ftm_irq_func overflow_handle;
 	u32 irq_num;
+	unsigned long clk_frq;
 };
 
 static u32 ftm_read(void *addr)
@@ -162,7 +164,7 @@ void ftm_counter_enable(struct udevice *dev)
 	/* Select and enable counter clock source */
 	val = ftm_read(&(ftm_base->SC));
 	val &= ~(FLEXTIMER_SC_PS_MASK | FLEXTIMER_SC_CLKS_MASK);
-	val |= FLEXTIMER_SC_CLKS(clock_sys);
+	val |= (FLEXTIMER_SC_PS_MASK | FLEXTIMER_SC_CLKS(clock_sys));
 	ftm_write(val, &(ftm_base->SC));
 
 	ftm_write_protection(ftm_base, true);
@@ -358,6 +360,7 @@ static int ftm_rtc_probe(struct udevice *dev)
 	fdt_addr_t addr;
 	int err;
 	u32 irq, core_id = get_core_id();
+	struct sys_info sysinfo;
 
 	dev_info(dev, "Probe start\n");
 	dev_dbg(dev, "Clock source setting: %u\n", clock_sys);
@@ -373,6 +376,24 @@ static int ftm_rtc_probe(struct udevice *dev)
 	addr = dev_read_addr(dev);
 	if (addr == FDT_ADDR_T_NONE)
 		return -EINVAL;
+
+#if CONFIG_IS_ENABLED(CLK)
+	struct clk clk;
+
+	err = clk_get_by_index(dev, 0, &clk);
+	if (clk.dev)
+	if (!err) {
+        clk_frq = clk_get_rate(&clk);
+        if (!IS_ERR_VALUE(clk_frq))
+            priv->clk_frq = err;
+    } else if (err != -ENOENT && err != -ENODEV && err != -ENOSYS) {
+        dev_err(dev, "FTM failed to get clock\n");
+        return err;
+    }
+#else
+	get_sys_info(&sysinfo);
+	priv->clk_frq = sysinfo.freq_localbus;
+#endif
 
 	err = dev_read_u32_index(dev, "interrupts", 1, &irq);
 	dev_dbg(dev, "irq_num : %u\n", irq);
