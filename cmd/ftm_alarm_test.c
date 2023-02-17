@@ -20,68 +20,105 @@
 
 #define TEST_LEN    50
 
-unsigned long pre_time;
-unsigned long avg_time;
 unsigned long max_time;
 unsigned long min_time;
 unsigned long irq_count;
+unsigned long pre_time;
+unsigned long first_time;
+unsigned long last_time;
+bool start_flg = false;
 struct udevice *dev;
 
 
 char * compatible_name = "fsl,ls1046a-ftm-alarm";
 
-static void do_ftm_show(struct udevice *dev)
+static void do_ftm_show(void)
 {
-	printf("%-15s | %-15s | %-15s | %-15s\n", "irq count", "average (us)", "max (us)", "min (us)");
-	printf("%-15lu | %-15lu | %-15lu | %-15lu\n", irq_count, avg_time, max_time, min_time);
+	unsigned long total_time = last_time - first_time;
+	unsigned long avg_time = total_time / (irq_count - 1);
+	printf("%-15s | %-15s | %-15s | %-15s | %-15s |\n",
+			"irq count", "total (us)", "average (us)", "max (us)", "min (us)");
+	printf("%-15lu | %-15lu | %-15lu | %-15lu | %-15lu |\n",
+			irq_count, total_time, avg_time, max_time, min_time);
 	return;
 }
 
 void timer_isr_handler(void *arg)
 {
-	unsigned long curr_time = timer_get_us();
 	unsigned long interval_time;
 
+	last_time = timer_get_us();
+
+	if (first_time == 0)
+		first_time = last_time;
+
 	if (pre_time != 0) {
-		interval_time = curr_time - pre_time;
+		interval_time = last_time - pre_time;
 		if (max_time < interval_time)
 			max_time = interval_time;
 
 		if (min_time > interval_time || min_time == 0)
 			min_time = interval_time;
-
-		avg_time = (avg_time * (irq_count - 1) + interval_time) / (irq_count);
 	}
-	pre_time = curr_time;
+	pre_time = last_time;
 
 	irq_count++;
 	return;
 }
 
-void do_ftm_start(struct udevice *dev)
+static int do_ftm_start(int argc, char * const argv[])
 {
-	if (irq_count != 0) {
+	unsigned long time_us = 5;
+	unsigned long input_value;
+	unsigned long max_alarm_us;
+	int ret;
+
+	if (start_flg) {
 		printf("FTM test already started.\n");
-		return;
+		return CMD_RET_SUCCESS;
 	}
 
-	ftm_rtc_set_alarm(dev, 2000, timer_isr_handler);
+	if (argc == 2) {
+		printf("Use default alarm time - %lu us\n", time_us);
+	} else if (argc == 3) {
+		input_value = simple_strtoul(argv[2], NULL, 10);
+		max_alarm_us = ftm_rtc_get_max_alarm_us(dev);
+		if (input_value > max_alarm_us) {
+			printf("Para error, the max alarm time: %lu us\n", max_alarm_us);
+			return CMD_RET_FAILURE;
+		}
+		time_us = input_value;
+	} else {
+		return CMD_RET_USAGE;
+	}
+
+	first_time = 0;
+	last_time = 0;
+	max_time = 0;
+	min_time = 0;
+	pre_time = 0;
+	irq_count = 0;
+
+	ret = ftm_rtc_set_alarm_by_us(dev, time_us, timer_isr_handler);
+	if (ret) {
+		printf("FTM set alarm error.\n");
+		return CMD_RET_FAILURE;
+	}
+
+	start_flg = true;
 
 	printf("FTM test start.\n");
-    return;
+    return CMD_RET_SUCCESS;
 }
 
-void do_ftm_stop(struct udevice *dev)
+void do_ftm_stop(void)
 {
 	ftm_rtc_alarm_stop(dev);
 
-	avg_time = 0;
-	max_time = 0;
-	min_time = 0;
-	irq_count = 0;
-	pre_time = 0;
+	start_flg = false;
 
 	printf("FTM test stop.\n");
+	do_ftm_show();
 	return;
 }
 
@@ -119,22 +156,22 @@ ftm_cmd(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 	}
 
 	if (!strcmp(argv[1], "show")) {
-		do_ftm_show(dev);
+		do_ftm_show();
 	} else if (!strcmp(argv[1], "start")) {
-		do_ftm_start(dev);
+		return do_ftm_start(argc, argv);
 	} else if (!strcmp(argv[1], "stop")) {
-		do_ftm_stop(dev);
+		do_ftm_stop();
 	} else
 		return CMD_RET_USAGE;
 
-	return 0;
+	return CMD_RET_SUCCESS;
 }
 
 static char ftm_help_text[] =
 	"test ftm alarm\n"
-	"show		- show FTM test result\n"
-	"start		- start FTM test\n"
-	"stop		- stop FTM test\n"
+	"show				- show FTM test result\n"
+	"start [count] us		- start FTM test\n"
+	"stop				- stop FTM test\n"
 	"";
 
 
