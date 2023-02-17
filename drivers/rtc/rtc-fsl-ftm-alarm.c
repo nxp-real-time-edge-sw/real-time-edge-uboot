@@ -126,6 +126,7 @@ struct rtc_ftm_alarm_priv {
 	ftm_irq_func overflow_handle;
 	u32 irq_num;
 	unsigned long clk_frq;
+	unsigned long ns_per_count;
 };
 
 static u32 ftm_read(void *addr)
@@ -300,6 +301,34 @@ void ftm_set_irq_handler(struct udevice *dev, void (* func)(void *))
 	return;
 }
 
+int ftm_us_to_count(struct udevice *dev, unsigned long us, unsigned short *output)
+{
+	struct rtc_ftm_alarm_priv *priv = dev_get_priv(dev);
+	unsigned long ns_per_count = priv->ns_per_count;
+	unsigned long input_ns = us * 1000;
+	unsigned long count;
+
+	count = input_ns / ns_per_count;
+	if (count > 0xFFFF)
+		return -1;
+
+	*output = (unsigned short)count;
+	return 0;
+}
+
+int ftm_rtc_set_alarm_by_us(struct udevice *dev, unsigned long us, void (* func)(void *))
+{
+	unsigned short ticks;
+	int ret;
+
+	ret = ftm_us_to_count(dev, us, &ticks);
+	if (ret)
+		return ret;
+
+	ftm_rtc_set_alarm(dev, ticks, func);
+	return 0;
+}
+
 void ftm_rtc_set_alarm(struct udevice *dev, u16 ticks, void (* func)(void *))
 {
 	struct rtc_ftm_alarm_priv *priv = dev_get_priv(dev);
@@ -394,6 +423,9 @@ static int ftm_rtc_probe(struct udevice *dev)
 	get_sys_info(&sysinfo);
 	priv->clk_frq = sysinfo.freq_localbus;
 #endif
+
+	priv->ns_per_count = ((unsigned long)1000 * 1000 * 1000 * 128) / priv->clk_frq;
+	dev_info(dev, "[INFO] ns per count : %lu\n", priv->ns_per_count);
 
 	err = dev_read_u32_index(dev, "interrupts", 1, &irq);
 	dev_dbg(dev, "irq_num : %u\n", irq);

@@ -23,6 +23,7 @@ u64 ftm_get_count(struct udevice *dev);
 void ftm_reset_count(struct udevice *dev);
 
 void ftm_rtc_set_alarm(struct udevice *dev, u16 ticks, void (* func)(void *));
+int ftm_rtc_set_alarm_by_us(struct udevice *dev, unsigned long us, void (* func)(void *));
 void ftm_rtc_alarm_stop(struct udevice *dev);
 
 #endif
