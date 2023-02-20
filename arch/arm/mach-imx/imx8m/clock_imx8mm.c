@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2018-2019 NXP
+ * Copyright 2018-2019, 2023 NXP
  *
  * Peng Fan <peng.fan@nxp.com>
  */
@@ -548,11 +548,11 @@ int clock_init(void)
 		INTPLL_DIV20_CLKE_MASK;
 	writel(val_cfg0, &ana_pll->sys_pll2_gnrl_ctl);
 
-	/* Configure ARM at 1.2GHz */
+	/* Configure ARM at 1.8GHz */
 	clock_set_target_val(ARM_A53_CLK_ROOT, CLK_ROOT_ON |
 			     CLK_ROOT_SOURCE_SEL(2));
 
-	intpll_configure(ANATOP_ARM_PLL, MHZ(1200));
+	intpll_configure(ANATOP_ARM_PLL, MHZ(1800));
 
 	/* Bypass CCM A53 ROOT, Switch to ARM PLL -> MUX-> CPU */
 	clock_set_target_val(CORE_SEL_CFG, CLK_ROOT_SOURCE_SEL(1));
