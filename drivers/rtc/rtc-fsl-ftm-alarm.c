@@ -14,7 +14,6 @@
 #include <asm/mp.h>
 #endif
 #include <dm/device_compat.h>
-#include <asm/arch/speed.h>
 #include <cpu_func.h>
 #include <ftm_alarm.h>
 #include <asm/io.h>
@@ -33,6 +32,8 @@
 
 /* FLEXTIMER module Fault Mode Status register */
 #define FLEXTIMER_FMS_WPEN			BIT(6)
+
+#define FTM_CLK_DIV					2
 
 struct ftm_module {
 	u32 SC;			/* 0x00 */
@@ -396,7 +397,6 @@ static int ftm_rtc_probe(struct udevice *dev)
 	fdt_addr_t addr;
 	int err;
 	u32 irq, core_id = get_core_id();
-	struct sys_info sysinfo;
 
 	dev_info(dev, "Probe start\n");
 	dev_dbg(dev, "Clock source setting: %u\n", clock_sys);
@@ -427,8 +427,7 @@ static int ftm_rtc_probe(struct udevice *dev)
         return err;
     }
 #else
-	get_sys_info(&sysinfo);
-	priv->clk_frq = sysinfo.freq_localbus;
+	priv->clk_frq = gd->bus_clk/FTM_CLK_DIV;
 #endif
 
 	priv->ns_per_count = ((unsigned long)1000 * 1000 * 1000 * 128) / priv->clk_frq;
