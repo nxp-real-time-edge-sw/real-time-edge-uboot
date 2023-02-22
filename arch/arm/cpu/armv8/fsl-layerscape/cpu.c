@@ -1333,7 +1333,9 @@ phys_size_t get_effective_memsize(void)
 		ea_size = gd->ram_size;
 	}
 
-#ifndef CONFIG_ARCH_LX2160A
+#if !defined(CONFIG_ARCH_LX2160A) || \
+    (defined(CONFIG_ARCH_LX2160A) && \
+    !defined(CONFIG_BAREMETAL_SLAVE_MODE))
 #ifdef CFG_SYS_MEM_RESERVE_SECURE
 	/* Check if we have enough space for secure memory */
 	if (ea_size > CFG_SYS_MEM_RESERVE_SECURE)
