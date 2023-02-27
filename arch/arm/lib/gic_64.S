@@ -133,6 +133,10 @@ ENTRY(gic_init_secure_percpu)
 					/* Allow EL1 access to ICC_SRE_EL1 */
 	msr	ICC_SRE_EL2, x10
 	isb
+
+	mov	x10, #0x1		/* Enable Group 1 interrupts */
+	msr	ICC_IGRPEN1_EL1, x10
+	isb
 1:
 	msr	ICC_CTLR_EL1, xzr	/* NonSecure ICC_CTLR_EL1 */
 	isb
@@ -209,7 +213,11 @@ ENDPROC(gic_wait_for_interrupt)
 WEAK(gic_send_sgi)
 #if defined(CONFIG_GICV3)
 	orr	x1, x1, x0, lsl #24
+#if defined(CONFIG_ARCH_IMX9)
+	msr ICC_SGI1R_EL1, x1
+#else
 	msr	ICC_ASGI1R_EL1, x1
+#endif
 	isb
 #elif defined(CONFIG_GICV2)
 	ldr	x1, =GICD_BASE
