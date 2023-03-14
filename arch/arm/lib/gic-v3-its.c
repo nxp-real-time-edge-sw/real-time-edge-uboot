@@ -30,26 +30,26 @@ struct gic_v3_its_priv {
 
 static int gic_v3_its_get_gic_addr(struct gic_v3_its_priv *priv)
 {
-	struct udevice *dev;
 	fdt_addr_t addr;
-	int ret;
+	fdt_size_t size;
+	int offset;
 
-	ret = uclass_get_device_by_driver(UCLASS_IRQ,
-					  DM_DRIVER_GET(arm_gic_v3_its), &dev);
-	if (ret) {
-		pr_err("%s: failed to get %s irq device\n", __func__,
-		       DM_DRIVER_GET(arm_gic_v3_its)->name);
-		return ret;
+	offset = fdt_node_offset_by_compatible(gd->fdt_blob, -1, "arm,gic-v3");
+	if (offset < 0) {
+		debug("%s: Not find node with compatible arm,gic-v3\n", __func__);
+		return offset;
 	}
 
-	addr = dev_read_addr_index(dev, 0);
+	addr = fdtdec_get_addr_size_auto_noparent(gd->fdt_blob, offset, "reg",
+						  0, &size, false);
 	if (addr == FDT_ADDR_T_NONE) {
 		pr_err("%s: failed to get GICD address\n", __func__);
 		return -EINVAL;
 	}
 	priv->gicd_base = addr;
 
-	addr = dev_read_addr_index(dev, 1);
+	addr = fdtdec_get_addr_size_auto_noparent(gd->fdt_blob, offset, "reg",
+						  1, &size, false);
 	if (addr == FDT_ADDR_T_NONE) {
 		pr_err("%s: failed to get GICR address\n", __func__);
 		return -EINVAL;
@@ -159,12 +159,12 @@ int gic_lpi_tables_init(u64 base, u32 num_redist)
 }
 
 static const struct udevice_id gic_v3_its_ids[] = {
-	{ .compatible = "arm,gic-v3" },
+	{ .compatible = "arm,gic-v3-its" },
 	{}
 };
 
 U_BOOT_DRIVER(arm_gic_v3_its) = {
-	.name		= "gic-v3",
+	.name		= "gic-v3-its",
 	.id		= UCLASS_IRQ,
 	.of_match	= gic_v3_its_ids,
 };
