@@ -213,11 +213,14 @@ ENDPROC(gic_wait_for_interrupt)
 WEAK(gic_send_sgi)
 #if defined(CONFIG_GICV3)
 	orr	x1, x1, x0, lsl #24
-#if defined(CONFIG_ARCH_IMX9)
+	switch_el x2, 3f, 2f, 2f
+3:
+	msr ICC_ASGI1R_EL1, x1
+	b	0f
+2:
 	msr ICC_SGI1R_EL1, x1
-#else
-	msr	ICC_ASGI1R_EL1, x1
-#endif
+	b	0f
+0:
 	isb
 #elif defined(CONFIG_GICV2)
 	ldr	x1, =GICD_BASE
