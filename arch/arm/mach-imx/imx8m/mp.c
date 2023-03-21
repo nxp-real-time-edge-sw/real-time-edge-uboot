@@ -150,8 +150,8 @@ void imx_set_cpu_pwr_on(unsigned int core_id)
 	mmio_setbits_32(IMX_SRC_BASE + IMX8M_SRC_A53RCR1, (1 << core_id));
 }
 
-#ifdef CONFIG_BAREMETAL
-/* Currently baremetal is using spintable for cpu release */
+#if defined(CONFIG_BAREMETAL) && !defined(CONFIG_BAREMETAL_PSCI_BOOT)
+/* If CONFIG_BAREMTAL_PSCI_BOOT is disabled for baremetal, using spintable for cpu release */
 int cpu_release(u32 cpuid, int argc, char *const argv[])
 {
 	uint64_t boot_addr;
