@@ -61,7 +61,8 @@ struct imx_fuse const imx_field_return_fuse = {
 
 int timer_init(void)
 {
-#if IS_ENABLED(CONFIG_XPL_BUILD) || IS_ENABLED(CONFIG_BAREMETAL_SLAVE_MODE)
+#if IS_ENABLED(CONFIG_XPL_BUILD) || \
+	(IS_ENABLED(CONFIG_BAREMETAL_SLAVE_MODE) && !IS_ENABLED(CONFIG_BAREMETAL_PSCI_BOOT))
 	struct sctr_regs *sctr = (struct sctr_regs *)SYSCNT_CTRL_BASE_ADDR;
 	unsigned long freq = readl(&sctr->cntfid0);
 
