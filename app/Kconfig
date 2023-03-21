@@ -26,6 +26,13 @@ config ENABLE_COREID_DEBUG
 	bool "Add coreid to the log"
 	default n
 
+config BAREMETAL_PSCI_BOOT
+	bool "Booting slave core by psci method"
+	default n
+	help
+	  Say Y here to chose psci method to boot slave core,
+	  otherwise using spin-table method to boot slave core.
+
 endif
 
 config GPIO_COREID_SET
