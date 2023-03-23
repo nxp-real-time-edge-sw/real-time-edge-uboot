@@ -73,6 +73,19 @@ int irq_set_affinity(struct irq *irq, int core_mask)
 	return ops->set_affinity(irq, core_mask);
 }
 
+struct udevice *get_irq_udevice(int index)
+{
+	struct udevice *dev;
+	int ret;
+
+	ret = uclass_get_device(UCLASS_IRQ, index, &dev);
+	if (ret) {
+		pr_err("%s: failed to get irq device\n", __func__);
+		return NULL;
+	}
+	return dev;
+}
+
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
 int irq_get_by_phandle(struct udevice *dev, const struct phandle_2_arg *cells,
 		       struct irq *irq)
