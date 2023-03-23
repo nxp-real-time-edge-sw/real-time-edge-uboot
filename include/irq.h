@@ -93,6 +93,12 @@ struct irq_ops {
 	 */
 	int (*read_and_clear)(struct irq *irq);
 	/**
+	  * set_affinity() - Set the IRQ affinity
+	  * @irq: IRQ line
+	  * @core_mask: core mask
+	  */
+	int	(*set_affinity)(struct irq *irq, int core_mask);
+	/**
 	 * of_xlate - Translate a client's device-tree (OF) irq specifier.
 	 *
 	 * The irq core calls this function as the first step in implementing
@@ -300,5 +306,5 @@ int irq_first_device_type(enum irq_dev_t type, struct udevice **devp);
  * Return: ACPI pin number or -ve on error
  */
 int irq_get_acpi(const struct irq *irq, struct acpi_irq *acpi_irq);
-
+int irq_set_affinity(struct irq *irq, int core_mask);
 #endif
