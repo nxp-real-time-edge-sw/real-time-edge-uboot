@@ -35,6 +35,12 @@ struct irq {
 	ulong flags;
 };
 
+struct irq_desc {
+	struct irq *irq;
+	void *data;
+	void (*handler)(int, int, void*);
+};
+
 /**
  * struct irq_ops - Operations for the IRQ
  *
