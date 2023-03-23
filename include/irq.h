@@ -307,4 +307,5 @@ int irq_first_device_type(enum irq_dev_t type, struct udevice **devp);
  */
 int irq_get_acpi(const struct irq *irq, struct acpi_irq *acpi_irq);
 int irq_set_affinity(struct irq *irq, int core_mask);
+struct udevice *get_irq_udevice(int index);
 #endif
