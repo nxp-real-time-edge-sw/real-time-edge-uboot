@@ -38,6 +38,7 @@
 #include <cpu_func.h>
 #include <irq_func.h>
 #include <inter-core-comm.h>
+#include <irq.h>
 
 #define GPIO2_ADDR	0x02310000
 #define GPIO2_DIR	(GPIO2_ADDR + 0x00)
@@ -60,7 +61,9 @@
 #define CORE3_MASK	(1 << 3)
 #define SGI8_NUM	8
 
-static void gpio2_irq(int hw_irq, int src_coreid)
+struct irq gpio_int_data;
+
+static void gpio2_irq(int hw_irq, int src_coreid, void *data)
 {
 	u32 val;
 	unsigned long time_us = timer_get_us();
@@ -77,9 +80,11 @@ static void gpio2_irq(int hw_irq, int src_coreid)
 
 static void gpio_register_irq(u32 coreid, u32 hw_irq)
 {
-	gic_irq_register(hw_irq, gpio2_irq);
-	gic_set_type(hw_irq);
-	gic_set_target(1 << coreid, hw_irq);
+	gpio_int_data.dev = get_irq_udevice(0);
+	gpio_int_data.id = hw_irq;
+	irq_desc_register(&gpio_int_data, gpio2_irq, NULL);
+	irq_set_polarity(gpio_int_data.dev, gpio_int_data.id, false);
+	irq_set_affinity(&gpio_int_data, 1 << coreid);
 	enable_interrupts();
 }
 
