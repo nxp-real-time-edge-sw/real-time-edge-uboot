@@ -96,6 +96,16 @@ int irq_get_interrupt_parent(const struct udevice *dev,
 	return 0;
 }
 
+int irq_set_affinity(struct irq *irq, int core_mask)
+{
+	const struct irq_ops *ops = irq_get_ops(irq->dev);
+
+	if (!ops->set_affinity)
+		return -ENOSYS;
+
+	return ops->set_affinity(irq, core_mask);
+}
+
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
 int irq_get_by_phandle(struct udevice *dev, const struct phandle_2_arg *cells,
 		       struct irq *irq)
