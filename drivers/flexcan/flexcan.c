@@ -10,7 +10,8 @@
 
 #include <linux/delay.h>
 #include "flexcan.h"
-
+#include <irq.h>
+struct irq flexcan_irq_data;
 irq_func flexcan_rx_handle = NULL;
 
 static u32 readl(void *addr)
@@ -409,11 +410,13 @@ static void flexcan_irq(int hw_irq, int src_coreid)
 		flexcan_write((1 << FLEXCAN_TX_BUF_ID), &(CAN3->IFLAG1));
 }
 
-static void flexcan_register_irq(u32 coreid, u32 hw_irq)
+static void flexcan_register_irq(u32 coreid, u32 hw_irq, void *data)
 {
-	gic_irq_register(hw_irq, flexcan_irq);
-	gic_set_type(hw_irq);
-	gic_set_target(1 << coreid, hw_irq);
+	flexcan_irq_data.dev = get_irq_udevice(0);
+	flexcan_irq_data.id  = hw_irq;
+	irq_desc_register(&flexcan_irq_data, flexcan_irq, NULL);
+	irq_set_polarity(flexcan_irq_data.dev, flexcan_irq_data.id, false);
+	irq_set_affinity(&flexcan_irq_data, 1 << coreid);
 	enable_interrupts();
 }
 
