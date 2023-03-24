@@ -17,6 +17,7 @@
 #include <cpu_func.h>
 #include <ftm_alarm.h>
 #include <asm/io.h>
+#include <irq.h>
 
 /* FLEXTIMER module Status And Control register */
 #define FLEXTIMER_SC_TOF			BIT(7)
@@ -34,6 +35,8 @@
 #define FLEXTIMER_FMS_WPEN			BIT(6)
 
 #define FTM_CLK_DIV					2
+
+struct irq ftm_irq_data;
 
 struct ftm_module {
 	u32 SC;			/* 0x00 */
@@ -239,9 +242,11 @@ static void ftm_timer_register_irq(struct udevice *dev)
 	u32 hw_irq = priv->irq_num;
 	u32 core_id = get_core_id();
 
-	gic_irq_register(hw_irq, ftm_timer_irq, (void *)dev);
-	gic_set_type(hw_irq);
-	gic_set_target(1 << core_id, hw_irq);
+	ftm_irq_data.dev = get_irq_udevice(0);
+	ftm_irq_data.id  = hw_irq;
+	irq_desc_register(&ftm_irq_data, ftm_timer_irq, (void *)dev);
+	irq_set_polarity(ftm_irq_data.dev, ftm_irq_data.id, false);
+	irq_set_affinity(&ftm_irq_data, 1 << core_id);
 	enable_interrupts();
 }
 
