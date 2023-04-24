@@ -348,8 +348,7 @@ void test_usb(void)
 		/* read the data to memory */
 		printf("\nUSB read: device %d block # %ld, count %ld  ... ",
 			usb_stor_curr_dev, blk, cnt);
-		stor_dev = blk_get_devnum_by_type(IF_TYPE_USB,
-			usb_stor_curr_dev);
+		stor_dev = blk_get_devnum_by_uclass_id(UCLASS_USB, usb_stor_curr_dev);
 		n = blk_dread(stor_dev, blk, cnt, (ulong *)addr);
 		printf("%ld blocks read: %s\n", n,
 			(n == cnt) ? "OK" : "ERROR");
@@ -357,8 +356,7 @@ void test_usb(void)
 		/* write the data to USB mass storage device */
 		printf("\nUSB write: device %d block # %ld, count %ld  ... ",
 			usb_stor_curr_dev, blk, cnt);
-		stor_dev = blk_get_devnum_by_type(IF_TYPE_USB,
-			usb_stor_curr_dev);
+		stor_dev = blk_get_devnum_by_uclass_id(UCLASS_USB, usb_stor_curr_dev);
 		n = blk_dwrite(stor_dev, blk, cnt, (ulong *)addr);
 		printf("%ld blocks write: %s\n", n,
 			(n == cnt) ? "OK" : "ERROR");
