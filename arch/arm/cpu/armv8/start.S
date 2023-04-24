@@ -176,6 +176,27 @@ pie_fixup_done:
 	/* Processor specific initialization */
 	bl	lowlevel_init
 
+#if defined(CONFIG_BAREMETAL) && defined(CONFIG_ARCH_IMX8M)
+#if defined(CONFIG_GICV2) || defined(CONFIG_GICV3)
+	mrs x0, mpidr_el1
+	and x0, x0, #0xffff
+	cmp x0, #CFG_BAREMETAL_FIRST_CORE
+	b.ne 1f
+
+	ldr	x0, =GICD_BASE
+	bl	gic_init_secure
+1:
+#if defined(CONFIG_GICV3)
+	ldr	x0, =GICR_BASE
+	bl	gic_init_secure_percpu
+#elif defined(CONFIG_GICV2)
+	ldr	x0, =GICD_BASE
+	ldr	x1, =GICC_BASE
+	bl	gic_init_secure_percpu
+#endif
+#endif
+#endif
+
 #if defined(CONFIG_ARMV8_SPIN_TABLE) && !defined(CONFIG_SPL_BUILD)
 	branch_if_master x0, master_cpu
 	b	spin_table_secondary_jump
