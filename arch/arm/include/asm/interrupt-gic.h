@@ -18,5 +18,6 @@ struct gic_chip_data {
 
 #ifndef __ASSEMBLY__
 void irq_desc_register(struct irq *, void (*irq_handle)(int, int, void *), void *);
+void gic_send_sgi(u32 hw_irq, int core_mask);
 #endif
 #endif /* _FSL_LAYERSCAPE_INT_GIC_H */
