@@ -1130,9 +1130,6 @@ init_fnc_t init_sequence_r_slave[] = {
 #endif
 
 #ifdef CONFIG_CMD_NET
-	initr_ethaddr,
-#endif
-#ifdef CONFIG_CMD_NET
 	INIT_FUNC_WATCHDOG_RESET
 	/* TODO: need add initr_net after add ethernet feature */
 	initr_net,
