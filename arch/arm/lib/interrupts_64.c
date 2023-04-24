@@ -2,18 +2,58 @@
 /*
  * (C) Copyright 2013
  * David Feng <fenghua@phytium.com.cn>
+ *
+ * Copyright 2023 NXP
+ *
  */
 
 #include <common.h>
 #include <asm/esr.h>
+#include <asm/system.h>
 #include <asm/global_data.h>
 #include <asm/ptrace.h>
 #include <irq_func.h>
+#include <irq.h>
+#include <asm/gic.h>
 #include <linux/compiler.h>
 #include <efi_loader.h>
 #include <semihosting.h>
+#include <asm/io.h>
+#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
+#include <asm/arch/soc.h>
+#endif
+#include <cpu_func.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+struct irq_desc *irq_descs[1024] __section(".data");
+#if defined(CONFIG_GICV3)
+extern int gicv3_ack_irq(void);
+extern void gicv3_end_irq(int ack);
+#elif defined(CONFIG_GICV2)
+extern int gic_ack_irq(void);
+extern void gic_end_irq(int ack);
+#endif
+
+int irq_desc_register(struct irq *irq_data, void (*irq_handle)(int, int, void *), void *data)
+{
+	struct irq_desc *irq_desc_t;
+
+	if (!irq_descs[irq_data->id]) {
+		irq_desc_t = calloc(1, sizeof(struct irq_desc));
+		if (!irq_desc_t) {
+			debug("%s: Cannot allocate memory\n", __func__);
+			return -ENOMEM;
+		}
+		irq_desc_t->handler = irq_handle;
+		irq_desc_t->data = data;
+		irq_descs[irq_data->id] = irq_desc_t;
+		return 0;
+	} else {
+		debug("%s: failed to register irq desc\n", __func__);
+		return -EINVAL;
+	}
+}
 
 int interrupt_init(void)
 {
@@ -24,11 +64,25 @@ int interrupt_init(void)
 
 void enable_interrupts(void)
 {
+	asm volatile(
+		/* arch_local_irq_enable */
+		"msr	daifclr, #2"
+		:
+		:
+		: "memory");
+
 	return;
 }
 
 int disable_interrupts(void)
 {
+	asm volatile(
+		/* arch_local_irq_disable */
+		"msr	daifset, #2"
+		:
+		:
+		: "memory");
+
 	return 0;
 }
 
@@ -176,11 +230,52 @@ void do_sync(struct pt_regs *pt_regs)
  */
 void do_irq(struct pt_regs *pt_regs)
 {
-	efi_restore_gd();
-	printf("\"Irq\" handler, esr 0x%08lx\n", pt_regs->esr);
-	show_regs(pt_regs);
-	show_efi_loaded_images(pt_regs);
-	panic("Resetting CPU ...\n");
+	u32 ack;
+	int hw_irq;
+	int src_coreid; /* just for SGI, will be 0 for other */
+	struct irq_desc *irq_desc_t;
+
+#if defined(CONFIG_GICV3)
+#define ICC_IAR_INT_ID_MASK	0xffffff
+	ack = gicv3_ack_irq();
+	hw_irq = ack & ICC_IAR_INT_ID_MASK;
+	/* FIX ME: use the fixed source coreID for ls1028a */
+	src_coreid = 0;
+
+	if (hw_irq  >= 1024 && hw_irq <= 8191)
+		return;
+
+	irq_desc_t = irq_descs[hw_irq];
+	if (irq_desc_t) {
+		for(src_coreid = 0; src_coreid < CONFIG_MAX_CPUS; src_coreid++)
+			if(src_coreid != get_core_id())
+				irq_desc_t->handler(hw_irq, src_coreid, irq_desc_t->data);
+	}
+
+	gicv3_end_irq(ack);
+#elif defined(CONFIG_GICV2)
+READ_ACK:
+	ack = gic_ack_irq();
+	hw_irq = ack & GICC_IAR_INT_ID_MASK;
+	src_coreid = ack >> 10;
+
+	if (hw_irq  >= 1021)
+		return;
+
+	irq_desc_t = irq_descs[hw_irq];
+	if (irq_desc_t)
+		irq_desc_t->handler(hw_irq, src_coreid, irq_desc_t->data);
+
+	gic_end_irq(ack);
+
+	/* core soft reset interrupt id
+		core0 : 196, core1 : 197, core2 : 200, core3 : 201
+	*/
+	if (ack == 196 || ack == 197 || ack == 200 || ack == 201)
+		wfi();
+
+	goto READ_ACK;
+#endif
 }
 
 /*
