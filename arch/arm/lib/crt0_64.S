@@ -189,20 +189,15 @@ ENTRY(_main_slave)
 #elif defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)
 	ldr	x0, =(CONFIG_SPL_STACK)
 #elif defined(CONFIG_INIT_SP_RELATIVE)
+#if CONFIG_POSITION_INDEPENDENT
+	adrp	x0, __bss_start     /* x0 <- Runtime &__bss_start */
+	add	x0, x0, #:lo12:__bss_start
+#else
 	adr	x0, __bss_start
+#endif
 	add	x0, x0, #CONFIG_SYS_INIT_SP_BSS_OFFSET
 #else
-	ldr	x0, =(CONFIG_SYS_INIT_SP_ADDR)
-	/* SRAM as stack for per slave core */
-	mrs	x1, mpidr_el1
-#if defined(CONFIG_ARCH_IMX9)
-	lsr	x1, x1, #8
-#endif
-	and	x1, x1, #0xff
-	ldr	x2, =0x1000	/* 4k SRAM as stack memory per core */
-	mul	x2, x1, x2
-	sub	x0, x0, x2
-
+	ldr	x0, =(SYS_INIT_SP_ADDR)
 #endif
 	bic	sp, x0, #0xf	/* 16-byte alignment for ABI compliance */
 	mov	x0, sp
