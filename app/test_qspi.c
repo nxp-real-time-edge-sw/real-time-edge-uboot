@@ -42,7 +42,7 @@ static int test_qspi_flash_probe(void)
 		device_remove(new, DM_REMOVE_NORMAL);
 
 	flash = NULL;
-	ret = spi_flash_probe_bus_cs(bus, cs, speed, mode, &new);
+	ret = spi_flash_probe_bus_cs(bus, cs, &new);
 	if (ret) {
 		printf("Failed to initialize SPI flash at %u:%u (error %d)\n",
 		       bus, cs, ret);
@@ -149,7 +149,7 @@ static int do_test_qspi_flash(ulong offset, ulong len)
 		return 1;
 	}
 
-	from = map_sysmem(CONFIG_SYS_TEXT_BASE, 0);
+	from = map_sysmem(CONFIG_TEXT_BASE, 0);
 	memcpy(buf, from, len);
 
 	ret = qspi_flash_test(flash, buf, len, offset, vbuf);
