@@ -5,6 +5,7 @@
  */
 #ifndef _FSL_LAYERSCAPE_INT_GIC_H
 #define _FSL_LAYERSCAPE_INT_GIC_H
+#include <irq.h>
 
 struct gic_chip_data {
 	void __iomem *gicd_base;
@@ -15,4 +16,7 @@ struct gic_chip_data {
 #endif
 };
 
+#ifndef __ASSEMBLY__
+void irq_desc_register(struct irq *, void (*irq_handle)(int, int, void *), void *);
+#endif
 #endif /* _FSL_LAYERSCAPE_INT_GIC_H */
