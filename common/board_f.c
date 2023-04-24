@@ -1130,7 +1130,6 @@ static const init_fnc_t init_sequence_f_slave[] = {
 #endif
 	arch_cpu_init,		/* basic arch cpu dependent setup */
 	initf_dm,
-	arch_cpu_init_dm,
 #if defined(CONFIG_PPC) || defined(CONFIG_SYS_FSL_CLK) || defined(CONFIG_M68K)
 	/* get CPU and bus clocks according to the environment variable */
 	get_clocks,		/* get CPU and bus clocks (etc.) */
