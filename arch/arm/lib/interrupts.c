@@ -16,18 +16,96 @@
  *
  * (C) Copyright 2004
  * Philippe Robin, ARM Ltd. <philippe.robin@arm.com>
+ *
+ * Copyright 2023 NXP
  */
 
 #include <common.h>
 #include <cpu_func.h>
 #include <efi_loader.h>
 #include <irq_func.h>
+#include <irq.h>
+#include <asm/gic.h>
 #include <asm/global_data.h>
 #include <asm/proc-armv/ptrace.h>
 #include <asm/ptrace.h>
 #include <asm/u-boot-arm.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+#ifdef CONFIG_USE_IRQ
+int interrupt_init(void)
+{
+	unsigned long cpsr;
+
+	/*
+	 * setup up stacks if necessary
+	 */
+	IRQ_STACK_START = gd->irq_sp - 4;
+	IRQ_STACK_START_IN = gd->irq_sp + 8;
+	FIQ_STACK_START = IRQ_STACK_START - CONFIG_STACKSIZE_IRQ;
+
+
+	__asm__ __volatile__("mrs %0, cpsr\n"
+			     : "=r" (cpsr)
+			     :
+			     : "memory");
+
+	__asm__ __volatile__("msr cpsr_c, %0\n"
+			     "mov sp, %1\n"
+			     :
+			     : "r" (IRQ_MODE | I_BIT | F_BIT |
+				    (cpsr & ~FIQ_MODE)),
+			       "r" (IRQ_STACK_START)
+			     : "memory");
+
+	__asm__ __volatile__("msr cpsr_c, %0\n"
+			     "mov sp, %1\n"
+			     :
+			     : "r" (FIQ_MODE | I_BIT | F_BIT |
+				    (cpsr & ~IRQ_MODE)),
+			       "r" (FIQ_STACK_START)
+			     : "memory");
+
+	__asm__ __volatile__("msr cpsr_c, %0"
+			     :
+			     : "r" (cpsr)
+			     : "memory");
+
+	return 0;
+}
+
+/* enable IRQ interrupts */
+void enable_interrupts(void)
+{
+	unsigned long temp;
+
+	__asm__ __volatile__("mrs %0, cpsr\n"
+			     "bic %0, %0, #0x80\n"
+			     "msr cpsr_c, %0"
+			     : "=r" (temp)
+			     :
+			     : "memory");
+}
+
+
+/*
+ * disable IRQ/FIQ interrupts
+ * returns true if interrupts had been enabled before we disabled them
+ */
+int disable_interrupts(void)
+{
+	unsigned long old, temp;
+
+	__asm__ __volatile__("mrs %0, cpsr\n"
+			     "orr %1, %0, #0xc0\n"
+			     "msr cpsr_c, %1"
+			     : "=r" (old), "=r" (temp)
+			     :
+			     : "memory");
+	return (old & 0x80) == 0;
+}
+#else
 
 int interrupt_init(void)
 {
@@ -49,6 +127,8 @@ int disable_interrupts(void)
 {
 	return 0;
 }
+
+#endif
 
 void bad_mode (void)
 {
@@ -195,6 +275,7 @@ void do_fiq (struct pt_regs *pt_regs)
 	bad_mode ();
 }
 
+#ifndef CONFIG_USE_IRQ
 void do_irq (struct pt_regs *pt_regs)
 {
 	efi_restore_gd();
@@ -203,4 +284,55 @@ void do_irq (struct pt_regs *pt_regs)
 	show_regs (pt_regs);
 	show_efi_loaded_images(pt_regs);
 	bad_mode ();
+}
+#endif
+
+struct irq_desc *irq_descs[1024] __section(".data");
+
+extern int gic_ack_irq(void);
+extern void gic_end_irq(int ack);
+
+int irq_desc_register(struct irq *irq_data, void (*irq_handle)(int, int, void *), void *data)
+{
+	struct irq_desc *irq_desc_t;
+
+	if (!irq_descs[irq_data->id]) {
+		irq_desc_t = calloc(1, sizeof(struct irq_desc));
+		if (!irq_desc_t) {
+			debug("%s: Cannot allocate memory\n", __func__);
+			return -ENOMEM;
+		}
+		irq_desc_t->handler = irq_handle;
+		irq_desc_t->data = data;
+		irq_descs[irq_data->id] = irq_desc_t;
+		return 0;
+	} else {
+		debug("%s: failed to register irq desc\n", __func__);
+		return -EINVAL;
+	}
+}
+
+void do_irq(struct pt_regs *pt_regs)
+{
+	u32 ack;
+	int hw_irq;
+	int src_coreid; /* just for SGI, will be 0 for other */
+	struct irq_desc *irq_desc_t;
+
+READ_ACK:
+	ack = gic_ack_irq();
+	hw_irq = ack & GICC_IAR_INT_ID_MASK;
+	src_coreid = ack >> 10;
+
+	if (hw_irq  >= 1021)
+		return;
+
+	irq_desc_t = irq_descs[hw_irq];
+	if (irq_desc_t)
+		irq_desc_t->handler(hw_irq, src_coreid, irq_desc_t->data);
+
+	gic_end_irq(ack);
+
+
+	goto READ_ACK;
 }
