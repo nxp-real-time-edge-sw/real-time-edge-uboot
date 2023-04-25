@@ -1033,9 +1033,6 @@ static int initr_caches_slave(void)
 }
 #endif
 
-#if defined(CONFIG_FMAN_COREID_SET)
-int eth_early_init_r(void);
-#endif
 
 static void initcall_run_r_slave(void)
 {
@@ -1139,9 +1136,6 @@ static void initcall_run_r_slave(void)
 #endif
 #if CONFIG_IS_ENABLED(ARCH_EARLY_INIT_R)
 	INITCALL(arch_early_init_r);
-#endif
-#ifdef CONFIG_FMAN_COREID_SET
-	INITCALL(eth_early_init_r);
 #endif
 	INITCALL(power_init_board);
 #if CONFIG_IS_ENABLED(MTD_NOR_FLASH)
