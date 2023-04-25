@@ -8,6 +8,8 @@
 #define GIC_CPU_OFFSET_A15	0x2000
 
 /* Distributor Registers */
+#define GICD_DISABLE        0x0
+#define GICD_ENABLE         0x3
 #define GICD_CTLR		0x0000
 #define GICD_TYPER		0x0004
 #define GICD_IIDR		0x0008
@@ -35,6 +37,7 @@
 #define GICD_IROUTERn		0x6000
 
 /* Cpu Interface Memory Mapped Registers */
+#define GICC_ENABLE         0x1
 #define GICC_CTLR		0x0000
 #define GICC_PMR		0x0004
 #define GICC_BPR		0x0008
@@ -50,6 +53,10 @@
 #define GICC_NSAPRn		0x00e0
 #define GICC_IIDR		0x00fc
 #define GICC_DIR		0x1000
+
+#define GICC_DIS_BYPASS_MASK	0x1e0
+#define GICC_IAR_INT_ID_MASK	0x3ff
+#define GICC_IAR_MASK			0x1fff
 
 /* ReDistributor Registers for Control and Physical LPIs */
 #define GICR_CTLR		0x0000
@@ -107,4 +114,5 @@
 #define ICC_SGI1R_EL1		S3_0_C12_C11_5
 #define ICC_ASGI1R_EL1		S3_0_C12_C11_6
 
+#define ICC_IAR_INT_ID_MASK 0xffffff
 #endif /* __GIC_H__ */
