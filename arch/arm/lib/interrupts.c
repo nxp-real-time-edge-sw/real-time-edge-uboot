@@ -292,6 +292,16 @@ void do_irq (struct pt_regs *pt_regs)
 }
 #endif
 
+__weak int gic_ack_irq(void)
+{
+	return 0;
+}
+
+__weak void gic_end_irq(int ack)
+{
+
+}
+
 struct irq_desc *irq_descs[1024] __section(".data");
 
 extern int gic_ack_irq(void);

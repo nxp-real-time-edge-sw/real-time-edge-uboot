@@ -188,6 +188,7 @@ static int gic_probe(struct udevice *dev)
 
 static const struct udevice_id gic_ids[] = {
 	{ .compatible = "arm,gic-400" },
+	{ .compatible = "arm,cortex-a7-gic"},
 	{ }
 };
 
