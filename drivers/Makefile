@@ -43,6 +43,7 @@ obj-$(CONFIG_$(SPL_)FPGA) += fpga/
 obj-$(CONFIG_$(SPL_)VIDEO) += video/
 
 obj-y += bus/
+obj-$(CONFIG_$(SPL_)IRQ) += irqchip/
 
 ifndef CONFIG_TPL_BUILD
 ifndef CONFIG_VPL_BUILD
