@@ -357,7 +357,7 @@ static void fm_init_qmi(struct fm_qmi_common *qmi)
 
 /* Init common part of FM, index is fm num# like fm as above */
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
-int fm_init_common(int index, struct ccsr_fman *reg)
+int fm_init_common(int index, struct ccsr_fman *reg, const char *firmware_name)
 {
 	/* Not need to load ucode */
 
