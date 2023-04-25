@@ -18,6 +18,7 @@ int blocks[ICC_CORE_BLOCK_COUNT];
 unsigned int block_idx;
 void *g_icc_irq_cb[CONFIG_MAX_CPUS] = {NULL};
 bool icc_debug_switch = false;
+struct irq icc_irq_data;
 
 #define block2index(x) ((x - ICC_CORE_BLOCK_BASE(mycoreid)) / \
 		ICC_BLOCK_UNIT_SIZE)
@@ -149,7 +150,6 @@ void icc_block_free(unsigned long block)
 
 void icc_set_sgi(int core_mask, unsigned int hw_irq)
 {
-#if defined(CONFIG_GICV3)
 #ifdef	CONFIG_ARCH_LX2160A
 	unsigned long i, cluster, mask, val;
 
@@ -159,14 +159,11 @@ void icc_set_sgi(int core_mask, unsigned int hw_irq)
 			cluster = i / CORE_NUM_PER_CLUSTER;
 			mask = i % CORE_NUM_PER_CLUSTER;
 			val |= (1 << mask) | (cluster << 16);
-			gic_send_sgi_test(hw_irq, val);
+			gic_send_sgi(hw_irq, val);
 		}
 	}
 #else
-	gic_send_sgi_test(hw_irq, core_mask);
-#endif
-#else
-	gic_set_sgi(core_mask, hw_irq);
+	gic_send_sgi(hw_irq, core_mask);
 #endif
 }
 
@@ -294,7 +291,7 @@ int icc_irq_register(int src_coreid,
 	return 0;
 }
 
-static void icc_irq_handler(int hw_irq, int src_coreid)
+static void icc_irq_handler(int hw_irq, int src_coreid, void *data)
 {
 	struct icc_ring *ring;
 	struct icc_desc *desc;
@@ -365,7 +362,8 @@ static int icc_irq_init(int hw_irq)
 			hw_irq);
 		return -1;
 	}
-	gic_irq_register(hw_irq, icc_irq_handler);
+	icc_irq_data.id = hw_irq;
+	irq_desc_register(&icc_irq_data, icc_irq_handler, NULL);
 	return 0;
 }
 
