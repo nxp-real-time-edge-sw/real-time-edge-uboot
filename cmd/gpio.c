@@ -17,6 +17,7 @@
 #endif
 #include <asm/gpio.h>
 #include <linux/err.h>
+#include <gpio_int.h>
 
 __weak int name_to_gpio(const char *name)
 {
@@ -314,3 +315,61 @@ U_BOOT_CMD(gpio, 4, 0, do_gpio,
 	   "    - set environment variable 'name' to the specified pin\n"
 #endif
 	   "gpio status [-a] [<bank> | <pin>]  - show [all/claimed] GPIOs");
+
+#ifdef CONFIG_GPIO_INT
+static int get_gpio_int_idx(void)
+{
+	struct uclass *uc;
+	struct udevice *dev;
+	int target_idx = -1, idx = 0;
+	char *compatible_name = "fsl,gpio-int";
+
+	uclass_id_foreach_dev(UCLASS_GPIO, dev, uc) {
+		if (!strcmp(dev_read_string(dev, "compatible"), compatible_name)) {
+			target_idx = idx;
+			break;
+		}
+		idx++;
+	}
+	return target_idx;
+}
+
+static int gpio_int_init(void)
+{
+	struct udevice *dev;
+	int ret;
+	int idx;
+	int initialized = 0;
+
+	if (initialized)    /* Avoid initializing gpio multiple times */
+		return 0;
+	initialized = 1;
+	idx = get_gpio_int_idx();
+	ret = uclass_get_device(UCLASS_GPIO, idx, &dev);
+
+	return 0;
+}
+
+static int do_gpio_interrupt(struct cmd_tbl *cmdtp, int flag, int argc,
+				char *const argv[])
+{
+	if (argc == 2 && strncmp(argv[1], "enable", 6) == 0) {
+		gpio_int_init();
+		gpio_int_enable();
+	}
+	if (argc == 2 && strncmp(argv[1], "start", 6) == 0)
+		gpio_int_start();
+	if (argc == 2 && strncmp(argv[1], "stop", 6) == 0)
+		gpio_int_stop();
+
+	return 0;
+}
+
+static char gpio_init_help[] =
+	"gpio_interrupt enable        - Enable GPIO interrupt\n"
+	"gpio_interrupt start         - Start one loop to generate GPIO interrupt\n"
+	"gpio_interrupt stop          - Generate low voltage to generate GPIO interrupt\n"
+	"";
+U_BOOT_CMD(gpio_interrupt, CONFIG_SYS_MAXARGS, 0, do_gpio_interrupt,
+	"enable gpio interrupt", gpio_init_help);
+#endif
