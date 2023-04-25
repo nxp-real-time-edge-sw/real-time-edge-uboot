@@ -147,6 +147,9 @@ static const struct irq_ops gic_chip = {
 static int gic_probe(struct udevice *dev)
 {
 	priv = dev_get_priv(dev);
+#ifdef CONFIG_TARGET_LS1043ARDB
+	priv = get_gic_offset();
+#else
 	priv->gicd_base = (void __iomem *)dev_read_addr_index(dev, 0);
 	if (!priv->gicd_base) {
 		pr_err("%s: failed to get GICD address\n", __func__);
@@ -158,6 +161,7 @@ static int gic_probe(struct udevice *dev)
 		pr_err("%s: failed to get GICC address\n", __func__);
 		return -ENOENT;
 	}
+#endif
 
 	return 0;
 }
