@@ -122,6 +122,15 @@ static void gic_set_pri_common(void)
 	for (i = 32; i < 256; i += 4)
 		writel(val, priv->gicd_base + GICD_IPRIORITYRn + (i / 4) * 4);
 
+#ifdef CONFIG_ARM64
+	/* route interrupt to EL2 */
+	if (current_el() == 2) {
+		asm volatile("mrs %0, HCR_EL2" : "=r" (val));
+		val |= (1 << 4);
+		asm volatile("msr HCR_EL2, %0" : : "r" (val));
+	}
+#endif
+
 }
 
 void gic_set_pri_irq(u32 hw_irq, u8 pri)
