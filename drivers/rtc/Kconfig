@@ -281,7 +281,7 @@ config RTC_HT1380
 
 config RTC_FSL_FTM_ALARM
 	bool "Enable Freescale FlexTimer alarm timer"
-	depends on DM_RTC
+	depends on DM_RTC && IRQ
 	help
 	  For the Flextimer in LS1046A, we can use FTM as the wakeup source.
 	  Say y here to enable FTM alarm support. The FTM alarm provides
