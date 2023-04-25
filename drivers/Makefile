@@ -38,6 +38,7 @@ obj-$(CONFIG_$(SPL_TPL_)TPM) += tpm/
 obj-$(CONFIG_XEN) += xen/
 obj-$(CONFIG_$(SPL_)FPGA) += fpga/
 obj-y += bus/
+obj-$(CONFIG_$(SPL_)IRQ) += irqchip/
 
 ifndef CONFIG_TPL_BUILD
 ifndef CONFIG_VPL_BUILD
