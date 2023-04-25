@@ -1048,10 +1048,6 @@ static int initr_caches_slave(void)
 }
 #endif
 
-#if defined(CONFIG_FMAN_COREID_SET)
-int eth_early_init_r(void);
-#endif
-
 init_fnc_t init_sequence_r_slave[] = {
 	initr_trace,
 	initr_reloc,
@@ -1107,9 +1103,6 @@ init_fnc_t init_sequence_r_slave[] = {
 	 * because PCU ressources are crucial for flash access on some boards.
 	 */
 	pci_init,
-#endif
-#ifdef CONFIG_FMAN_COREID_SET
-	eth_early_init_r,
 #endif
 #if defined(CONFIG_ID_EEPROM) || defined(CONFIG_SYS_I2C_MAC_OFFSET)
 	mac_read_from_eeprom,
