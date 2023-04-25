@@ -37,7 +37,11 @@
 #define GICD_IROUTERn		0x6000
 
 /* Cpu Interface Memory Mapped Registers */
+#ifdef CONFIG_TARGET_LS1021AIOT
+#define GICC_ENABLE         0x7
+#else
 #define GICC_ENABLE         0x1
+#endif
 #define GICC_CTLR		0x0000
 #define GICC_PMR		0x0004
 #define GICC_BPR		0x0008
