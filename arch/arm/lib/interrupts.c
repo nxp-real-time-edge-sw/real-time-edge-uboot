@@ -115,7 +115,12 @@ int interrupt_init(void)
 	IRQ_STACK_START_IN = gd->irq_sp + 8;
 
 	enable_interrupts();
+#ifdef CONFIG_IRQ
+struct udevice *irqdev;
 
+	irqdev = get_irq_udevice(0);
+	gic_initial(irqdev);
+#endif
 	return 0;
 }
 
