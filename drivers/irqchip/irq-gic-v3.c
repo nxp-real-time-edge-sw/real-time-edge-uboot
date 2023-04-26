@@ -20,6 +20,8 @@
 #include <dt-structs.h>
 #include <mapmem.h>
 #include <linux/err.h>
+#include <asm/interrupt-gic.h>
+#include <cpu_func.h>
 
 struct gic_chip_data *priv;
 
@@ -142,6 +144,21 @@ void gic_set_pri_irq(u32 hw_irq, u8 pri)
 
 	writel(oldval & (~mask), priv->gicd_base + GICD_IPRIORITYRn + confoff);
 	writel(oldval | val, priv->gicd_base + GICD_IPRIORITYRn + confoff);
+}
+
+int gic_initial(struct udevice *dev)
+{
+
+	if (get_core_id() == CFG_BAREMETAL_FIRST_CORE)
+		gic_set_pri_common();
+#ifdef CONFIG_ARCH_IMX8M
+	if (get_core_id() == 1)
+		gic_set_pri_common();
+#endif
+
+	gic_set_pri_per_cpu();
+
+	return 0;
 }
 
 static const struct irq_ops gicv3_chip = {
