@@ -23,3 +23,5 @@ else
 obj-$(CONFIG_CMD_IMX_QB) += qb.o
 endif
 endif
+
+obj-$(CONFIG_MP) += mp.o
