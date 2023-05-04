@@ -15,3 +15,4 @@ obj-y += imx_bootaux.o misc.o
 else
 obj-$(CONFIG_SPL_IMX_BBSM) += bbsm.o
 endif
+obj-$(CONFIG_MP) += mp.o
