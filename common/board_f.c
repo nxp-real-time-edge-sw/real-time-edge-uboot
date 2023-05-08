@@ -1122,6 +1122,7 @@ static const init_fnc_t init_sequence_f_slave[] = {
 #endif
 	initf_malloc,
 	initf_bootstage,	/* uses its own timer, so does not need DM */
+	event_init,
 #if defined(CONFIG_CONSOLE_RECORD_INIT_F)
 	console_record_init,
 #endif
