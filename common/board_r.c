@@ -994,6 +994,7 @@ static int initr_caches_slave(void)
 init_fnc_t init_sequence_r_slave[] = {
 	initr_trace,
 	initr_reloc,
+	event_init,
 	/* TODO: could x86/PPC have this also perhaps? */
 #ifdef CONFIG_ARM
 #if defined(CONFIG_ARCH_IMX8M) || defined(CONFIG_ARCH_IMX9)
