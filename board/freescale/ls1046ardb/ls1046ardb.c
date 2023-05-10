@@ -35,7 +35,21 @@ struct serial_device *default_serial_console(void)
 	if (semihosting_enabled())
 		return &serial_smh_device;
 #endif
+#if CONFIG_CONS_INDEX == 1
 	return &eserial1_device;
+#elif CONFIG_CONS_INDEX == 2
+	return &eserial2_device;
+#elif CONFIG_CONS_INDEX == 3
+	return &eserial3_device;
+#elif CONFIG_CONS_INDEX == 4
+	return &eserial4_device;
+#elif CONFIG_CONS_INDEX == 5
+	return &eserial5_device;
+#elif CONFIG_CONS_INDEX == 6
+	return &eserial6_device;
+#else
+	return &eserial1_device;
+#endif
 }
 
 int board_early_init_f(void)
