@@ -12,6 +12,7 @@
 #define CONFIG_MAX_CPUS		4
 
 /* GICv3 base address */
+#define CONFIG_GICV3
 #define GICD_BASE	0x38800000
 #define GICR_BASE	0x38880000
 
