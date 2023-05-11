@@ -39,7 +39,7 @@
 
 #if defined(CONFIG_BAREMETAL_SLAVE_MODE)
 
-#undef CONFIG_EXTRA_ENV_SETTINGS
+#undef CFG_EXTRA_ENV_SETTINGS
 
 #undef CONFIG_ETHPRIME
 #define CONFIG_ETHPRIME                 "eth0"
