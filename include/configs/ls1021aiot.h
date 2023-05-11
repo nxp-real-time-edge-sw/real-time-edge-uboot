@@ -88,7 +88,7 @@
 	func(DHCP, dhcp, na)
 #include <config_distro_bootcmd.h>
 
-#define CONFIG_EXTRA_ENV_SETTINGS \
+#define CFG_EXTRA_ENV_SETTINGS \
 	"bootargs=root=/dev/ram0 rw console=ttyS0,115200 "	\
 		"cma=64M@0x0-0xb0000000\0" \
 	"initrd_high=0xffffffff\0"      \
