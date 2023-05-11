@@ -182,6 +182,9 @@ ENTRY(lowlevel_init)
 	str	w0, [x1, #0x10]
 #endif
 
+#if defined(CONFIG_BAREMETAL)
+100:
+#endif
 	/* Initialize GIC Secure Bank Status */
 #if !defined(CONFIG_SPL_BUILD)
 #if defined(CONFIG_GICV2) || defined(CONFIG_GICV3)
@@ -199,7 +202,9 @@ ENTRY(lowlevel_init)
 #endif
 #endif
 
+#if !defined(CONFIG_BAREMETAL)
 100:
+#endif
 	branch_if_master x0, 2f
 
 #if defined(CONFIG_MP) && defined(CONFIG_ARMV8_MULTIENTRY)
