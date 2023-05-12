@@ -11,6 +11,7 @@
 #include <env.h>
 #include <linux/delay.h>
 #include "test_net.h"
+#include <cpu_func.h>
 
 #define ping_ip		"192.168.1.2"
 #define ipaddr		"192.168.1.1"
@@ -18,6 +19,13 @@
 /* before run this func, need connect network */
 int test_net(void)
 {
+#if defined(CONFIG_FMAN_COREID_SET)
+	u32 id = get_core_id();
+	if(id != CONFIG_FMAN_FMAN1_COREID) {
+		printf("test net failed; FMAN1 has not been assigned to %d\n", id);
+		return CMD_RET_FAILURE;
+	}
+#endif
 #ifdef CONFIG_ENETC_COREID_SET
 	pci_init();
 	mdelay(1 * 1000);  /* avoid that BareMetal sometimes hang  */

@@ -31,6 +31,7 @@
 #undef CFG_EXTRA_ENV_SETTINGS
 #define CFG_EXTRA_ENV_SETTINGS		\
 			"ipaddr=192.168.1.1\0" \
+			"eth0addr=00:04:9F:04:F0:F0\0" \
 			"eth1addr=00:04:9F:04:F0:F1\0" \
 			"eth2addr=00:1F:7B:63:35:E9\0" \
 			"eth3addr=00:04:9F:04:F0:F3\0" \
