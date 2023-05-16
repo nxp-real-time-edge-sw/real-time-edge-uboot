@@ -10,6 +10,10 @@
 /* Number of cores in each cluster */
 #define CORE_NUM_PER_CLUSTER	2
 
+#define CONFIG_GICV2
+#define GICD_BASE       0x01401000
+#define GICC_BASE       0x01402000
+
 #if defined(CONFIG_BAREMETAL)
 
 #define CFG_BAREMETAL_FIRST_CORE 0
@@ -30,9 +34,6 @@
 	(CFG_BAREMETAL_SYS_SDRAM_SHARE_BASE + \
 	CFG_BAREMETAL_SYS_SDRAM_SHARE_SIZE)
 
-#define CONFIG_GICV2
-#define GICD_BASE       0x01401000
-#define GICC_BASE       0x01402000
 
 /* PCIe */
 #define FSL_PCIE_COMPAT			"fsl,ls1021a-pcie"
