@@ -280,18 +280,6 @@ void do_fiq (struct pt_regs *pt_regs)
 	bad_mode ();
 }
 
-#ifndef CONFIG_USE_IRQ
-void do_irq (struct pt_regs *pt_regs)
-{
-	efi_restore_gd();
-	printf ("interrupt request\n");
-	fixup_pc(pt_regs, -8);
-	show_regs (pt_regs);
-	show_efi_loaded_images(pt_regs);
-	bad_mode ();
-}
-#endif
-
 void gic_send_sgi(u32 hw_irq, int core_mask)
 {
 	u32 val;
