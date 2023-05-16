@@ -1459,7 +1459,6 @@ int dram_init_banksize(void)
 	gd->bd->bi_dram[0].start = CFG_SYS_SDRAM_BASE;
 #endif
 
-	gd->bd->bi_dram[0].start = CFG_SYS_SDRAM_BASE;
 	if (gd->ram_size > CFG_SYS_DDR_BLOCK1_SIZE) {
 		gd->bd->bi_dram[0].size = CFG_SYS_DDR_BLOCK1_SIZE;
 		gd->bd->bi_dram[1].start = CFG_SYS_DDR_BLOCK2_BASE;
