@@ -216,7 +216,7 @@ ENTRY(secondary_main_entry)
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)
 	ldr sp, =(CONFIG_SPL_STACK)
 #else
-	ldr sp, =(CONFIG_SYS_INIT_SP_ADDR)
+	ldr sp, =(SYS_INIT_SP_ADDR)
 #endif
 	mrc p15, 0, r1, c0, c0, 5
 	and	r1, r1, #0x3
