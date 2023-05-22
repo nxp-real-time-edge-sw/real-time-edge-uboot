@@ -182,4 +182,6 @@
 #include "imx93_evk_android.h"
 #endif
 
+#define CONFIG_MAX_CPUS 2
+
 #endif
