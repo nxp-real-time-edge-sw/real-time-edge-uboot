@@ -120,7 +120,8 @@ void set_wdog_reset(struct wdog_regs *wdog)
 	setbits_le16(&wdog->wcr, WDOG_WDT_MASK | WDOG_WDZST_MASK);
 }
 
-#if IS_ENABLED(CONFIG_ARMV8_PSCI)
+#if IS_ENABLED(CONFIG_ARMV8_PSCI) || \
+		IS_ENABLED(CONFIG_BAREMETAL_SLAVE_MODE)
 #define PTE_MAP_NS	PTE_BLOCK_NS
 #else
 #define PTE_MAP_NS	0
