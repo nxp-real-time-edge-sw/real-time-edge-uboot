@@ -16,7 +16,11 @@
 #if defined(CONFIG_CMD_NET)
 #define CFG_FEC_MXC_PHYADDR          1
 
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+#define PHY_ANEG_TIMEOUT 5000
+#else
 #define PHY_ANEG_TIMEOUT 20000
+#endif
 
 #endif
 
