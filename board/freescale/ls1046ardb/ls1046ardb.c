@@ -402,3 +402,16 @@ int board_fix_fdt(void *blob)
 }
 #endif
 #endif
+
+#if IS_ENABLED(CONFIG_OF_BOARD_FIXUP)
+int board_fix_fdt(void *blob)
+{
+	int ret = 0;
+
+#if defined(CONFIG_BAREMETAL)
+	ret = fdt_baremetal_setup(blob);
+#endif
+
+	return ret;
+}
+#endif

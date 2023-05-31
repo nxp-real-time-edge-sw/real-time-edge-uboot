@@ -394,13 +394,19 @@ void nand_fixup(void)
 #if IS_ENABLED(CONFIG_OF_BOARD_FIXUP)
 int board_fix_fdt(void *blob)
 {
+	int ret = 0;
+
 	/* nand driver fix up */
 	nand_fixup();
 
 	/* fdt fix up */
 	fdt_fixup_phy_addr(blob);
 
-	return 0;
+#if defined(CONFIG_BAREMETAL)
+	ret = fdt_baremetal_setup(blob);
+#endif
+
+	return ret;
 }
 #endif
 
