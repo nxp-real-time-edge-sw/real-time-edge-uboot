@@ -22,9 +22,8 @@
 #ifndef CONFIG_USB_USB2_COREID
 #define CONFIG_USB_USB2_COREID 0
 #endif
-int fdt_baremetal_setup_usb(void)
+int fdt_baremetal_setup_usb(void *blob)
 {
-	void *blob = (void *)gd->fdt_blob;
 	int node_offset;
 	int start_offset = -1;
 	int i;
@@ -69,9 +68,8 @@ int fdt_baremetal_setup_usb(void)
 #ifndef CONFIG_PCIE_PCIE3_COREID
 #define CONFIG_PCIE_PCIE3_COREID 0
 #endif
-int fdt_baremetal_setup_pcie(void)
+int fdt_baremetal_setup_pcie(void *blob)
 {
-	void *blob = (void *)gd->fdt_blob;
 	int node_offset;
 	int start_offset = -1;
 	int i;
@@ -107,9 +105,8 @@ int fdt_baremetal_setup_pcie(void)
 #endif
 
 #ifdef CONFIG_ENETC_COREID_SET
-int fdt_baremetal_setup_enetc(void)
+int fdt_baremetal_setup_enetc(void *blob)
 {
-	void *blob = gd->fdt_blob;
 	int node_offset;
 	int start_offset = -1;
 	int i;
@@ -138,20 +135,20 @@ int fdt_baremetal_setup_enetc(void)
 }
 #endif
 
-int fdt_baremetal_setup(void)
+int fdt_baremetal_setup(void *blob)
 {
 	int ret = 0;
 
 #ifdef CONFIG_USB_COREID_SET
-	ret = fdt_baremetal_setup_usb();
+	ret = fdt_baremetal_setup_usb(blob);
 #endif
 
 #ifdef CONFIG_PCIE_COREID_SET
-	ret = fdt_baremetal_setup_pcie();
+	ret = fdt_baremetal_setup_pcie(blob);
 #endif
 
 #ifdef CONFIG_ENETC_COREID_SET
-	ret = fdt_baremetal_setup_enetc();
+	ret = fdt_baremetal_setup_enetc(blob);
 #endif
 
 	return ret;
