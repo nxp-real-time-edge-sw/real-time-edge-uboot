@@ -1191,6 +1191,9 @@ static const init_fnc_t init_sequence_f_slave[] = {
 	 *  - board info struct
 	 */
 	setup_dest_addr,
+#ifdef CONFIG_OF_BOARD_FIXUP
+	fix_fdt,
+#endif
 #if defined(CONFIG_LOGBUFFER)
 	reserve_logbuffer,
 #endif
@@ -1220,9 +1223,6 @@ static const init_fnc_t init_sequence_f_slave[] = {
 	setup_board_part2,
 #endif
 	display_new_sp,
-#ifdef CONFIG_OF_BOARD_FIXUP
-	fix_fdt,
-#endif
 	INIT_FUNC_WATCHDOG_RESET
 	reloc_fdt,
 	reloc_bootstage,
