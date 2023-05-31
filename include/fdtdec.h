@@ -929,7 +929,7 @@ int fdtdec_decode_display_timing(const void *blob, int node, int index,
 int fdtdec_setup_mem_size_base(void);
 
 #if defined(CONFIG_BAREMETAL)
-int fdt_baremetal_setup(void);
+int fdt_baremetal_setup(void *);
 #endif
 
 /**

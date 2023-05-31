@@ -792,9 +792,6 @@ static init_fnc_t init_sequence_r[] = {
 #if IS_ENABLED(CONFIG_NEEDS_MANUAL_RELOC) && CONFIG_IS_ENABLED(EVENT)
 	event_manual_reloc,
 #endif
-#if defined(CONFIG_BAREMETAL)
-	fdt_baremetal_setup,
-#endif
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 	initr_unlock_ram_in_cache,
 #endif
@@ -1067,10 +1064,6 @@ init_fnc_t init_sequence_r_slave[] = {
 	 */
 #endif
 	initr_reloc_global_data,
-
-#if !defined(CONFIG_ARCH_IMX8M) && !defined(CONFIG_ARCH_IMX9)
-	fdt_baremetal_setup,
-#endif
 
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 	initr_unlock_ram_in_cache,
