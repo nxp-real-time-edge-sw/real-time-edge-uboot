@@ -135,6 +135,52 @@ int fdt_baremetal_setup_enetc(void *blob)
 }
 #endif
 
+#ifdef CONFIG_FMAN_COREID_SET
+int fdt_baremetal_setup_fman(void *blob)
+{
+	int node_offset;
+	int sub_node;
+	int start_offset = -1;
+	int ret;
+	const char *cell;
+
+	do {
+		node_offset = fdt_node_offset_by_compatible(blob,
+				start_offset, "fsl,fman");
+		if (node_offset <= start_offset)
+			break;
+
+		fdt_for_each_subnode(sub_node, blob, node_offset) {
+			cell = fdt_getprop(blob, sub_node, "phy-connection-type", NULL);
+			if (!cell)
+				continue;
+
+			if (!strcmp(cell, "rgmmi-id") && !strcmp(cell, "sgmii")
+					&& !strcmp(cell, "xgmii"))
+				continue;
+
+set_status:
+			if (get_core_id() != CONFIG_FMAN_FMAN1_COREID) {
+				ret = fdt_set_node_status(blob, sub_node,
+					FDT_STATUS_DISABLED);
+			} else {
+				ret = fdt_set_node_status(blob, sub_node,
+					FDT_STATUS_OKAY);
+			}
+			if (ret == -FDT_ERR_NOSPACE) {
+				ret = fdt_increase_size(blob, 512);
+				if (!ret)
+					goto set_status;
+			}
+		}
+
+		start_offset = node_offset;
+	} while (node_offset > start_offset);
+
+	return 0;
+}
+#endif
+
 int fdt_baremetal_setup(void *blob)
 {
 	int ret = 0;
@@ -149,6 +195,10 @@ int fdt_baremetal_setup(void *blob)
 
 #ifdef CONFIG_ENETC_COREID_SET
 	ret = fdt_baremetal_setup_enetc(blob);
+#endif
+
+#ifdef CONFIG_FMAN_COREID_SET
+	ret = fdt_baremetal_setup_fman(blob);
 #endif
 
 	return ret;
