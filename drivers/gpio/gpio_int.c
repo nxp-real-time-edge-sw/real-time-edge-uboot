@@ -86,10 +86,10 @@ static int gpio_int_probe(struct udevice *dev)
 {
 	int ret;
 
-	ret = gpio_request_by_name(dev, "reg-names", 0, &gpio_out, GPIOD_IS_OUT);
+	ret = gpio_request_by_name(dev, "gpios", 0, &gpio_out, GPIOD_IS_OUT);
 	if (ret)
 		printk("gpio_out_request_by_name_failed\n");
-	ret = gpio_request_by_name(dev, "reg-names", 1, &gpio_in, GPIOD_IS_IN);
+	ret = gpio_request_by_name(dev, "gpios", 1, &gpio_in, GPIOD_IS_IN);
 	if (ret)
 		printk("gpio_in_request_by_name_failed\n");
 	dev_read_u32_index(dev, "interrupts", 1, &gpio_irq_number);
