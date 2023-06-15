@@ -70,7 +70,7 @@
 	"baremetal_args=setenv bootargs ${jh_clk} console=${console} root=${mmcroot} maxcpus=1 clk_ignore_unused\0 " \
 	"loadbmimage=fatload mmc ${mmcdev}:${mmcpart} ${bm_addr} ${bmimage}\0" \
 	"startbm=dcache flush;cpu 1 release 50200000;sleep 6; \
-		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 2\0" \
+		cpu 2 release 50200000; sleep 2; cpu 3 release 50200000;sleep 5\0" \
 	"boot_bm=" \
 		"if run loadbmimage; then " \
 			"run startbm; "	\
