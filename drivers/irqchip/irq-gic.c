@@ -23,6 +23,7 @@
 #include <cpu_func.h>
 
 struct gic_chip_data *priv;
+struct gic_chip_data get_gic_offset(void);
 
 void gic_mask_irq(int irq)
 {
@@ -164,11 +165,28 @@ static const struct irq_ops gic_chip = {
 	.set_affinity   = gic_set_affinity,
 };
 
+void gic_send_sgi(u32 hw_irq, int core_mask)
+{
+	u32 val;
+
+	if (hw_irq > 16) {
+		printf("Interrupt id num: %u is not valid, SGI[0 - 15]\n",
+				hw_irq);
+		return;
+	}
+
+	val = readl(priv->gicd_base + GICD_SGIR);
+	val |= (core_mask << 16) | 0x8000 | hw_irq;
+	writel(val, priv->gicd_base + GICD_SGIR);
+
+	return;
+}
+
 static int gic_probe(struct udevice *dev)
 {
 	priv = dev_get_priv(dev);
 #ifdef CONFIG_TARGET_LS1043ARDB
-	priv = get_gic_offset();
+	*priv = get_gic_offset();
 #else
 	priv->gicd_base = (void __iomem *)dev_read_addr_index(dev, 0);
 	if (!priv->gicd_base) {
