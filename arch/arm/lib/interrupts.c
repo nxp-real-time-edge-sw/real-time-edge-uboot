@@ -280,26 +280,6 @@ void do_fiq (struct pt_regs *pt_regs)
 	bad_mode ();
 }
 
-void gic_send_sgi(u32 hw_irq, int core_mask)
-{
-	u32 val;
-	if (hw_irq > 16) {
-		printf("Interrupt id num: %d is not valid, SGI[0 - 15]\n",
-				hw_irq);
-
-		return;
-   }
-
-	val = (core_mask << 16) | hw_irq;
-	/* group 1 */
-	val |= 0x8000;
-	*((volatile unsigned int *)((void __iomem *)GICD_BASE +
-				GICD_SGIR)) = val;
-
-	return;
-}
-
-
 __weak int gic_ack_irq(void)
 {
 	return 0;
