@@ -11,6 +11,7 @@
 #include <cpu_func.h>
 #include <inter-core-comm.h>
 #include <cpu_func.h>
+#include <linux/delay.h>
 
 struct icc_ring *ring[CONFIG_MAX_CPUS];
 int mycoreid;
@@ -299,6 +300,9 @@ static void icc_irq_handler(int hw_irq, int src_coreid, void *data)
 	unsigned int byte_count, option_mode;
 	int i, valid;
 	unsigned long time_us = timer_get_us();
+#ifdef CONFIG_ARCH_IMX8M
+	int coreid = get_core_id();
+#endif
 	void (*irq_handle)(int, unsigned long, unsigned int);
 
 	if (hw_irq != ICC_SGI) {
@@ -326,8 +330,14 @@ static void icc_irq_handler(int hw_irq, int src_coreid, void *data)
 		option_mode = desc->option_mode;
 
 		if (option_mode & ICC_CMD_DUMP_TIME) {
+#ifdef CONFIG_ARCH_IMX8M
+			udelay(coreid*10000);
+#endif
 			printf("Time(us): 0x%lx, Get the SGI from CoreID: %d\n",
 					time_us, src_coreid);
+#ifdef CONFIG_ARCH_IMX8M
+			udelay(coreid*10000);
+#endif
 		} else {
 			block_addr = desc->block_addr;
 			byte_count = desc->byte_count;

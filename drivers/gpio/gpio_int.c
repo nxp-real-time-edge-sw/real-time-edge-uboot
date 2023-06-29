@@ -14,6 +14,7 @@
 #include <irq.h>
 #include <irq_func.h>
 #include <inter-core-comm.h>
+#include <linux/delay.h>
 
 #define CORE0_MASK	(1 << 0)
 #define CORE1_MASK	(1 << 1)
@@ -38,6 +39,9 @@ static void gpio_irq(void)
 
 	icc_dump_time(dest_core);
 	printf("Time(us): 0x%lx\n", time_us);
+#ifdef CONFIG_ARCH_IMX8M
+	udelay(60000);
+#endif
 	dm_gpio_clr_interrupt(&gpio_in);
 }
 
