@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  */
 
 #ifndef __IMX93_QSB_H
@@ -165,6 +165,10 @@
 
 #if defined(CONFIG_CMD_NET)
 #define PHY_ANEG_TIMEOUT 20000
+#endif
+
+#ifndef CONFIG_MAX_CPUS
+#define CONFIG_MAX_CPUS	2
 #endif
 
 #endif
