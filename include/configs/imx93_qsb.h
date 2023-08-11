@@ -26,4 +26,6 @@
 #define CONFIG_MAX_CPUS	2
 #endif
 
+#include "imx93_baremetal.h"
+
 #endif
