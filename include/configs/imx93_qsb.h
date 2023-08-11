@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  */
 
 #ifndef __IMX93_QSB_H
@@ -21,5 +21,9 @@
 #define PHYS_SDRAM_SIZE		0x80000000 /* 2GB DDR */
 
 #define WDOG_BASE_ADDR		WDG3_BASE_ADDR
+
+#ifndef CONFIG_MAX_CPUS
+#define CONFIG_MAX_CPUS	2
+#endif
 
 #endif
