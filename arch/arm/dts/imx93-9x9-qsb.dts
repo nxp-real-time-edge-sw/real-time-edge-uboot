@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright 2022 NXP
+ * Copyright 2022-2023 NXP
  */
 
 /dts-v1/;
@@ -389,6 +389,14 @@
 	status = "okay";
 };
 
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	clocks = <&clk IMX93_CLK_LPUART2_GATE>, <&clk IMX93_CLK_LPUART2_GATE>;
+	clock-names = "ipg", "per";
+	status = "okay";
+};
+
 &lpuart5 {
 	/* BT */
 	pinctrl-names = "default";
@@ -556,6 +564,13 @@
 		fsl,pins = <
 			MX93_PAD_UART1_RXD__LPUART1_RX			0x31e
 			MX93_PAD_UART1_TXD__LPUART1_TX			0x31e
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__LPUART2_RX			0x31e
+			MX93_PAD_UART2_TXD__LPUART2_TX			0x31e
 		>;
 	};
 
