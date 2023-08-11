@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0-only OR MIT)
 /*
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  */
 
 /dts-v1/;
@@ -372,6 +372,14 @@
 &lpuart1 { /* console */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	clocks = <&clk IMX93_CLK_LPUART2_GATE>, <&clk IMX93_CLK_LPUART2_GATE>;
+	clock-names = "ipg", "per";
 	status = "okay";
 };
 
