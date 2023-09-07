@@ -393,20 +393,16 @@ int ft_board_setup(void *blob, struct bd_info *bd)
 	return 0;
 }
 
-#if IS_ENABLED(CONFIG_OF_BOARD_FIXUP)
-int board_fix_fdt(void *blob)
-{
-	fdt_fixup_phy(blob);
-
-	return 0;
-}
-#endif
 #endif
 
 #if IS_ENABLED(CONFIG_OF_BOARD_FIXUP)
 int board_fix_fdt(void *blob)
 {
 	int ret = 0;
+
+#ifndef CONFIG_SPL_BUILD
+	fdt_fixup_phy(blob);
+#endif
 
 #if defined(CONFIG_BAREMETAL)
 	ret = fdt_baremetal_setup(blob);
