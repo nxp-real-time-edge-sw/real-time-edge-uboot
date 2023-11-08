@@ -31,7 +31,9 @@ arch-y += -D__LINUX_ARM_ARCH__=$(CONFIG_SYS_ARM_ARCH)
 endif
 
 ifneq ($(CONFIG_ARCH_IMX8)$(CONFIG_ARCH_IMX8M)$(CONFIG_ARCH_IMX8ULP),)
+ifneq ($(CONFIG_BAREMETAL),y)
 arch-y += -mgeneral-regs-only
+endif
 endif
 
 # Evaluate arch cc-option calls now
