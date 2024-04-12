@@ -13,3 +13,5 @@ endif
 ifneq ($(CONFIG_SPL_BUILD),y)
 obj-y += imx_bootaux.o misc.o
 endif
+
+obj-$(CONFIG_MP) += mp.o
