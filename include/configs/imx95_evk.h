@@ -29,4 +29,6 @@
 #include "imx95_evk_android.h"
 #endif
 
+#define CONFIG_MAX_CPUS 6
+
 #endif
