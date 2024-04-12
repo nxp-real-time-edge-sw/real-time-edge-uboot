@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2023 NXP
+ * Copyright 2023-2024 NXP
  */
 
 #include <common.h>
@@ -11,7 +11,18 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/imx-regs.h>
 
-static u64 logical_id_to_hwid[CONFIG_MAX_CPUS] = {0, 0x100};
+#define MPIDR_MT_SHFT		(24)
+#define MPIDR_AFF1_SHFT		(8)
+
+static u64 logical_id_to_hwid(unsigned int core)
+{
+	u64 hwid = core;
+
+	if (read_mpidr() & MPIDR_MT_SHFT)
+		hwid = core << MPIDR_AFF1_SHFT;
+
+	return hwid;
+}
 
 int is_core_valid(unsigned int core)
 {
@@ -53,7 +64,7 @@ int cpu_release(u32 nr, int argc, char *const argv[])
 	printf("begin to kick cpu core #%d to address %llx\n",
 			nr, boot_addr);
 	regs.regs[0] = PSCI_0_2_FN64_CPU_ON;
-	regs.regs[1] = logical_id_to_hwid[nr];
+	regs.regs[1] = logical_id_to_hwid(nr);
 	regs.regs[2] = boot_addr;
 	regs.regs[3] = 0;
 	smc_call(&regs);
