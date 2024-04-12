@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2023 NXP
+ * Copyright 2023-2024 NXP
  */
 
 #ifndef __IMX95_EVK_H
@@ -217,5 +217,7 @@
 #ifdef CONFIG_ANDROID_SUPPORT
 #include "imx95_evk_android.h"
 #endif
+
+#define CONFIG_MAX_CPUS 6
 
 #endif
