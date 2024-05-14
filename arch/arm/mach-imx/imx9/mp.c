@@ -13,14 +13,14 @@
 #include <linux/bitops.h>
 #include <vsprintf.h>
 
-#define MPIDR_MT_SHFT		(24)
+#define MPIDR_MT_BIT		BIT(24)
 #define MPIDR_AFF1_SHFT		(8)
 
 static u64 logical_id_to_hwid(unsigned int core)
 {
 	u64 hwid = core;
 
-	if (read_mpidr() & MPIDR_MT_SHFT)
+	if (read_mpidr() & MPIDR_MT_BIT)
 		hwid = core << MPIDR_AFF1_SHFT;
 
 	return hwid;
