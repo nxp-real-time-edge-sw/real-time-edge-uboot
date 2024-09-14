@@ -888,7 +888,9 @@ unsigned long arch_spl_mmc_get_uboot_raw_sector(struct mmc *mmc,
 		offset = SZ_1M << val;
 
 	offset /= 512;
+#ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_DATA_PART_OFFSET
 	offset -= CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_DATA_PART_OFFSET;
+#endif
 
 	if (imx8m_detect_secondary_image_boot())
 		raw_sect += offset;
