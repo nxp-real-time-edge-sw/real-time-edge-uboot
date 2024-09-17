@@ -139,7 +139,11 @@ else ifeq ($(CONFIG_ARCH_IMX8M), y)
 IMAGE_TYPE := imx8mimage
 DEPFILE_EXISTS := 0
 else ifeq ($(CONFIG_ARCH_IMX9), y)
+ifeq ($(CONFIG_BAREMETAL), y)
+IMAGE_TYPE := imximage
+else
 IMAGE_TYPE := imx8image
+endif
 DEPFILE_EXISTS := 0
 else
 IMAGE_TYPE := imximage
