@@ -250,8 +250,8 @@ int init_func_vid(void)
 
 	return 0;
 }
-#endif
 EVENT_SPY_SIMPLE(EVT_MISC_INIT_F, init_func_vid);
+#endif
 
 int checkboard(void)
 {
