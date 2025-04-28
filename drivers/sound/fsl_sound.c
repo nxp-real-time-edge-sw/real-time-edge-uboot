@@ -3,7 +3,6 @@
  * Copyright 2023 NXP
  */
 
-#include <common.h>
 #include <audio_codec.h>
 #include <dm.h>
 #include <i2s.h>

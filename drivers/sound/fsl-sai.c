@@ -5,7 +5,6 @@
  * Author: Jianchao Wang <jianchao.wang@nxp.com>
  */
 
-#include <common.h>
 #include <dm.h>
 #include <i2s.h>
 #include <sound.h>
