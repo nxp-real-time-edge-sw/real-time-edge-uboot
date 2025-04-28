@@ -13,6 +13,7 @@
 #define _U_BOOT_ARM_H_	1
 
 #ifndef __ASSEMBLY__
+#include <linux/types.h>
 
 /* for the following variables, see start.S */
 extern ulong IRQ_STACK_START;	/* top of IRQ stack */
