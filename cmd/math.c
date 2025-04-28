@@ -6,8 +6,8 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <common.h>
 #include <command.h>
+#include <vsprintf.h>
 #undef log
 
 int __errno;

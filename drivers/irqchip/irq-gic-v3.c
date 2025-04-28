@@ -5,7 +5,6 @@
  *
  */
 
-#include <common.h>
 #include <dm.h>
 #include <errno.h>
 #include <log.h>
@@ -13,6 +12,7 @@
 #include <asm/system.h>
 #include <asm/ptrace.h>
 #include <dm/lists.h>
+#include <dm/device.h>
 #include <asm/io.h>
 #include <irq.h>
 #include <asm/gic.h>

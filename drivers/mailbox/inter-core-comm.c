@@ -4,7 +4,7 @@
  *
  */
 
-#include <common.h>
+#include <config.h>
 #include <asm/barriers.h>
 #include <asm/u-boot-arm.h>
 #include <asm/interrupt-gic.h>
@@ -12,6 +12,7 @@
 #include <inter-core-comm.h>
 #include <cpu_func.h>
 #include <linux/delay.h>
+#include <time.h>
 
 struct icc_ring *ring[CONFIG_MAX_CPUS];
 int mycoreid;

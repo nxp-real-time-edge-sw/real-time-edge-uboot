@@ -9,7 +9,6 @@
  */
 
 #include <linux/delay.h>
-#include <common.h>
 #include <flexcan.h>
 #include <dm.h>
 #include <ftm_alarm.h>

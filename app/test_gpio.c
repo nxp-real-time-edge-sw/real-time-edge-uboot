@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <asm-generic/gpio.h>
 #include <dm.h>
 
