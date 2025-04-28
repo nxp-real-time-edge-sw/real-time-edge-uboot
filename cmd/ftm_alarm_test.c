@@ -8,7 +8,6 @@
 
 #include <config.h>
 #include <command.h>
-#include <common.h>
 #include <malloc.h>
 #include <env.h>
 #include <linux/types.h>

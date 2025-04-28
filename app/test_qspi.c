@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <div64.h>
 #include <dm.h>
 #include <malloc.h>

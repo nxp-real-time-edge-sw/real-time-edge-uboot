@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <usb.h>
 #include <memalign.h>
 #include <bootstage.h>

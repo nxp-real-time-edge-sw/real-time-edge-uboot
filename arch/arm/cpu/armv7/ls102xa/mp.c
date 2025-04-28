@@ -4,7 +4,6 @@
  * Copyright 2019-2023 NXP
  */
 
-#include <common.h>
 #include <asm/io.h>
 #include <asm/system.h>
 #include <asm/arch/immap_ls102xa.h>

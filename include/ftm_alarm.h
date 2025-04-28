@@ -10,7 +10,6 @@
 #define __FTM_ALARM_H
 
 #include <stdbool.h>
-#include <common.h>
 #include <linux/types.h>
 #include <linux/bitops.h>
 #include <asm/interrupt-gic.h>
