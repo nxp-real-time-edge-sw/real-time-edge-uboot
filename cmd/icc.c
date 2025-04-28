@@ -4,11 +4,14 @@
  *
  */
 
-#include <common.h>
+#include <stdio.h>
+#include <config.h>
 #include <command.h>
 #include <cpu_func.h>
 #include <inter-core-comm.h>
 #include <div64.h>
+#include <vsprintf.h>
+#include <time.h>
 
 static void do_icc_show(void)
 {

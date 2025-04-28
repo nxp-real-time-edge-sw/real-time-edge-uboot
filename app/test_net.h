@@ -7,7 +7,6 @@
 #ifndef _FSL_LAYERSCAPE_TEST_NET_H
 #define _FSL_LAYERSCAPE_TEST_NET_H
 
-#include <common.h>
 #include <command.h>
 #include <net.h>
 #include <console.h>

@@ -4,7 +4,7 @@
  *
  */
 
-#include <common.h>
+#include <stdio.h>
 #include <i2c.h>
 
 #ifdef CONFIG_TARGET_LS1021AIOT

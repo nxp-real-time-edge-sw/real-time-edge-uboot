@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <asm/interrupt-gic.h>
 #include <inter-core-comm.h>
 #include <cpu_func.h>

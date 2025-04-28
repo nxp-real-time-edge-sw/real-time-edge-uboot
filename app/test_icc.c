@@ -5,7 +5,8 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
-#include <common.h>
+#include <stdio.h>
+#include <config.h>
 #include <inter-core-comm.h>
 
 static void do_test_icc_irq_handle(int src_coreid,
