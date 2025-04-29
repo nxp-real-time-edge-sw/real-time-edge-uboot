@@ -81,6 +81,7 @@
 			args;	/* Needed by mkimage etype superclass */
 #endif
 
+#ifdef CONFIG_SPL
 			binman_imx_spl: nxp-imx8mimage {
 				filename = "u-boot-spl-mkimage.bin";
 				nxp,boot-from = "sd";
@@ -124,6 +125,7 @@
 					};
 				};
 			};
+#endif
 #ifdef CONFIG_IMX_HAB
 		};
 
