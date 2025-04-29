@@ -1045,7 +1045,6 @@ init_fnc_t init_sequence_r_slave[] = {
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
-	bootstage_relocate,
 #ifdef CONFIG_DM
 	initr_dm,
 #endif
