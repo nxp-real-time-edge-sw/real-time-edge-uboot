@@ -6,6 +6,7 @@
 
 #include <asm-generic/gpio.h>
 #include <dm.h>
+#include <linux/delay.h>
 
 int test_set_gpio(int value)
 {
