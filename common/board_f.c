@@ -1311,7 +1311,7 @@ void board_init_f_slave(ulong boot_flags)
 #endif
 
 	gd->flags = boot_flags;
-	gd->have_console = 0;
+	gd->flags &= ~GD_FLG_HAVE_CONSOLE;
 
 	if (initcall_run_list(init_sequence_f_slave))
 		hang();
