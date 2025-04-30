@@ -14,6 +14,7 @@
 #include <asm/io.h>
 #include <stdio.h>
 #include <vsprintf.h>
+#include <cpu_func.h>
 
 char *display_options_get_banner_priv(bool newlines, const char *build_tag,
 				      char *buf, int size)
