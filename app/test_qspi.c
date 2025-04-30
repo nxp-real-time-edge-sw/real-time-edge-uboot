@@ -12,6 +12,7 @@
 #include <spi_flash.h>
 #include <jffs2/jffs2.h>
 #include <linux/mtd/mtd.h>
+#include <display_options.h>
 
 #include <asm/io.h>
 #include <dm/device-internal.h>
