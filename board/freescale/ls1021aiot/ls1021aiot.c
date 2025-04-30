@@ -23,6 +23,7 @@
 #include <fsl_immap.h>
 #include <netdev.h>
 #include <fsl_mdio.h>
+#include <fsl_ifc.h>
 #include <tsec.h>
 #include <spl.h>
 
