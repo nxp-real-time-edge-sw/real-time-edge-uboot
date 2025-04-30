@@ -8,6 +8,7 @@
 #include <inter-core-comm.h>
 #include <cpu_func.h>
 #include <irq.h>
+#include <stdio.h>
 
 #ifdef CONFIG_TARGET_LS1021AIOT
 #define CONFIG_TEST_HW_IRQ 195
