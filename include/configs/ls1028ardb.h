@@ -49,7 +49,7 @@
 
 #define JAILHOUSE_ENV \
 	"jh_mmcboot=setenv dtb fsl-ls1028a-rdb-jailhouse.dtb;" \
-		"setenv othbootargs mem=1024MB;" \
+		"setenv othbootargs mem=1024MB kvm.enable_virt_at_load=false;" \
 		"run bootcmd \0"
 
 /* Initial environment variables */
