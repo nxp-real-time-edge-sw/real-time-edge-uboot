@@ -27,9 +27,10 @@
 #include <usb.h>
 #include <dwc3-uboot.h>
 #include <mmc.h>
+#include <status_led.h>
+#include <configs/imx8mp_evk.h>
 
 DECLARE_GLOBAL_DATA_PTR;
-
 #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
 #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
 
@@ -465,6 +466,11 @@ int board_init(void)
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();
+#endif
+
+#ifdef CONFIG_LED_STATUS
+  status_led_init();
+  status_led_set(CONFIG_LED_STATUS_BIT, CONFIG_LED_STATUS_ON);
 #endif
 
 	return 0;
