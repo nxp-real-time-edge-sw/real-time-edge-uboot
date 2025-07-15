@@ -12,7 +12,6 @@
 #include "imx_env.h"
 
 #define CFG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
-#define CONFIG_LED_STATUS
 
 #if defined(CONFIG_CMD_NET)
 #define CFG_FEC_MXC_PHYADDR          1
@@ -189,8 +188,6 @@
 
 #ifdef CONFIG_LED_STATUS
 #define CONFIG_LED_STATUS_OFF       0
-#define CONFIG_LED_STATUS_ON        1
-#define CONFIG_LED_STATUS_BLINKING  2
 #define CONFIG_LED_STATUS_FREQ      2
 #define STATUS_LED_GPIO_NUM         112
 #define CONFIG_LED_STATUS_BIT              STATUS_LED_GPIO_NUM
