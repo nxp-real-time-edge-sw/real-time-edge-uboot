@@ -316,6 +316,7 @@ int ddr_init(struct dram_timing_info *dram_timing)
 	unsigned int tmp, initial_drate, target_freq;
 	int ret;
 
+  printf("AxisB: board early init function called from SPL\n");
 	printf("DDRINFO: start DRAM init\n");
 
 	/* Step1: Follow the power up procedure */
