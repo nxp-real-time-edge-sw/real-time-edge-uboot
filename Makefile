@@ -1146,7 +1146,7 @@ PLATFORM_LIBGCC := -L $(shell dirname `$(CC) $(c_flags) -print-libgcc-file-name`
 endif
 endif
 ifeq ($(CONFIG_CMD_MATH),y)
-PLATFORM_LIBS += -L $(srctree)/math/lib
+PLATFORM_LIBS += -L $(abspath $(srctree))/math/lib
 endif
 PLATFORM_LIBS += $(PLATFORM_LIBGCC)
 ifeq ($(CONFIG_CMD_MATH),y)
@@ -2622,7 +2622,7 @@ clean: $(clean-dirs)
 		-o -name 'generated_defconfig' \
 		-o -name '*.gcno' \
 		-o -name '*.efi' -o -name '*.gcno' -o -name '*.so' \
-		-o -name '*.*.symversions' \) -type f -print | xargs rm -f
+		-o -name '*.*.symversions' \) -type f ! -name 'libm.a' -print | xargs rm -f
 
 
 # See doc/develop/python_cq.rst
