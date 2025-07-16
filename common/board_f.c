@@ -1291,6 +1291,7 @@ static const init_fnc_t init_sequence_f_slave[] = {
 
 void board_init_f_slave(ulong boot_flags)
 {
+	struct board_f boardf;
 #ifdef CONFIG_SYS_GENERIC_GLOBAL_DATA
 	/*
 	 * For some archtectures, global data is initialized and used before
@@ -1312,6 +1313,8 @@ void board_init_f_slave(ulong boot_flags)
 
 	gd->flags = boot_flags;
 	gd->flags &= ~GD_FLG_HAVE_CONSOLE;
+	if (gd->boardf == NULL)
+		gd->boardf = &boardf;
 
 	if (initcall_run_list(init_sequence_f_slave))
 		hang();
