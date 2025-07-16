@@ -13,7 +13,11 @@
 	compatible = "fsl,imx93-11x11-evk", "fsl,imx93";
 
 	chosen {
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+		stdout-path = &lpuart2;
+#else
 		stdout-path = &lpuart1;
+#endif
 	};
 
 	reserved-memory {
