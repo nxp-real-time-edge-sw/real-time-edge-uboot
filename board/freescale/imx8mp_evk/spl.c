@@ -138,6 +138,13 @@ int board_fit_config_name_match(const char *name)
 }
 #endif
 
+#ifdef CONFIG_FACTORY_TEST
+// Generate test pattern based on address
+uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset) {
+	return (uint32_t)(base_addr >> 8) ^ offset ^ 0xA5A5A5A5;
+}
+#endif
+
 void board_init_f(ulong dummy)
 {
 	struct udevice *dev;
@@ -176,6 +183,95 @@ void board_init_f(ulong dummy)
 	spl_dram_init();
 
 #ifdef CONFIG_FACTORY_TEST
+	/* DDR 1MB Test at 1GB Intervals - Add this before return 0; */
+	printf("DDRINFO: Starting 1MB DDR test at 1GB intervals\n");
+
+#define TEST_SIZE_1MB        0x100000    // 1MB
+#define NUM_TEST_LOCATIONS   6
+
+	// Test locations at 1GB intervals
+	uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
+		0x40000000ULL,    // 1GB mark (start of DDR)
+		0x80000000ULL,    // 2GB mark
+		0xC0000000ULL,    // 3GB mark
+		0x100000000ULL,   // 4GB mark (start of region 2)
+		0x140000000ULL,   // 5GB mark
+		0x180000000ULL    // 6GB mark
+	};
+
+	printf("DDRINFO: Writing 1MB test data at 6 locations...\n");
+
+	// Phase 1: Write test data to all 6 locations
+	for (int loc = 0; loc < NUM_TEST_LOCATIONS; loc++) {
+		volatile uint32_t *test_addr = (uint32_t*)test_addresses[loc];
+
+		uint32_t addr_high = (uint32_t)(test_addresses[loc] >> 32);
+		uint32_t addr_low = (uint32_t)(test_addresses[loc] & 0xFFFFFFFF);
+
+		if(addr_high != 0){
+			printf("DDRINFO: Writing to location %d: 0x%08x%08x\n", loc + 1, addr_high, addr_low);
+		} else {
+			printf("DDRINFO: Writing to location %d: 0x%08x\n", loc + 1, addr_low);
+		}
+
+
+		// Write 1MB of test data (256K words)
+		for (uint32_t i = 0; i < (TEST_SIZE_1MB / 4); i++) {
+			uint32_t test_pattern = generate_test_pattern(test_addresses[loc], i);
+			test_addr[i] = test_pattern;
+		}
+		printf(" Location %d write complete\n", loc + 1);
+	}
+
+	printf("DDRINFO: Reading back and verifying test data...\n");
+
+	// Phase 2: Read back and verify all 6 locations
+	int test_passed = 1;
+	uint32_t total_errors = 0;
+
+	for (int loc = 0; loc < NUM_TEST_LOCATIONS; loc++) {
+		volatile uint32_t *test_addr = (uint32_t*)test_addresses[loc];
+		uint32_t location_errors = 0;
+
+		uint32_t addr_high = (uint32_t)(test_addresses[loc] >> 32);
+		uint32_t addr_low = (uint32_t)(test_addresses[loc] & 0xFFFFFFFF);
+
+		if(addr_high != 0){
+			printf("DDRINFO: Verifying location %d: 0x%08x%08x\n", loc + 1, addr_high, addr_low);
+		} else {
+			printf("DDRINFO: Verifying to location %d: 0x%08x\n", loc + 1, addr_low);
+		}
+		// Verify 1MB of test data
+		for (uint32_t i = 0; i < (TEST_SIZE_1MB / 4); i++) {
+			uint32_t expected_pattern = generate_test_pattern(test_addresses[loc], i);
+			uint32_t read_value = test_addr[i];
+
+			if (read_value != expected_pattern) {
+				if (location_errors < 10) {  // Limit error prints
+					printf("ERROR at 0x%08x%08x+0x%x: expected 0x%08x, got 0x%08x\n", 
+									 addr_high, addr_low, i * 4, expected_pattern, read_value);
+				}
+				location_errors++;
+				test_passed = 0;
+			}
+		}
+
+		if (location_errors == 0) {
+			printf(" Location %d verification PASSED\n", loc + 1);
+		} else {
+			printf(" Location %d verification FAILED (%d errors)\n", loc + 1, location_errors);
+			total_errors += location_errors;
+		}
+	}
+
+	// Final result
+	if (test_passed) {
+		printf("DDRINFO: 1MB DDR test PASSED - All 6 locations verified successfully\n");
+	} else {
+		printf("DDRINFO: 1MB DDR test FAILED - Total errors: %d\n", total_errors);
+	}
+
+	printf("DDRINFO: DDR test completed\n");
 	hang();
 #else
 	board_init_r(NULL, 0);
