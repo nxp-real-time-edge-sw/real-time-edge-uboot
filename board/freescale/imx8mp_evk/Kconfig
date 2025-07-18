@@ -12,4 +12,9 @@ config SYS_CONFIG_NAME
 config IMX_CONFIG
 	default "board/freescale/imx8mp_evk/imximage-8mp-lpddr4.cfg"
 
+config FACTORY_TEST
+	bool "Enable Factory Test Routines"
+	help
+	  Enables custom memory tests for factory diagnostics.
+
 endif

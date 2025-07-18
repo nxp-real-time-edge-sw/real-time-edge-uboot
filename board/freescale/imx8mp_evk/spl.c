@@ -175,5 +175,9 @@ void board_init_f(ulong dummy)
 	/* DDR initialization */
 	spl_dram_init();
 
+#ifdef CONFIG_FACTORY_TEST
+#else
 	board_init_r(NULL, 0);
+#endif
+
 }
