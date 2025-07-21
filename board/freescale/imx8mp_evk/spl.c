@@ -272,7 +272,7 @@ void board_init_f(ulong dummy)
 	}
 
 	printf("DDRINFO: DDR test completed\n");
-	hang();
+	for (;;); // Hang after test
 #else
 	board_init_r(NULL, 0);
 #endif

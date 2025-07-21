@@ -35,6 +35,21 @@ DECLARE_GLOBAL_DATA_PTR;
 #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
 #define LED_PAD_CTRL  (PAD_CTL_DSE6 | PAD_CTL_FSEL1)
 
+#ifdef CONFIG_TARGET_IMX8MP_EVK
+#ifdef CONFIG_TARGET_IMX8MP_EDC_BRD01
+static iomux_v3_cfg_t const uart_pads[] = {
+	MX8MP_IOMUXC_SD1_DATA2__UART2_DTE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+	MX8MP_IOMUXC_SD1_DATA3__UART2_DTE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+};
+
+static iomux_v3_cfg_t const wdog_pads[] = {
+	MX8MP_IOMUXC_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
+};
+
+static iomux_v3_cfg_t const led_pads[] = {
+	MX8MP_PAD_NAND_READY_B__GPIO3_IO16 | MUX_PAD_CTRL(LED_PAD_CTRL),
+};
+#else
 static iomux_v3_cfg_t const uart_pads[] = {
 	MX8MP_PAD_UART2_RXD__UART2_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
 	MX8MP_PAD_UART2_TXD__UART2_DCE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
@@ -43,10 +58,8 @@ static iomux_v3_cfg_t const uart_pads[] = {
 static iomux_v3_cfg_t const wdog_pads[] = {
 	MX8MP_PAD_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
 };
-
-static iomux_v3_cfg_t const led_pads[] = {
-  MX8MP_PAD_NAND_READY_B__GPIO3_IO16 | MUX_PAD_CTRL(LED_PAD_CTRL),
-};
+#endif
+#endif
 
 #ifdef CONFIG_NAND_MXS
 
@@ -81,11 +94,14 @@ int board_early_init_f(void)
 
 	set_wdog_reset(wdog);
 
+#ifdef CONFIG_TARGET_IMX8MP_EDC_BRD01
+	imx_iomux_v3_setup_multiple_pads(led_pads, ARRAY_SIZE(led_pads));
+#endif
+
 	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
 
 	init_uart_clk(1);
 
-	imx_iomux_v3_setup_multiple_pads(led_pads, ARRAY_SIZE(led_pads));
 	return 0;
 }
 
