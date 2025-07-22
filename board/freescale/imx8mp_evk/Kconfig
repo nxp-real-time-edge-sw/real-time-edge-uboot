@@ -18,4 +18,10 @@ config FACTORY_TEST
 	help
 	  Enables custom memory tests for factory diagnostics.
 
+config TARGET_IMX8MP_EDC_BRD01
+	bool "Enable target to EDC board"
+	default n
+	help
+	  Enables target board to EDC board.
+
 endif
