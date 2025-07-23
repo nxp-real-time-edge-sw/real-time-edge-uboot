@@ -30,6 +30,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define GPIO3_BASE_ADDR    0x30220000
+
 int spl_board_boot_device(enum boot_device boot_dev_spl)
 {
 #ifdef CONFIG_SPL_BOOTROM_SUPPORT
@@ -181,6 +183,11 @@ void board_init_f(ulong dummy)
 
 	/* DDR initialization */
 	spl_dram_init();
+
+#ifdef CONFIG_LED_STATUS
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + 0x04) |= (1 << 16);  // GDIR
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + 0x00) |= (1 << 16);  // DR
+#endif
 
 #ifdef CONFIG_FACTORY_TEST
 	/* DDR 1MB Test at 1GB Intervals - Add this before return 0; */
