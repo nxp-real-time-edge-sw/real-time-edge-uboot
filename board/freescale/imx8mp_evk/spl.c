@@ -149,7 +149,8 @@ uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset)
 	return (uint32_t)(base_addr >> 8) ^ offset ^ 0xA5A5A5A5;
 }
 
-void write_test_data(uint64_t* test_addresses, int num_locations){
+void write_test_data(uint64_t* test_addresses, int num_locations)
+{
 
 	for (int loc = 0; loc < num_locations; loc++) {
 		volatile uint32_t *test_addr = (uint32_t*)test_addresses[loc];
@@ -190,7 +191,7 @@ void read_and_verify_test_data(uint64_t* test_addresses, int num_locations)
 			printf("DDRINFO: Verifying to location %d: 0x%08x\n", loc + 1, addr_low);
 		}
 		// Verify 1MB of test data
-		for (uint32_t i = 0; i < (TEST_SIZE_1MB / 4); i++) {
+		for (uint32_t i = 0; i < (TEST_SIZE / 4); i++) {
 			uint32_t expected_pattern = generate_test_pattern(test_addresses[loc], i);
 			uint32_t read_value = test_addr[i];
 
