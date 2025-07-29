@@ -1,5 +1,14 @@
 #include "imx8mp_factory_test.h"
 
+uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
+    0x40000000ULL,
+    0x80000000ULL,
+    0xC0000000ULL,
+    0x100000000ULL,
+    0x140000000ULL,
+    0x180000000ULL
+};
+
 // Generate test pattern based on address
 uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset)
 {
