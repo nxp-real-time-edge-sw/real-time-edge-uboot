@@ -28,6 +28,8 @@
 #include <mmc.h>
 #include <asm/arch/ddr.h>
 
+#include "imx8mp_factory_test.h"
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #define GPIO3_BASE_ADDR    0x30220000
@@ -265,29 +267,7 @@ void board_init_f(ulong dummy)
 #endif
 
 #ifdef CONFIG_FACTORY_TEST
-	/* DDR 1MB Test at 1GB Intervals - Add this before return 0; */
-	printf("DDRINFO: Starting 1MB DDR test at 1GB intervals\n");
-
-#define NUM_TEST_LOCATIONS   6
-
-	// Test locations at 1GB intervals
-	uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
-		0x40000000ULL,    // 1GB mark (start of DDR)
-		0x80000000ULL,    // 2GB mark
-		0xC0000000ULL,    // 3GB mark
-		0x100000000ULL,   // 4GB mark (start of region 2)
-		0x140000000ULL,   // 5GB mark
-		0x180000000ULL    // 6GB mark
-	};
-
-	printf("DDRINFO: Writing 1MB test data at 6 locations...\n");
-	write_test_data(test_addresses, NUM_TEST_LOCATIONS);
-	printf("DDRINFO: Reading back and verifying test data...\n");
-	read_and_verify_test_data(test_addresses, NUM_TEST_LOCATIONS);
-
-	printf("DDRINFO: DDR test completed\n");
-
-	for (;;); // Hang after test
+	run_factory_test();
 #else
 	board_init_r(NULL, 0);
 #endif
