@@ -489,11 +489,6 @@ int board_init(void)
 	init_usb_clk();
 #endif
 
-#ifdef CONFIG_LED_STATUS
-	status_led_init();
-	status_led_set(CONFIG_LED_STATUS_BIT, CONFIG_LED_STATUS_ON);
-#endif
-
 	return 0;
 }
 
