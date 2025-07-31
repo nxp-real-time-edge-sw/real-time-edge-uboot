@@ -1,6 +1,9 @@
 #include "imx8mp_factory_test.h"
 
-uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
+#define TEST_SIZE		0x100000
+#define NUM_TEST_LOCATIONS   6
+
+static const uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
     0x40000000ULL,
     0x80000000ULL,
     0xC0000000ULL,
@@ -10,12 +13,12 @@ uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
 };
 
 // Generate test pattern based on address
-uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset)
+static uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset)
 {
 	return (uint32_t)(base_addr >> 8) ^ offset ^ 0xA5A5A5A5;
 }
 
-void write_test_data(uint64_t* test_addresses, int num_locations)
+static void write_test_data(uint64_t* test_addresses, int num_locations)
 {
 
 	for (int loc = 0; loc < num_locations; loc++) {
@@ -40,7 +43,7 @@ void write_test_data(uint64_t* test_addresses, int num_locations)
 	}
 }
 
-void read_and_verify_test_data(uint64_t* test_addresses, int num_locations)
+static void read_and_verify_test_data(uint64_t* test_addresses, int num_locations)
 {
 	int test_passed = 1;
 	uint32_t total_errors = 0;
@@ -87,7 +90,7 @@ void read_and_verify_test_data(uint64_t* test_addresses, int num_locations)
 	}
 }
 
-void run_ddr_test(void)
+static void run_ddr_test(void)
 {
 	printf("DDRINFO: Writing 1MB test data at 6 locations...\n");
 	write_test_data(test_addresses, NUM_TEST_LOCATIONS);
