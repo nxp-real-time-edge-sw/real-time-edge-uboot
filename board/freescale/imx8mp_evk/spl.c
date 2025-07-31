@@ -27,12 +27,15 @@
 #include <fsl_esdhc_imx.h>
 #include <mmc.h>
 #include <asm/arch/ddr.h>
+#include <asm/arch-imx8m/imx-regs.h>
 
 #include "imx8mp_factory_test.h"
 
-DECLARE_GLOBAL_DATA_PTR;
+// GPIO register offsets
+#define GPIO_DR_OFFSET		(0x00)
+#define GPIO_GDIR_OFFSET	(0x04)
 
-#define GPIO3_BASE_ADDR    0x30220000
+DECLARE_GLOBAL_DATA_PTR;
 
 int spl_board_boot_device(enum boot_device boot_dev_spl)
 {
@@ -180,8 +183,9 @@ void board_init_f(ulong dummy)
 	spl_dram_init();
 
 #ifdef CONFIG_LED_STATUS
-	*(volatile uint32_t *)(GPIO3_BASE_ADDR + 0x04) |= (1 << 16);  // GDIR
-	*(volatile uint32_t *)(GPIO3_BASE_ADDR + 0x00) |= (1 << 16);  // DR
+	u_int8_t pin_num = 16;
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + GPIO_GDIR_OFFSET) |= (1 << pin_num);
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + GPIO_DR_OFFSET) |= (1 << pin_num);
 #endif
 
 #ifdef CONFIG_FACTORY_TEST

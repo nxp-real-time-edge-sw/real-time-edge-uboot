@@ -13,12 +13,12 @@ static const uint64_t test_addresses[NUM_TEST_LOCATIONS] = {
 };
 
 // Generate test pattern based on address
-static uint32_t generate_test_pattern(uint64_t base_addr, uint32_t offset)
+static uint32_t generate_test_pattern(const uint64_t base_addr, uint32_t offset)
 {
 	return (uint32_t)(base_addr >> 8) ^ offset ^ 0xA5A5A5A5;
 }
 
-static void write_test_data(uint64_t* test_addresses, int num_locations)
+static void write_test_data(const uint64_t* test_addresses, int num_locations)
 {
 
 	for (int loc = 0; loc < num_locations; loc++) {
@@ -43,7 +43,7 @@ static void write_test_data(uint64_t* test_addresses, int num_locations)
 	}
 }
 
-static void read_and_verify_test_data(uint64_t* test_addresses, int num_locations)
+static void read_and_verify_test_data(const uint64_t* test_addresses, int num_locations)
 {
 	int test_passed = 1;
 	uint32_t total_errors = 0;
