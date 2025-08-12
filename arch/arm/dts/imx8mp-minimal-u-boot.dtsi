@@ -148,11 +148,11 @@
 	u-boot,dm-spl;
 };
 
-&pinctrl_i2c1 {
+&pinctrl_i2c3 {
 	u-boot,dm-spl;
 };
 
-&pinctrl_i2c1_gpio {
+&pinctrl_i2c3_gpio {
 	u-boot,dm-spl;
 };
 
