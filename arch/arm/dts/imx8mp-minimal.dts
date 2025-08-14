@@ -6,7 +6,7 @@
 #include "imx8mp-edc-brd01-pinmux.dtsi"
 
 / {
-	model = "NXP i.MX8MPlus LPDDR4 EVK board";
+	model = "NXP i.MX8MPlus EDC Brd01 board";
 	compatible = "fsl,imx8mp-evk", "fsl,imx8mp";
 
 	chosen {
