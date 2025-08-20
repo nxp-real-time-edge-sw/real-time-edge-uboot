@@ -15,17 +15,17 @@ config IMX8MQ
 	bool
 	select IMX8M
 	select CLK_IMX8MQ
-	select ARMV8_SPL_EXCEPTION_VECTORS
+	select ARMV8_SPL_EXCEPTION_VECTORS if SPL
 
 config IMX8MM
 	bool
 	select IMX8M
-	select ARMV8_SPL_EXCEPTION_VECTORS
+	select ARMV8_SPL_EXCEPTION_VECTORS if SPL
 
 config IMX8MN
 	bool
 	select IMX8M
-	select ARMV8_SPL_EXCEPTION_VECTORS
+	select ARMV8_SPL_EXCEPTION_VECTORS if SPL
 
 config IMX8MP
 	bool
