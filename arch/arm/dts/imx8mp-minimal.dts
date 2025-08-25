@@ -231,10 +231,7 @@
 &i2c3 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
-	pinctrl-0 = <&pinctrl_i2c3>;
-	pinctrl-1 = <&pinctrl_i2c3_gpio>;
-	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
-	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	pinctrl-0 = <&BOARD_InitPins>;
 	status = "okay";
 
 	pmic@25 {
@@ -341,20 +338,6 @@
 	/* console */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
-	status = "okay";
-};
-
-&usb3_phy0 {
-	fsl,phy-tx-vref-tune = <0xe>;
-	fsl,phy-tx-preemp-amp-tune = <3>;
-	fsl,phy-tx-vboost-level = <5>;
-	fsl,phy-comp-dis-tune = <7>;
-	fsl,pcs-tx-deemph-3p5db = <0x21>;
-	fsl,phy-pcs-tx-swing-full = <0x7f>;
-	status = "okay";
-};
-
-&usb3_0 {
 	status = "okay";
 };
 
