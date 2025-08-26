@@ -231,7 +231,10 @@
 &i2c3 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
-	pinctrl-0 = <&BOARD_InitPins>;
+	pinctrl-0 = <&pinctrl_i2c3>;
+	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 
 	pmic@25 {
