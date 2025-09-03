@@ -473,7 +473,7 @@ int board_init(void)
 
 	flexspi_nor_steup();
 
-	power_on_m7("mx95evkrpmsg");
+	power_on_m7(CONFIG_SM_CONFIG_NAME);
 
 	lvds_backlight_on();
 
