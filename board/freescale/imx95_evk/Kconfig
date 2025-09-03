@@ -9,4 +9,11 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx95_evk"
 
+config SM_CONFIG_NAME
+	string "System Manager config name to power on M7MIX"
+	default "mx95evkrpmsg"
+	help
+	  This string is the specified System Manager config name with which
+	  the M7MIX will be powered on.
+
 endif
