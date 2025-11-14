@@ -191,7 +191,7 @@ int board_init(void)
 
 	netc_init();
 
-	power_on_m7("mx94evkrpmsg");
+	power_on_m7(CONFIG_SM_CONFIG_NAME);
 
 #if IS_ENABLED(CONFIG_IMX_CRRM)
 	crrm_uboot_init();
