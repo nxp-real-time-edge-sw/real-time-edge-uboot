@@ -9,4 +9,11 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx94_evk"
 
+config SM_CONFIG_NAME
+	string "System Manager config name to power on M-core MIXs"
+	default "mx94evkrpmsg"
+	help
+	  This string is the specified System Manager config name with which
+	  the M-core MIXs (M7MIX0, M7MIX1 and NETC MIX) will be powered on.
+
 endif
