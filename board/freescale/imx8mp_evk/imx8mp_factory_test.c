@@ -1,4 +1,13 @@
+/* 
+Copyright (c) 2025 AxisB Inc.
+All Rights Reserved. Confidential and Proprietary.
+*/
+
 #include "imx8mp_factory_test.h"
+#include <common.h>
+#include <hang.h>
+#include <init.h>
+#include <log.h>
 
 #define TEST_SIZE		0x100000
 #define NUM_TEST_LOCATIONS   6
