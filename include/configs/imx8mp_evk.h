@@ -9,6 +9,7 @@
 #include <linux/sizes.h>
 #include <linux/stringify.h>
 #include <asm/arch/imx-regs.h>
+#include <asm/mach-imx/gpio.h>
 #include "imx_env.h"
 
 #define CFG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
@@ -184,6 +185,15 @@
 
 #ifdef CONFIG_ANDROID_SUPPORT
 #include "imx8mp_evk_android.h"
+#endif
+
+#ifdef CONFIG_LED_STATUS
+#define CONFIG_LED_STATUS_OFF       0
+#define CONFIG_LED_STATUS_FREQ      2
+#define STATUS_LED_GPIO_NUM         IMX_GPIO_NR(3, 16)
+#define CONFIG_LED_STATUS_BIT              STATUS_LED_GPIO_NUM
+#define CONFIG_LED_STATUS_STATE            CONFIG_LED_STATUS_ON
+#define STATUS_LED_PERIOD           (CONFIG_SYS_HZ / CONFIG_LED_STATUS_FREQ)
 #endif
 
 #endif

@@ -27,6 +27,13 @@
 #include <fsl_esdhc_imx.h>
 #include <mmc.h>
 #include <asm/arch/ddr.h>
+#include <asm/arch-imx8m/imx-regs.h>
+
+#include "imx8mp_factory_test.h"
+
+// GPIO register offsets
+#define GPIO_DR_OFFSET		(0x00)
+#define GPIO_GDIR_OFFSET	(0x04)
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -175,5 +182,16 @@ void board_init_f(ulong dummy)
 	/* DDR initialization */
 	spl_dram_init();
 
+#ifdef CONFIG_LED_STATUS
+	u_int8_t pin_num = 16;
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + GPIO_GDIR_OFFSET) |= (1 << pin_num);
+	*(volatile uint32_t *)(GPIO3_BASE_ADDR + GPIO_DR_OFFSET) |= (1 << pin_num);
+#endif
+
+#ifdef CONFIG_FACTORY_TEST
+	run_factory_test();
+#else
 	board_init_r(NULL, 0);
+#endif
+
 }
