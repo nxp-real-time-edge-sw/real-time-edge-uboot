@@ -8,6 +8,8 @@ All Rights Reserved. Confidential and Proprietary.
 #include <hang.h>
 #include <init.h>
 #include <log.h>
+#include <mmc.h>
+#include <dm.h>
 
 #define TEST_SIZE		0x100000
 #define NUM_TEST_LOCATIONS   6
@@ -107,11 +109,33 @@ static void run_ddr_test(void)
 	read_and_verify_test_data(test_addresses, NUM_TEST_LOCATIONS);
 }
 
+int factory_test_emmc(void)
+{
+	struct mmc *mmc;
+
+    mmc = find_mmc_device(1);   /* eMMC */
+    if (!mmc) {
+        printf("FACTORY: eMMC device not found\n");
+        return -1;
+    }
+
+    if (mmc_init(mmc)) {
+        printf("FACTORY: eMMC init failed\n");
+        return -1;
+    }
+
+    printf("FACTORY: eMMC detected successfully\n");
+    return 0;
+}
+
 void run_factory_test(void)
 {
 	printf("DDRINFO: Starting 1MB DDR test at 1GB intervals\n");
 	run_ddr_test();
+	if (factory_test_emmc())
+	hang();
 
 	// Hang after all the tests are completed
-	for(;;);
+	printf("FACTORY TEST PASS\n");
+	hang();
 }
