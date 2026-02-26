@@ -12,7 +12,7 @@
 
 #define MPIDR_MT_BIT		BIT(24)
 
-#define IMX_SIP_CPU_OFF		0xC200000D
+#define IMX_SIP_CPU_OFF		0xC2000012
 
 #ifndef CONFIG_MAX_CPUS
 #define CONFIG_MAX_CPUS 4
