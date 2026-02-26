@@ -13,7 +13,7 @@
 #define MPIDR_MT_BIT		BIT(24)
 #define MPIDR_AFF1_SHFT		(8)
 
-#define IMX_SIP_CPU_OFF		0xC200000D
+#define IMX_SIP_CPU_OFF		0xC2000012
 
 static u64 logical_id_to_hwid(unsigned int core)
 {
