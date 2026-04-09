@@ -519,6 +519,19 @@ config ENABLE_ARM_SOC_BOOT0_HOOK
 	  values, then choose this option, and create a file included as
 	  <asm/arch/boot0.h> which contains the required assembler code.
 
+config EMBEDDED_FASTBOOT_BLOB
+	bool "Reserve a space for fastboot blob in BOOT0 header"
+	depends on ENABLE_ARM_SOC_BOOT0_HOOK
+	help
+	  Enable this option to reserve a space in BOOT0 header, the
+	  space is used to embed fastboot blob, magic number and
+	  space size will be filled at the head of the space.
+
+config EMBEDDED_FASTBOOT_BLOB_SIZE
+	int "Embedded fastboot space size in bytes"
+	depends on EMBEDDED_FASTBOOT_BLOB
+	default 256
+
 config USE_ARCH_MEMCPY
 	bool "Use an assembly optimized implementation of memcpy"
 	default y if !ARM64
