@@ -39,4 +39,6 @@
 #define NS_ARCH_ARM64 1
 #endif
 
+#define CONFIG_MAX_CPUS 2
+
 #endif
