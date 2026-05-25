@@ -630,9 +630,37 @@ static int run_main_loop(void)
 
 	event_notify_null(EVT_MAIN_LOOP);
 
+#if !defined(CONFIG_BAREMETAL)
 	/* main_loop() can return to retry autoboot, if so just run it again */
 	for (;;)
 		main_loop();
+#else
+	u32 coreid = get_core_id();
+
+	if (coreid == 0) {
+		puts("Core[0] in the loop...\n");
+		/* main_loop() can return to retry autoboot, if so run it again */
+		for (;;)
+			main_loop();
+	} else if (coreid == 1) {
+		puts("Core[1] in the loop...\n");
+		core1_main();
+		for (;;)
+			main_loop();
+			;
+	} else if (coreid == 2) {
+		puts("Core[2] in the loop...\n");
+		core2_main();
+		for (;;)
+			;
+	} else if (coreid == 3) {
+		puts("Core[3] in the loop...\n");
+		core3_main();
+		for (;;)
+			;
+	}
+#endif /* CONFIG_BAREMETAL */
+
 	return 0;
 }
 
@@ -875,3 +903,239 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 	/* NOTREACHED - run_main_loop() does not return */
 	hang();
 }
+
+#if defined(CONFIG_BAREMETAL_SLAVE_MODE)
+static void initcall_run_r_slave(void)
+{
+	/*
+	 * Please do not add logic to this function (variables, if (), etc.).
+	 * For simplicity it should remain an ordered list of function calls.
+	 */
+	INITCALL(initr_trace);
+	INITCALL(initr_reloc);
+	INITCALL(event_init);
+	/* TODO: could x86/PPC have this also perhaps? */
+#if CONFIG_IS_ENABLED(ARM) || CONFIG_IS_ENABLED(RISCV)
+	INITCALL(initr_caches);
+	/* Note: For Freescale LS2 SoCs, new MMU table is created in DDR.
+	 *	 A temporary mapping of IFC high region is since removed,
+	 *	 so environmental variables in NOR flash is not available
+	 *	 until board_init() is called below to remap IFC to high
+	 *	 region.
+	 */
+#endif
+	INITCALL(initr_reloc_global_data);
+#if CONFIG_IS_ENABLED(SYS_INIT_RAM_LOCK) && CONFIG_IS_ENABLED(E500)
+	INITCALL(initr_unlock_ram_in_cache);
+#endif
+	INITCALL(initr_barrier);
+	INITCALL(initr_malloc);
+	INITCALL(log_init);
+	INITCALL(initr_bootstage); /* Needs malloc() but has its own timer */
+#if CONFIG_IS_ENABLED(CONSOLE_RECORD)
+	INITCALL(console_record_init);
+#endif
+#if CONFIG_IS_ENABLED(SYS_HAS_NONCACHED_MEMORY)
+	INITCALL(noncached_init);
+#endif
+	INITCALL(initr_of_live);
+#if CONFIG_IS_ENABLED(DM)
+	INITCALL(initr_dm);
+#endif
+#if CONFIG_IS_ENABLED(ADDR_MAP)
+	INITCALL(init_addr_map);
+#endif
+#if CONFIG_IS_ENABLED(BOARD_INIT)
+	INITCALL(board_init);	/* Setup chipselects */
+#endif
+	/*
+	 * TODO: printing of the clock inforamtion of the board is now
+	 * implemented as part of bdinfo command. Currently only support for
+	 * davinci SOC's is added. Remove this check once all the board
+	 * implement this.
+	 */
+#if CONFIG_IS_ENABLED(CLOCKS)
+	INITCALL(set_cpu_clk_info);
+#endif
+	INITCALL(initr_lmb);
+#if CONFIG_IS_ENABLED(EFI_LOADER)
+	INITCALL(efi_memory_init);
+#endif
+#if CONFIG_IS_ENABLED(BINMAN_FDT)
+	INITCALL(initr_binman);
+#endif
+#if CONFIG_IS_ENABLED(FSP_VERSION2)
+	INITCALL(arch_fsp_init_r);
+#endif
+	INITCALL(initr_dm_devices);
+	INITCALL(stdio_init_tables);
+	INITCALL(serial_initialize);
+	INITCALL(initr_announce);
+	INITCALL(dm_announce);
+#if CONFIG_IS_ENABLED(WDT)
+	INITCALL(initr_watchdog);
+#endif
+	WATCHDOG_RESET();
+	INITCALL(arch_initr_trap);
+#if CONFIG_IS_ENABLED(BOARD_EARLY_INIT_R)
+	INITCALL(board_early_init_r);
+#endif
+	WATCHDOG_RESET();
+#if CONFIG_IS_ENABLED(POST)
+	INITCALL(post_output_backlog);
+#endif
+	WATCHDOG_RESET();
+#if CONFIG_IS_ENABLED(PCI_INIT_R) && CONFIG_IS_ENABLED(SYS_EARLY_PCI_INIT)
+	/*
+	 * Do early PCI configuration _before_ the flash gets initialised,
+	 * because PCU resources are crucial for flash access on some boards.
+	 */
+	INITCALL(pci_init);
+#endif
+#if CONFIG_IS_ENABLED(ARCH_EARLY_INIT_R)
+	INITCALL(arch_early_init_r);
+#endif
+	INITCALL(power_init_board);
+#if CONFIG_IS_ENABLED(MTD_NOR_FLASH)
+	INITCALL(initr_flash);
+#endif
+	WATCHDOG_RESET();
+#if CONFIG_IS_ENABLED(PPC) || CONFIG_IS_ENABLED(M68K) || CONFIG_IS_ENABLED(X86)
+	/* initialize higher level parts of CPU like time base and timers */
+	INITCALL(cpu_init_r);
+#endif
+#if CONFIG_IS_ENABLED(EFI_LOADER)
+	INITCALL(efi_init_early);
+#endif
+#if CONFIG_IS_ENABLED(CMD_NAND)
+	INITCALL(initr_nand);
+#endif
+#if CONFIG_IS_ENABLED(CMD_ONENAND)
+	INITCALL(initr_onenand);
+#endif
+#if CONFIG_IS_ENABLED(MMC)
+	INITCALL(initr_mmc);
+#endif
+#if CONFIG_IS_ENABLED(XEN)
+	INITCALL(xen_init);
+#endif
+#if CONFIG_IS_ENABLED(PVBLOCK)
+	INITCALL(initr_pvblock);
+#endif
+	INITCALL(initr_env);
+#if CONFIG_IS_ENABLED(SYS_MALLOC_BOOTPARAMS)
+	INITCALL(initr_malloc_bootparams);
+#endif
+	WATCHDOG_RESET();
+	INITCALL(cpu_secondary_init_r);
+#if CONFIG_IS_ENABLED(ID_EEPROM)
+	INITCALL(mac_read_from_eeprom);
+#endif
+	INITCALL_EVT(EVT_SETTINGS_R);
+	WATCHDOG_RESET();
+#if CONFIG_IS_ENABLED(PCI_INIT_R) && !CONFIG_IS_ENABLED(SYS_EARLY_PCI_INIT)
+	/*
+	 * Do pci configuration
+	 */
+	INITCALL(pci_init);
+#endif
+	INITCALL(stdio_add_devices);
+	INITCALL(jumptable_init);
+#if CONFIG_IS_ENABLED(API)
+	INITCALL(api_init);
+#endif
+	INITCALL(console_init_r);	/* fully init console as a device */
+#if CONFIG_IS_ENABLED(DISPLAY_BOARDINFO_LATE)
+	INITCALL(console_announce_r);
+	INITCALL(show_board_info);
+#endif
+	/* miscellaneous arch-dependent init */
+#if CONFIG_IS_ENABLED(ARCH_MISC_INIT)
+	INITCALL(arch_misc_init);
+#endif
+	/* miscellaneous platform-dependent init */
+#if CONFIG_IS_ENABLED(MISC_INIT_R)
+	INITCALL(misc_init_r);
+#endif
+	WATCHDOG_RESET();
+#if CONFIG_IS_ENABLED(CMD_KGDB)
+	INITCALL(kgdb_init);
+#endif
+	INITCALL(interrupt_init);
+#if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
+	INITCALL(timer_init);		/* initialize timer */
+#endif
+	INITCALL(initr_status_led);
+	INITCALL(initr_boot_led_blink);
+	/* PPC has a udelay(20) here dating from 2002. Why? */
+#if CONFIG_IS_ENABLED(BOARD_LATE_INIT)
+	INITCALL(board_late_init);
+#endif
+#ifdef CONFIG_FSL_FASTBOOT
+	INITCALL(initr_fastboot_setup);
+#endif
+#if CONFIG_IS_ENABLED(PCI_ENDPOINT)
+	INITCALL(pci_ep_init);
+#endif
+#if CONFIG_IS_ENABLED(NET) || CONFIG_IS_ENABLED(NET_LWIP)
+	WATCHDOG_RESET();
+	/* TODO: need add initr_net after add ethernet feature */
+	//INITCALL(initr_net);
+#endif
+#if CONFIG_IS_ENABLED(POST)
+	INITCALL(initr_post);
+#endif
+	WATCHDOG_RESET();
+	INITCALL_EVT(EVT_LAST_STAGE_INIT);
+#if defined(CFG_PRAM)
+	INITCALL(initr_mem);
+#endif
+	INITCALL(initr_boot_led_on);
+#if defined(AVB_RPMB) && !defined(CONFIG_SPL)
+	INITCALL(initr_avbkey);
+#endif
+#ifdef CONFIG_IMX_TRUSTY_OS
+	INITCALL(initr_tee_setup);
+#endif
+#ifdef CONFIG_FSL_FASTBOOT
+	INITCALL(initr_check_fastboot);
+#endif
+#ifdef CONFIG_DUAL_BOOTLOADER
+	INITCALL(initr_check_spl_recovery);
+#endif
+	INITCALL(run_main_loop);
+};
+
+void board_init_r_slave(gd_t *new_gd, ulong dest_addr)
+{
+	/*
+	 * The pre-relocation drivers may be using memory that has now gone
+	 * away. Mark serial as unavailable - this will fall back to the debug
+	 * UART if available.
+	 *
+	 * Do the same with log drivers since the memory may not be available.
+	 */
+	gd->flags &= ~(GD_FLG_SERIAL_READY | GD_FLG_LOG_READY);
+
+	/*
+	 * Set up the new global data pointer. So far only x86 does this
+	 * here.
+	 * TODO(sjg@chromium.org): Consider doing this for all archs, or
+	 * dropping the new_gd parameter.
+	 */
+	if (CONFIG_IS_ENABLED(X86_64) && !IS_ENABLED(CONFIG_EFI_APP))
+		arch_setup_gd(new_gd);
+
+#if defined(CONFIG_RISCV)
+	set_gd(new_gd);
+#elif !defined(CONFIG_X86) && !defined(CONFIG_ARM) && !defined(CONFIG_ARM64)
+	gd = new_gd;
+#endif
+	gd->flags &= ~GD_FLG_LOG_READY;
+
+	initcall_run_r_slave();
+
+	/* NOTREACHED - run_main_loop() does not return */
+	hang();
+}
+#endif /* CONFIG_BAREMETAL_SLAVE_MODE */
