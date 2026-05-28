@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <config.h>
 #include <command.h>
 #include <cpu_func.h>
