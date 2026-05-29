@@ -30,7 +30,7 @@ int test_net(void)
 	pci_init();
 	mdelay(1 * 1000);  /* avoid that BareMetal sometimes hang  */
 	eth_initialize();
-#elif CONFIG_FEC_COREID_SET
+#elif defined(CONFIG_FEC_COREID_SET)
 	eth_initialize();
 #endif
 	net_ping_ip = string_to_ip(ping_ip);
