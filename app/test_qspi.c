@@ -55,7 +55,6 @@ static int test_qspi_flash_probe(void)
 		spi_flash_free(flash);
 
 	new = spi_flash_probe(bus, cs, speed, mode);
-	flash = new;
 
 	if (!new) {
 		printf("Failed to initialize SPI flash at %u:%u\n", bus, cs);
