@@ -47,11 +47,11 @@ static double my_strtod(const char *str, char **ptr)
 		decimal = simple_strtol(dotptr, &endptr, 10);
 		bits = endptr - dotptr;
 		num = integer + decimal * pow(0.1, bits);
-		if (!ptr)
+		if (ptr)
 			*ptr = endptr;
 	} else {
 		num = integer;
-		if (!ptr)
+		if (ptr)
 			*ptr = dotptr;
 	}
 	return num;
