@@ -112,7 +112,7 @@ int cpu_release(u32 nr, int argc, char *const argv[])
 	regs.regs[3] = 0;
 	smc_call(&regs);
 	if (regs.regs[0] == PSCI_0_2_AFFINITY_LEVEL_ON) {
-		printf("CPU Core %d is already running, disalbe it firstly before release it\n", nr);
+		printf("CPU Core %d is already running, disable it firstly before release it\n", nr);
 		return 0;
 	}
 
