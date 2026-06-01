@@ -56,6 +56,11 @@ int ls_gic_rd_tables_init(void *blob)
 
 	addr = fdtdec_get_addr_size_auto_noparent(gd->fdt_blob, offset, "reg",
 						  0, &size, false);
+	if (addr == FDT_ADDR_T_NONE) {
+		debug("%s: Failed to get GIC LPI table address\n");
+		return -EINVAL;
+	}
+
 	gic_lpi_table.start = addr;
 	gic_lpi_table.end = addr + size - 1;
 	ret = fdtdec_add_reserved_memory(blob, "fsl,gic-lpi-table", &gic_lpi_table,
