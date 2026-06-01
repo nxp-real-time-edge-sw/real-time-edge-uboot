@@ -865,13 +865,13 @@ static void fdt_fixup_ethercat_prop(void *blob)
 
 		ret = fdt_appendprop_u32(blob, node, "fsl,bpid", 7);
 		if (ret < 0) {
-			printf("%s: Counld not append property \"fsl,bpid\"\n", __func__);
+			printf("%s: Could not append property \"fsl,bpid\"\n", __func__);
 			return;
 		}
 
 		ret = fdt_appendprop_u32(blob, node, "fsl,cpuid", ec_ports[idx].cpuid);
 		if (ret < 0) {
-			printf("%s: Counld not append property \"fsl,cpuid\"\n", __func__);
+			printf("%s: Could not append property \"fsl,cpuid\"\n", __func__);
 			return;
 		}
 loop_tag:
