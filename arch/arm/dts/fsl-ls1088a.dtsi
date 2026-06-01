@@ -114,7 +114,7 @@
 		#size-cells = <2>;
 		ranges;
 
-		gic_lpi_table: gic-lpi-table@0x90100000 {
+		gic_lpi_table: gic-lpi-table@90100000 {
 			compatible = "fsl,gic-lpi-table";
 			reg = <0 0x90100000 0 0x100000>;
 		};
