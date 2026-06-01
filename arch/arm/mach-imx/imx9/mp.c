@@ -27,9 +27,9 @@ static u64 logical_id_to_hwid(unsigned int core)
 
 int is_core_valid(unsigned int core)
 {
-        if(core < CONFIG_MAX_CPUS)
-                return 1;
-        return 0;
+	if(core < CONFIG_MAX_CPUS)
+		return 1;
+	return 0;
 }
 
 int cpu_reset(u32 nr)
@@ -69,7 +69,7 @@ int cpu_disable(u32 nr)
 	}
 	printf("CPU core #%d is disabled\n", nr);
 
-        return 0;
+	return 0;
 }
 
 int cpu_status(u32 nr)
