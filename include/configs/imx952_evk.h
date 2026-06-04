@@ -28,4 +28,6 @@
 #include "imx952_evk_android.h"
 #endif
 
+#define CONFIG_MAX_CPUS 4
+
 #endif
