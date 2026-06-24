@@ -270,7 +270,16 @@ int board_init(void)
 
 	netc_init();
 
-	power_on_m7("mx952evkrpmsg");
+	/*
+	 * Power on CM7 core for System Manager (SM) firmware.
+	 * Supports two firmware variants:
+	 *   - mx952evkrpmsg: For RPMSG communication variant
+	 *   - mx952rte: For Real-Time Edge variant
+	 * The appropriate firmware is selected based on the boot configuration.
+	 */
+	ret = power_on_m7("mx952rte");
+	if (ret == -EINVAL)
+		power_on_m7("mx952evkrpmsg");
 
 	lvds_backlight_on();
 
